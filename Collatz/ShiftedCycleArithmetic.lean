@@ -93,7 +93,7 @@ theorem cycleDenominator_mul_shift_difference
     cycleDenominator c.totalExponent L *
         ((((halfStep^[s]) (c.node 0) : ℕ) : ℤ) - (c.node 0 : ℤ)) =
       cycleDenominator c.totalExponent L *
-          (((halfStep^[s]) (c.node 0) : ℕ) -
+          (((halfStep^[s]) (c.node 0) : ℕ) : ℤ) -
         cycleDenominator c.totalExponent L * (c.node 0 : ℤ) := by ring
     _ = (wordNumerator
           (orbitBits ((halfStep^[s]) (c.node 0)) c.totalExponent) : ℤ) -

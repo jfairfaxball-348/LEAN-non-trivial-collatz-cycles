@@ -16,7 +16,9 @@ theorem zmod_sum_eq_sum_range {n : ℕ} [NeZero n] {α : Type*}
   | zero =>
       exact (neZero_zero_iff_false.mp ‹_›).elim
   | succ n =>
-      exact Fintype.sum_equiv (ZMod.finEquiv (n + 1)).symm.toEquiv _ _ (fun _ => rfl)
+      exact Fintype.sum_equiv (ZMod.finEquiv (n + 1)).symm.toEquiv _ _ (fun x => by
+        apply congrArg f
+        exact (ZMod.natCast_zmod_val x).symm)
 
 namespace OddCycle
 

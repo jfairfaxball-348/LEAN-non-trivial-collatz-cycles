@@ -74,15 +74,17 @@ Proves: `HasRadiusFourRotation w` is exactly the existence of a nonzero shift at
 
 This is also definitional and contains no Collatz-specific eligibility claim.
 
-### `Collatz.radiusFour_rotation_ne_of_primitive`
+### `Collatz.radiusFour_rotation_ne`
 
 Source: `Collatz/Radius4.lean`
 
-Assumptions: the word is primitive, the shift is nonzero, and the shift is at exact Radius 4.
+Assumption: the specified rotation is at exact Radius 4.
 
-Proves: the rotated word is not exactly equal to the original word.
+Proves: the rotated word is not exactly equal to the original word. The proof uses the fact that equal words have Hamming distance zero, contradicting exact distance four.
 
-This is an elementary consistency result. It does **not** prove the intended Radius-4 local impossibility theorem and does **not** exclude any Collatz cycle.
+Primitivity and a separate nonzero-shift assumption are not needed for this elementary consequence.
+
+This result does **not** prove the intended Radius-4 local impossibility theorem and does **not** exclude any Collatz cycle.
 
 ## Arithmetic definitions currently without substantive theorem claims
 

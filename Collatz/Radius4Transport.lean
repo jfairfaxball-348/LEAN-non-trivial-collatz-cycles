@@ -1,4 +1,5 @@
 import Collatz.RotationWord
+import Collatz.Radius4Structure
 
 namespace Collatz
 
@@ -61,6 +62,88 @@ theorem transportPrefixFlow_succ {n : ℕ} [NeZero n]
       transportPrefixFlow source target cut k +
         transportIncrement source target cut k := by
   simp [transportPrefixFlow]
+
+/-- The integer-valued bit indicator sums to the number of true bits. -/
+theorem sum_transportBitValue_eq_ones {n : ℕ} [NeZero n]
+    (w : CyclicWord n) :
+    (∑ i : ZMod n, transportBitValue (w i)) = (ones w : ℤ) := by
+  classical
+  calc
+    (∑ i : ZMod n, transportBitValue (w i)) =
+        ∑ i in Finset.univ.filter (fun i : ZMod n => w i = true), (1 : ℤ) := by
+      rw [Finset.sum_filter]
+      simp [transportBitValue]
+    _ = (ones w : ℤ) := by
+      simp [ones]
+
+/-- Summing a residue-indexed function over canonical natural representatives
+`0, ..., n-1` gives the full `ZMod n` sum.  This local bookkeeping lemma keeps
+the foundational transport layer independent of the later Radius-4 numerator
+files, where the same finite-enumeration fact is also used. -/
+private theorem transport_zmod_sum_eq_sum_range {n : ℕ} [NeZero n]
+    {α : Type*} [AddCommMonoid α] (f : ZMod n → α) :
+    (∑ i : ZMod n, f i) =
+      (Finset.range n).sum (fun j => f (j : ZMod n)) := by
+  rw [← Fin.sum_univ_eq_sum_range]
+  cases n with
+  | zero =>
+      exact (neZero_zero_iff_false.mp ‹_›).elim
+  | succ n =>
+      exact Fintype.sum_equiv (ZMod.finEquiv (n + 1)).symm.toEquiv _ _ (fun x => by
+        apply congrArg f
+        exact (ZMod.natCast_zmod_val x).symm)
+
+/-- A full prefix records exactly the total target mass minus total source
+mass, independently of the chosen cyclic cut. -/
+theorem transportPrefixFlow_full_eq_ones_sub_ones {n : ℕ} [NeZero n]
+    (source target : CyclicWord n) (cut : ZMod n) :
+    transportPrefixFlow source target cut n =
+      (ones target : ℤ) - (ones source : ℤ) := by
+  classical
+  calc
+    transportPrefixFlow source target cut n =
+        (Finset.range n).sum (fun j =>
+          transportBitValue (target (cut + (j : ZMod n))) -
+            transportBitValue (source (cut + (j : ZMod n)))) := by
+      rfl
+    _ = ∑ i : ZMod n,
+          (transportBitValue (target (cut + i)) -
+            transportBitValue (source (cut + i))) := by
+      exact (transport_zmod_sum_eq_sum_range
+        (fun i : ZMod n =>
+          transportBitValue (target (cut + i)) -
+            transportBitValue (source (cut + i)))).symm
+    _ = (∑ i : ZMod n, transportBitValue (target (cut + i))) -
+          ∑ i : ZMod n, transportBitValue (source (cut + i)) := by
+      rw [Finset.sum_sub_distrib]
+    _ = (∑ i : ZMod n, transportBitValue ((rotate target cut) i)) -
+          ∑ i : ZMod n, transportBitValue ((rotate source cut) i) := by
+      congr 1 <;> apply Finset.sum_congr rfl <;> intro i hi <;>
+        simp [rotate, add_comm]
+    _ = (ones (rotate target cut) : ℤ) -
+          (ones (rotate source cut) : ℤ) := by
+      rw [sum_transportBitValue_eq_ones, sum_transportBitValue_eq_ones]
+    _ = (ones target : ℤ) - (ones source : ℤ) := by
+      rw [ones_rotate, ones_rotate]
+
+/-- Equal-weight words have zero full-prefix flow at every cyclic cut.  This is
+the endpoint condition `G_n = 0` used in the RL238 Radius-4 topology
+classification. -/
+theorem transportPrefixFlow_full_eq_zero_of_ones_eq {n : ℕ} [NeZero n]
+    {source target : CyclicWord n} (hones : ones source = ones target)
+    (cut : ZMod n) :
+    transportPrefixFlow source target cut n = 0 := by
+  rw [transportPrefixFlow_full_eq_ones_sub_ones]
+  rw [hones]
+  simp
+
+/-- A word and any cyclic rotation have zero full-prefix flow at every cut. -/
+@[simp]
+theorem transportPrefixFlow_full_rotate_eq_zero {n : ℕ} [NeZero n]
+    (w : CyclicWord n) (shift cut : ZMod n) :
+    transportPrefixFlow w (rotate w shift) cut n = 0 := by
+  apply transportPrefixFlow_full_eq_zero_of_ones_eq
+  exact (ones_rotate w shift).symm
 
 /-- Consecutive prefix-flow values differ by at most one in absolute value. -/
 theorem transportPrefixFlow_step_natAbs_le_one {n : ℕ} [NeZero n]

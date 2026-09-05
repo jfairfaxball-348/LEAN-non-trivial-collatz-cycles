@@ -260,6 +260,56 @@ Proves only elementary facts about exact Hamming distance four for arbitrary cyc
 
 These results do not supply Collatz eligibility or a contradiction.
 
+## Directional structure of Radius 4
+
+### `Collatz.ones_eq_commonTrue_add_down`, `Collatz.ones_eq_commonTrue_add_up`, `Collatz.hammingDistance_eq_down_add_up`
+
+Source: `Collatz/Radius4Structure.lean`
+
+Assumptions: arbitrary binary cyclic words of the same nonzero length.
+
+Proves: true positions split into common-true and directional mismatch positions, and every Hamming mismatch is uniquely either `true→false` or `false→true`.
+
+Does not use or assert any Collatz arithmetic.
+
+### `Collatz.down_eq_up_of_ones_eq`
+
+Source: `Collatz/Radius4Structure.lean`
+
+Assumption: two cyclic binary words have the same number of true bits.
+
+Proves: their numbers of `true→false` and `false→true` mismatches are equal.
+
+Contribution to Radius 4: this turns a total Hamming-count statement into a balanced directional statement once equal weight is known.
+
+### `Collatz.ones_rotate`
+
+Source: `Collatz/Radius4Structure.lean`
+
+Proves: cyclic rotation preserves the number of true bits.
+
+This is purely finite combinatorics; it does not prove that a rotation corresponds to a rebased Collatz orbit or carries the required denominator arithmetic.
+
+### `Collatz.hammingFour_directional_counts`
+
+Source: `Collatz/Radius4Structure.lean`
+
+Assumptions: two equal-weight cyclic binary words at Hamming distance exactly four.
+
+Proves: there are exactly two `true→false` and exactly two `false→true` mismatch positions.
+
+### `Collatz.radiusFour_directional_counts`
+
+Source: `Collatz/Radius4Structure.lean`
+
+Assumption: `IsRadiusFour w shift` for an arbitrary cyclic binary word and rotation.
+
+Proves: the four mismatches are exactly two in each orientation, using rotation-invariance of the number of true bits.
+
+Contribution to Radius 4: this is the first proved structural reduction specific to exact Radius 4. It narrows any later numerator-difference argument to two deletions and two insertions.
+
+Does not prove: any arithmetic impossibility, any full-denominator condition for a rotation, the topology/classification of the four mismatch positions along shift-orbits, or the Collatz-specific Radius-4 obstruction.
+
 ## Substantive target not yet proved
 
 ### Radius-4 local impossibility theorem
@@ -275,7 +325,8 @@ The strongest proved dependency chain now reaches:
 5. the composed denominator identity `D*x_0 = N`;
 6. full-denominator divisibility of that numerator;
 7. a genuine length-`A` parity-word definition;
-8. an exact Collatz-specific Radius-4 predicate on that word.
+8. an exact Collatz-specific Radius-4 predicate on that word;
+9. a proved combinatorial reduction that every exact Radius-4 rotation has exactly two mismatches in each direction.
 
 The immediate missing local bridge is to connect cyclic rotation of `parityWord` to rebasing/advancing the same periodic orbit and to derive the corresponding full-denominator relation for the rotated arithmetic numerator. The arithmetic marker word must also be proved equal to the genuine parity word if cumulative exponent positions are used in that derivation.
 

@@ -4,7 +4,8 @@ open Lake DSL
 
 package «collatz-formal» where
   leanOptions := #[
-    ⟨`autoImplicit, false⟩
+    ⟨`autoImplicit, false⟩,
+    ⟨`warningAsError, true⟩
   ]
 
 require mathlib from git

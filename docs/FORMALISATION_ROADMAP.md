@@ -4,88 +4,120 @@ This roadmap describes the intended order of work inside this repository. Every 
 
 ## Stage 0 — Foundations
 
-Status: **scaffolded and compiling**.
+Status: **complete as infrastructure**.
 
-The project currently defines:
+The project defines:
 
-- the standard unaccelerated Collatz map on natural numbers;
+- the standard unaccelerated Collatz map `step` on natural numbers;
+- the derived one-division map `halfStep`;
 - finite cyclic binary words;
 - cyclic rotation;
 - Hamming distance;
 - rotational primitivity;
-- the cycle denominator `2^A - 3^L`;
+- the integer expression `2^A - 3^L`;
 - exact Radius 4 as Hamming distance four from a nonzero cyclic rotation.
 
-These definitions are only the vocabulary required for later theorems.
+These definitions alone do not assert a Collatz obstruction.
 
 ## Stage 1 — Odd-to-odd Collatz cycle arithmetic
 
-Formalise the exact odd-to-odd step
+Status: **substantive forward direction proved; reverse extraction still open**.
+
+The repository now formalises the exact odd-to-odd step
 
 `3x + 1 = 2^a y`
 
-with `x` and `y` odd and `a >= 1` the exact two-adic exponent. Then define a finite hypothetical odd cycle and prove, inside Lean, the identities obtained by composing all odd-to-odd steps.
+with positive odd `x,y` and positive exponent `a`.
 
-Required outcomes include:
+Lean proves:
 
-- a precise cycle data structure;
-- positivity and oddness conditions;
-- exact two-adic exponents for each step;
-- `L`, the number of odd nodes;
-- `A`, the sum of the two-adic exponents;
-- a proved derivation of the denominator `D = 2^A - 3^L`.
+- the local equation is realised by the ordinary Collatz map;
+- every earlier ordinary post-odd state is even and the stated endpoint is odd;
+- the same edge takes exactly `a` iterations of `halfStep`;
+- a positive cyclic odd-cycle structure `OddCycle L`;
+- `A`, the sum of its exponents, satisfies `L ≤ A` and `A > 0`;
+- composition of the first `k` odd-to-odd equations;
+- one full ordinary traversal returns the base odd node after `A+L` steps;
+- one full `halfStep` traversal returns the base odd node after exactly `A` steps.
 
-The existing `cycleDenominator` definition is notation only until this derivation is proved.
+The remaining Stage-1 bridge, if the final theorem is stated from the most general ordinary-cycle hypothesis, is:
+
+> **ordinary-cycle extraction lemma** — every hypothetical positive periodic orbit of the ordinary map can be rebased at an odd state and converted to an `OddCycle` with the exact exponent data above.
+
+The current local development instead begins from explicit `OddCycle` data and proves that it genuinely gives an ordinary periodic orbit. That direction is fully explicit and not assumed.
 
 ## Stage 2 — Collatz cycle encoding
 
-Define the exact finite cyclic combinatorial object extracted from a hypothetical positive cycle and prove that the extraction preserves every property later used by Radius 4.
+Status: **genuine parity word defined; rotation bridge incomplete**.
 
-This stage must make explicit:
+The denominator-compatible encoding uses `halfStep`, not the `A+L` ordinary-step traversal. This was a substantive representation correction: since each odd-to-odd exponent contributes exactly that many one-division transitions, the natural cyclic length is `A`, matching `2^A - 3^L`.
 
-- what each bit means;
-- the length of the cyclic word;
-- how cyclic shifts correspond to changing the chosen starting point or comparing cycle data;
-- why the relevant word is primitive in the cases where primitivity is assumed;
-- which arithmetic quantities are invariant under rotation.
+The repository now defines `OddCycle.parityWord`, a `CyclicWord A` whose bit at a cyclic position records whether the actual `halfStep` orbit state is odd.
 
-No theorem about an arbitrary `CyclicWord` should be advertised as a theorem about Collatz cycles until this encoding theorem exists.
+It also defines cumulative exponent positions and an arithmetic marker word `oddStartWord`. Every marked exponent boundary is proved to be an actual odd state.
 
-## Stage 3 — Full-denominator eligibility
+Next required encoding lemmas:
 
-Derive the exact arithmetic quantity to which the complete denominator `D = 2^A - 3^L` applies.
+1. **marker/parity equality** — prove `oddStartWord = parityWord` by showing all non-boundary positions inside each exponent block are even;
+2. **rotation/advance theorem** — prove that rotating `parityWord` by a cyclic shift corresponds to advancing the same periodic `halfStep` orbit by that shift;
+3. **odd-node rebase theorem** — for shifts landing on odd positions, connect the rotated word to `OddCycle.rebase` and prove the relevant exponent/denominator invariants;
+4. **primitivity bridge** — only if the final local theorem requires primitive words, prove exactly which cycle minimality/non-repetition hypothesis implies `IsPrimitive parityWord`.
 
-The final predicate must be proved from the cycle equations rather than introduced as an unexplained hypothesis. In particular, this stage must distinguish divisibility by the full integer `D` from weaker congruence, factor, or residue conditions.
+No primitivity or rotation identity is to be inserted as an unexplained eligibility assumption.
 
-The current `FullDenominatorDivides` definition is only a generic divisibility relation and is not yet the Collatz-specific eligibility theorem.
+## Stage 3 — Full-denominator arithmetic
+
+Status: **base numerator divisibility proved; shift-specific relation still open**.
+
+From the full composed cycle identity Lean now derives
+
+`(2^A - 3^L) * x_0 = N`,
+
+where `N = prefixNumerator L` is generated recursively from the local cycle equations.
+
+Consequently Lean proves:
+
+- `2^A - 3^L > 0`;
+- the complete integer denominator `D = 2^A - 3^L` divides `N`;
+- the quotient is the base odd node `x_0`.
+
+This replaces the previous state in which `FullDenominatorDivides` was only generic vocabulary.
+
+However, the final Radius-4 obstruction is expected to compare a parity word with a rotation. The next arithmetic theorem must therefore derive, not assume, the corresponding numerator for an advanced/rebased orbit and the exact full-`D` divisibility relation for the relevant difference or comparison expression.
+
+Do not substitute a factor of `D`, a residue surrogate, or a hand-stated shifted numerator condition.
 
 ## Stage 4 — Radius-4 local combinatorics
 
-Develop the purely finite combinatorics of a primitive cyclic word and a nonzero shift whose Hamming distance is exactly four.
+Status: **pure definitions only; substantive attack waits on Stage-2/3 bridge**.
 
-Any classification of the four changed positions, flow pattern, or topology must itself be formalised and shown exhaustive. Finite computation may be used only when its input domain and completeness are represented in Lean or otherwise checked by Lean's trusted kernel.
+The generic cyclic-word layer already defines exact Radius 4. The Collatz encoding layer now defines `OddCycle.IsCycleRadiusFour` and `OddCycle.HasCycleRadiusFourRotation` for the genuine length-`A` parity word.
+
+Before a sparse four-position contradiction can be attacked honestly, the rotation/advance and shift-specific denominator lemmas from Stages 2–3 must exist.
+
+Then develop the finite combinatorics of a nonzero shift whose Hamming distance is exactly four. Any classification of the four changed positions must be formalised and exhaustive.
 
 ## Stage 5 — Radius-4 local impossibility theorem
 
-Combine the Collatz eligibility results from Stages 1–3 with the Radius-4 combinatorics from Stage 4.
+Status: **not yet stated as a proved Collatz theorem**.
 
-The intended theorem has the logical form:
+Only after Stages 2–4 are precise should the final theorem be stated. Its intended logical form remains:
 
 > An eligible primitive positive Collatz-cycle encoding satisfying the exact full-denominator condition cannot possess a nonzero cyclic rotation at exact Hamming distance four.
 
-The final Lean theorem must expose all mathematically meaningful assumptions in its type.
+The final Lean theorem must expose all mathematically meaningful assumptions in its type. In particular, it must not hide the cycle-to-word bridge, primitivity bridge, or shift-specific full-denominator relation inside definitions that merely assume the desired property.
 
 ## Stage 6 — Scope and audit
 
-For the completed local theorem:
+For any promoted substantive checkpoint:
 
-- add a plain-English theorem statement;
-- list every assumption;
-- record the exact Lean theorem name and source file;
-- explain what is proved;
-- explain what is not proved;
-- check that the proof contains no admitted gaps;
-- keep CI green from a clean checkout.
+- update `docs/THEOREM_INDEX.md`;
+- explain all assumptions and limitations;
+- check for `sorry`/`admit` or equivalent gaps;
+- run the full Lean build with warnings as errors;
+- keep `main` coherent and self-contained.
+
+For a completed local theorem, additionally record the exact theorem name, source file, full assumptions, supporting chain, and the still-separate global encounter problem.
 
 ## Separate future problem — global encounter theorem
 

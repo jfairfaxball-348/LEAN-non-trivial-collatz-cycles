@@ -8,3 +8,4 @@ import Collatz.CycleWordArithmetic
 import Collatz.RotationArithmetic
 import Collatz.RotationWord
 import Collatz.WordAppendArithmetic
+import Collatz.RotationNumeratorComparison

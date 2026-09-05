@@ -117,6 +117,40 @@ theorem orbitWeightedDifferenceTerm_eq_radiusWeightedDifferenceTerm
     baseStateAt, shiftedStateAt, hval]
   rfl
 
+/-- The terminal potential over one complete cycle is `2^A` times the literal
+shifted-minus-base state difference. -/
+theorem orbitDifferencePotential_total (c : OddCycle L)
+    (shift : ZMod c.encodingPeriod) :
+    orbitDifferencePotential (c.node 0)
+        ((halfStep^[shift.val]) (c.node 0)) c.totalExponent c.totalExponent =
+      (2 : ℤ) ^ c.totalExponent *
+        ((((halfStep^[shift.val]) (c.node 0) : ℕ) : ℤ) - (c.node 0 : ℤ)) := by
+  change
+    (2 : ℤ) ^ c.totalExponent *
+        ((((halfStep^[c.totalExponent])
+            ((halfStep^[shift.val]) (c.node 0)) : ℕ) : ℤ) -
+          (((halfStep^[c.totalExponent]) (c.node 0) : ℕ) : ℤ)) =
+      (2 : ℤ) ^ c.totalExponent *
+        ((((halfStep^[shift.val]) (c.node 0) : ℕ) : ℤ) - (c.node 0 : ℤ))
+  rw [c.node_zero_halfStep_periodic, c.halfStep_shift_periodic shift.val]
+
+/-- The initial potential is `3^L` times the same state difference. -/
+theorem orbitDifferencePotential_zero (c : OddCycle L)
+    (shift : ZMod c.encodingPeriod) :
+    orbitDifferencePotential (c.node 0)
+        ((halfStep^[shift.val]) (c.node 0)) c.totalExponent 0 =
+      (3 : ℤ) ^ L *
+        ((((halfStep^[shift.val]) (c.node 0) : ℕ) : ℤ) - (c.node 0 : ℤ)) := by
+  have hshift : shift.val ≤ c.totalExponent :=
+    c.zmodShift_val_le_totalExponent shift
+  change
+    (3 : ℤ) ^ listOnes
+        (orbitBits ((halfStep^[shift.val]) (c.node 0)) c.totalExponent) *
+      ((((halfStep^[shift.val]) (c.node 0) : ℕ) : ℤ) - (c.node 0 : ℤ)) =
+    (3 : ℤ) ^ L *
+      ((((halfStep^[shift.val]) (c.node 0) : ℕ) : ℤ) - (c.node 0 : ℤ))
+  rw [c.orbitBits_shift_total_ones hshift]
+
 /-- Over one complete genuine cycle, the natural-indexed weighted local
 forcings sum to the complete denominator times the literal shifted-minus-base
 state difference. -/
@@ -127,15 +161,10 @@ theorem cycleDenominator_mul_shiftedState_sub_base_eq_orbitWeightedRangeSum
       (Finset.range c.totalExponent).sum (fun j =>
         orbitWeightedDifferenceTerm (c.node 0)
           ((halfStep^[shift.val]) (c.node 0)) c.totalExponent j) := by
-  have hshift : shift.val ≤ c.totalExponent :=
-    c.zmodShift_val_le_totalExponent shift
   have hsum := orbitWeightedDifferenceSum_eq_potential_sub
     (c.node 0) ((halfStep^[shift.val]) (c.node 0)) c.totalExponent
-  rw [orbitDifferencePotential] at hsum
-  simp only [Nat.sub_self, orbitBits, listOnes_nil, pow_zero, mul_one,
-    Function.iterate_zero_apply, Nat.sub_zero] at hsum
-  rw [c.node_zero_halfStep_periodic, c.halfStep_shift_periodic shift.val,
-    c.orbitBits_shift_total_ones hshift] at hsum
+  rw [c.orbitDifferencePotential_total shift,
+    c.orbitDifferencePotential_zero shift] at hsum
   rw [cycleDenominator]
   linarith
 

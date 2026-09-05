@@ -54,6 +54,14 @@ theorem listOnes_cons (b : Bool) (bs : List Bool) :
   rfl
 
 @[simp]
+theorem listOnes_append (xs ys : List Bool) :
+    listOnes (xs ++ ys) = listOnes xs + listOnes ys := by
+  induction xs with
+  | nil => simp
+  | cons b bs ih =>
+      cases b <;> simp [listOnes, ih]
+
+@[simp]
 theorem wordNumerator_nil : wordNumerator [] = 0 := by
   rfl
 
@@ -90,6 +98,17 @@ same mod-two test used by `halfStep`. -/
 def stateBit (n : ℕ) : Bool :=
   if n % 2 = 0 then false else true
 
+/-- An odd natural number has parity bit `true`. -/
+@[simp]
+theorem stateBit_of_odd {n : ℕ} (hn : Odd n) : stateBit n = true := by
+  rcases hn with ⟨k, rfl⟩
+  simp [stateBit]
+
+/-- An explicit even multiple has parity bit `false`. -/
+@[simp]
+theorem stateBit_two_mul (n : ℕ) : stateBit (2 * n) = false := by
+  simp [stateBit]
+
 /-- Every actual `halfStep` transition satisfies the affine equation selected
 by its state bit. This is the local Collatz-to-word arithmetic bridge. -/
 theorem halfStep_affine (n : ℕ) :
@@ -111,6 +130,31 @@ theorem orbitBits_length (x k : ℕ) : (orbitBits x k).length = k := by
   induction k generalizing x with
   | zero => simp [orbitBits]
   | succ k ih => simp [orbitBits, ih]
+
+/-- Splitting a `halfStep` orbit after `m` transitions concatenates its parity
+lists. -/
+theorem orbitBits_add (x m n : ℕ) :
+    orbitBits x (m + n) =
+      orbitBits x m ++ orbitBits ((halfStep^[m]) x) n := by
+  induction m generalizing x with
+  | zero => simp [orbitBits]
+  | succ m ih =>
+      simp only [Nat.succ_add, orbitBits, List.cons_append]
+      rw [ih (x := halfStep x)]
+      rw [Function.iterate_succ_apply]
+
+/-- During the `a` halving transitions starting from `2^a*y`, every recorded
+source state is even, so the parity list contains no `true` bit. -/
+theorem orbitBits_pow_two_mul_ones (a y : ℕ) :
+    listOnes (orbitBits (2 ^ a * y) a) = 0 := by
+  induction a with
+  | zero => simp [orbitBits]
+  | succ a ih =>
+      have hpow : 2 ^ (a + 1) * y = 2 * (2 ^ a * y) := by
+        rw [pow_succ]
+        ring
+      rw [hpow]
+      simp [orbitBits, ih]
 
 /-- The actual `halfStep` orbit realises its chronological parity-bit list. -/
 theorem orbitBits_realizes (x k : ℕ) :

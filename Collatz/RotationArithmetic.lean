@@ -41,12 +41,11 @@ theorem iterate_periodic_mul {α : Type*} (f : α → α) (x : α)
   | succ m ih =>
       rw [Nat.succ_mul, Function.iterate_add_apply, hperiod, ih]
 
-/-- At a positive periodic point, iteration count may be reduced modulo the
-period. This is the generic arithmetic fact needed to interpret `ZMod period`
-indices as actual orbit positions. -/
+/-- At a periodic point, iteration count may be reduced modulo the period.
+This is the generic arithmetic fact needed to interpret `ZMod period` indices
+as actual orbit positions. -/
 theorem iterate_mod_period {α : Type*} (f : α → α) (x : α)
-    {period : ℕ} (hperiod_pos : 0 < period)
-    (hperiod : (f^[period]) x = x) (k : ℕ) :
+    {period : ℕ} (hperiod : (f^[period]) x = x) (k : ℕ) :
     (f^[k % period]) x = (f^[k]) x := by
   have hdecomp := Nat.mod_add_div k period
   calc

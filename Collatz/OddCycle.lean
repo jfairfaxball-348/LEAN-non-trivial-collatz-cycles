@@ -77,14 +77,16 @@ variable {L : ℕ} [NeZero L]
 
 /-- The local edge at cyclic position `i`, packaged as an exact odd-to-odd
 Collatz transition. -/
-def edge (c : OddCycle L) (i : ZMod L) :
-    OddToOddStep (c.node i) (c.node (i + 1)) (c.exponent i) where
-  source_pos := c.node_pos i
-  target_pos := c.node_pos (i + 1)
-  source_odd := c.node_odd i
-  target_odd := c.node_odd (i + 1)
-  exponent_pos := c.exponent_pos i
-  equation := c.step_eq i
+theorem edge (c : OddCycle L) (i : ZMod L) :
+    OddToOddStep (c.node i) (c.node (i + 1)) (c.exponent i) := by
+  exact {
+    source_pos := c.node_pos i
+    target_pos := c.node_pos (i + 1)
+    source_odd := c.node_odd i
+    target_odd := c.node_odd (i + 1)
+    exponent_pos := c.exponent_pos i
+    equation := c.step_eq i
+  }
 
 /-- Every edge of an `OddCycle` is realised by ordinary Collatz iteration. -/
 theorem edge_reaches_next (c : OddCycle L) (i : ZMod L) :
@@ -99,7 +101,7 @@ def IsNontrivial (c : OddCycle L) : Prop :=
 /-- The sum of exponents on the first `k` cyclic odd-to-odd edges, starting at
 index zero. At `k = L` this traverses the cycle exactly once. -/
 def prefixExponent (c : OddCycle L) (k : ℕ) : ℕ :=
-  ∑ j in Finset.range k, c.exponent (j : ZMod L)
+  (Finset.range k).sum (fun j => c.exponent (j : ZMod L))
 
 @[simp]
 theorem prefixExponent_zero (c : OddCycle L) : c.prefixExponent 0 = 0 := by
@@ -108,7 +110,7 @@ theorem prefixExponent_zero (c : OddCycle L) : c.prefixExponent 0 = 0 := by
 @[simp]
 theorem prefixExponent_succ (c : OddCycle L) (k : ℕ) :
     c.prefixExponent (k + 1) = c.prefixExponent k + c.exponent (k : ZMod L) := by
-  simp [prefixExponent, Finset.sum_range_succ]
+  simp [prefixExponent]
 
 /-- Total power of two removed during one traversal of the odd cycle. -/
 def totalExponent (c : OddCycle L) : ℕ := c.prefixExponent L

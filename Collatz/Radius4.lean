@@ -27,12 +27,20 @@ theorem hasRadiusFourRotation_iff {n : ℕ} [NeZero n] (w : CyclicWord n) :
       ∃ shift : ZMod n, shift ≠ 0 ∧ hammingDistance w (rotate w shift) = 4 := by
   rfl
 
-/-- Radius 4 is not equality with a nonzero rotation for a primitive word. -/
-theorem radiusFour_rotation_ne_of_primitive {n : ℕ} [NeZero n]
-    (w : CyclicWord n) (hw : IsPrimitive w) {shift : ZMod n}
-    (hshift : shift ≠ 0) (hRadius : IsRadiusFour w shift) :
+/-- An exact Radius-4 rotation cannot be equal to the original word.
+
+This conclusion follows from distance four alone; primitivity and a separate
+nonzero-shift hypothesis are not required for this elementary fact. -/
+theorem radiusFour_rotation_ne {n : ℕ} [NeZero n]
+    (w : CyclicWord n) {shift : ZMod n} (hRadius : IsRadiusFour w shift) :
     rotate w shift ≠ w := by
-  exact primitive_nontrivial_rotation_ne w hw hshift
+  intro hEq
+  have hzero : hammingDistance w (rotate w shift) = 0 := by
+    rw [hEq]
+    exact hammingDistance_self w
+  have hfour : hammingDistance w (rotate w shift) = 4 :=
+    (isRadiusFour_iff w shift).mp hRadius
+  omega
 
 /-!
 ## Intended Collatz theorem boundary

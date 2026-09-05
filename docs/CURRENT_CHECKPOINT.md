@@ -6,13 +6,15 @@ The repository itself remains authoritative. A future session must still inspect
 
 ## Promoted mathematical checkpoint
 
-The latest promoted mathematical `main` at this closeout is:
+The latest promoted mathematical checkpoint at this closeout is:
 
 `24463e599f05098ad8e7584610334a1218cad4fa`
 
-This includes the green merge of PR #22, `Collapse weighted Radius-4 cyclic sum to four terms`.
+This is the green merge of PR #22, `Collapse weighted Radius-4 cyclic sum to four terms`.
 
-Important immediately preceding promoted commits are:
+Documentation-only closeout commits follow that mathematical checkpoint on `main`.
+
+Important immediately preceding promoted mathematical commits are:
 
 - `afac4e21b6f86ab0c124fbf4c275561382d5767d` — exact weighted Radius-4 boundary support;
 - `ad10df5b0d749b3571512a63f13f41918e98b821` — exact weighted composition of the genuine shifted-minus-base numerator difference;
@@ -58,31 +60,31 @@ Once that bridge is promoted, the numerator difference can be rewritten as an ex
 
 Do not replace this with assumptions that the four-term expression is small, indivisible by `D`, conveniently ordered, primitive, or minimal.
 
-## Experimental PR #21 — useful but unpromoted
+## Closed experimental PR #21 — useful but unpromoted
 
 PR #21, `Identify the weighted forcing range sum`, was created from the earlier promoted base
 
-`afac4e21b6f86ab0c124fbf4c275561382d5767d`
+`afac4e21b6f86ab0c124fbf4c275561382d5767d`.
 
-with head
+Its branch eventually reached head
 
-`267cbb739261e9749bd582a7f703e9e518995548`.
+`7e505608d3945f50bc5ed001e3b2fcb65236d945`
+
+but remained CI-failing and has been closed unmerged because `main` advanced through PR #22.
 
 Its substantive Lean development introduces a telescoping potential for the pair of genuine `halfStep` orbits and proves:
 
 - each natural-indexed weighted local forcing is one adjacent potential difference;
 - the full chronological range telescopes;
-- an in-range natural representative agrees with the corresponding cyclic `radiusWeightedDifferenceTerm`;
-- intended full-period range-sum identities connecting the denominator/state difference and shifted-minus-base numerator difference to the weighted range sum.
+- an in-range natural representative agrees with the corresponding cyclic `radiusWeightedDifferenceTerm`.
 
-The first CI run reached the final endpoint-normalisation theorem and failed there for proof-engineering reasons:
+The first CI run failed in the full-period endpoint simplification because one `orbitDifferencePotential ... 0` occurrence remained folded and two `simp` arguments were unused.
 
-- one `orbitDifferencePotential ... 0` occurrence remained folded, so the attempted rewrite of the shifted full-period odd count did not match;
-- two `simp` arguments were flagged as unused.
+A subsequent repair attempted to isolate the two endpoint potentials explicitly. That second run also reached only those endpoint lemmas and failed because `change` was used to replace the folded `orbitDifferencePotential` targets by expanded formulas that were not definitionally equal. The exact failures were at the intended `j = total` and `j = 0` endpoint lemmas.
 
-The local telescoping mathematics compiled before that point. This is **not** evidence of a mathematical counterexample, but PR #21 is not green and is not authoritative.
+This remains a proof-engineering issue, not evidence of a mathematical counterexample: the local telescoping and indexing mathematics compiled before those endpoint goals.
 
-Because `main` has since advanced through PR #22, a future session must not merge PR #21 directly. Freshly transplant only the useful `DifferenceForcingRangeSum` delta onto current `main`, repair the endpoint proof by establishing the endpoint potentials explicitly, rerun full Lean CI, and promote only if green.
+Because the branch is stale relative to current `main`, do not reopen or merge PR #21 directly. Freshly transplant only the useful `DifferenceForcingRangeSum.lean` mathematics onto current `main` and repair the endpoint lemmas by explicitly unfolding `orbitDifferencePotential` (or using `simp [orbitDifferencePotential, ...]`) before rewriting periodicity and full-period odd counts. Do not rely on `change` to unfold the potential.
 
 ## Interpretation of the earlier `nonzero multiple of D` sanity check
 
@@ -107,13 +109,14 @@ Likewise, even a completed local Radius-4 impossibility theorem would not exclud
 ## Recommended next session
 
 1. Verify live `main`, open PRs, CI, and this checkpoint.
-2. Inspect closed/experimental PR #21 and its CI failure, but do not merge its stale-base history.
-3. Freshly transplant `DifferenceForcingRangeSum.lean` onto current `main`.
-4. Repair the endpoint potential proof explicitly. A robust route is to prove separate lemmas for `orbitDifferencePotential ... total` and `orbitDifferencePotential ... 0`, then derive the full range-sum identity from those lemmas rather than relying on fragile unfolding/rewrite order.
-5. Run full Lean CI and promote only if green.
-6. Combine the promoted range-sum bridge with the already-promoted four-boundary cyclic-sum theorem to derive an exact four-term formula for the genuine shifted-minus-base numerator difference.
-7. Then attack the actual four-term arithmetic contradiction. If it fails, isolate the precise counterexample or missing condition rather than adding convenient assumptions.
-8. Update `THEOREM_INDEX.md`, `FORMALISATION_ROADMAP.md`, and this checkpoint after the next promoted mathematical result.
+2. Inspect closed experimental PR #21 and its final head `7e505608d3945f50bc5ed001e3b2fcb65236d945`, but do not merge its stale-base history.
+3. Freshly transplant the useful `DifferenceForcingRangeSum.lean` delta onto current `main`.
+4. Repair the endpoint potential lemmas by unfolding `orbitDifferencePotential` explicitly. At `j = total`, reduce the suffix to the empty orbit and use periodicity of both base and shifted states. At `j = 0`, reduce the power of two and use the already-proved shifted full-period odd count `L`.
+5. Derive the full chronological weighted range-sum identity from those two endpoint lemmas and the already-working telescoping theorem.
+6. Run full Lean CI and promote only if green.
+7. Combine the promoted range-sum bridge with the already-promoted four-boundary cyclic-sum theorem to derive an exact four-term formula for the genuine shifted-minus-base numerator difference.
+8. Then attack the actual four-term arithmetic contradiction. If it fails, isolate the precise counterexample or missing condition rather than adding convenient assumptions.
+9. Update `THEOREM_INDEX.md`, `FORMALISATION_ROADMAP.md`, and this checkpoint after the next promoted mathematical result.
 
 ## Repository hygiene at closeout
 
@@ -122,5 +125,5 @@ Likewise, even a completed local Radius-4 impossibility theorem would not exclud
 - PR #19: green and merged; exact weighted difference-forcing composition.
 - PR #20: green and merged; exact four-position weighted boundary support.
 - PR #22: green and merged; full cyclic weighted sum collapses to the four Radius-4 boundaries.
-- PR #21: experimental range-sum bridge; CI failed only at endpoint proof normalisation and remains unpromoted/stale-base.
+- PR #21: closed unmerged; useful telescoping/range-sum experiment, but both endpoint-proof attempts failed CI and the branch is stale-base.
 - PR #6: older reverse-bridge development line; not the current local blocker.

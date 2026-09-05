@@ -87,7 +87,7 @@ That final step would require a separate **global bridge/encounter theorem** sho
 | Global Radius-4 bridge theorem | out of scope for the local proof |
 | Full Collatz conjecture | not claimed |
 
-"Scaffolded" means source code has been written for the definition or elementary lemma; CI is being installed so that the repository itself will record whether the current tree is accepted by Lean.
+"Scaffolded" means the definition or elementary lemma exists as Lean source and is included in the library build. It does **not** mean the substantive Radius-4 obstruction theorem has already been proved.
 
 ## Repository rule: every proof states its scope
 
@@ -100,7 +100,11 @@ Every substantial formalised result added here should be accompanied by plain-En
 5. what it does **not** establish;
 6. any additional theorem that would be required to turn it into a stronger Collatz conclusion.
 
-See [`docs/PROOF_SCOPE_POLICY.md`](docs/PROOF_SCOPE_POLICY.md).
+The current formal results are catalogued in [`docs/THEOREM_INDEX.md`](docs/THEOREM_INDEX.md). The documentation rule is defined in [`docs/PROOF_SCOPE_POLICY.md`](docs/PROOF_SCOPE_POLICY.md), and the planned dependency order for the Radius-4 proof is in [`docs/FORMALISATION_ROADMAP.md`](docs/FORMALISATION_ROADMAP.md).
+
+## Proof hygiene
+
+The project builds with `autoImplicit = false` and `warningAsError = true`. This is intended to make accidental implicit assumptions and admitted proof placeholders fail the build rather than quietly entering the formal theorem set.
 
 ## Building
 
@@ -111,4 +115,4 @@ lake update
 lake build
 ```
 
-GitHub Actions is used as an independent build check once CI is present on `main`.
+GitHub Actions performs dependency resolution and `lake build` on pushes and pull requests to `main`.

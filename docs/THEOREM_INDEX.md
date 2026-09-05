@@ -1,105 +1,284 @@
 # Theorem index
 
-This file is the human-readable scope register for formal results in the repository. A theorem is listed here only after its statement exists in Lean source. The descriptions below distinguish elementary infrastructure from substantive Collatz results.
+This file is the human-readable scope register for formal results in the repository. A theorem is listed here only after its statement exists in Lean source. The descriptions distinguish elementary infrastructure from substantive Collatz results and record the remaining Radius-4 boundary explicitly.
 
 ## Elementary Collatz-map checks
 
-### `Collatz.step_one`
+### `Collatz.step_one`, `Collatz.step_two`, `Collatz.step_four`
 
 Source: `Collatz/Basic.lean`
 
-Proves: one application of the defined Collatz map sends `1` to `4`.
+Proves: the defined ordinary, unaccelerated Collatz map contains the familiar `1 -> 4 -> 2 -> 1` orbit.
 
-Does not prove: termination, periodicity beyond this single step, or any part of the Collatz conjecture.
+Does not prove: termination for arbitrary inputs, classification of cycles, or any part of the Radius-4 obstruction.
 
-### `Collatz.step_two`
-
-Source: `Collatz/Basic.lean`
-
-Proves: one application of the defined Collatz map sends `2` to `1`.
-
-Does not prove: termination for arbitrary inputs or absence of non-trivial cycles.
-
-### `Collatz.step_four`
+### `Collatz.step_of_odd`, `Collatz.step_two_mul`
 
 Source: `Collatz/Basic.lean`
 
-Proves: one application of the defined Collatz map sends `4` to `2`.
+Proves: the ordinary map takes the `3n+1` branch on odd inputs and halves an explicitly even input `2*n`.
 
-Together with the two preceding checks, this verifies the familiar `1 -> 4 -> 2 -> 1` orbit for the map as defined. It does not classify any other orbit.
+These lemmas are used to connect the odd-to-odd arithmetic equations to actual iterations of the ordinary Collatz map.
 
-## Cyclic-word infrastructure
+## Denominator-compatible one-division map
 
-### `Collatz.rotate_zero`
-
-Source: `Collatz/Basic.lean`
-
-Proves: rotating a cyclic word by the zero shift leaves it unchanged.
-
-Does not prove: anything specific to Collatz trajectories.
-
-### `Collatz.hammingDistance_self`
+### `Collatz.halfStep`
 
 Source: `Collatz/Basic.lean`
 
-Proves: the Hamming distance from a finite cyclic binary word to itself is zero.
+Definition: `halfStep n = n/2` for even `n`, and `(3*n+1)/2` for odd `n`.
 
-Does not prove: that a particular word encodes a Collatz cycle.
+Purpose: this is a derived map, not a replacement for the ordinary map. An odd-to-odd edge with exponent `a` takes exactly `a` `halfStep` transitions, so a full odd cycle has `halfStep` traversal length `A`. That is the cyclic length naturally compatible with the denominator `2^A - 3^L`.
 
-### `Collatz.primitive_nontrivial_rotation_ne`
+### `Collatz.halfStep_of_odd`, `Collatz.halfStep_two_mul`, `Collatz.halfStep_eq_step_of_even`
 
 Source: `Collatz/Basic.lean`
 
-Assumptions: the word is rotationally primitive and the shift is nonzero.
+Proves: the defining odd/even behavior of the derived one-division map and its agreement with the ordinary map on even states.
 
-Proves: the shifted word is not exactly equal to the original word.
+Does not prove: by itself, that an arbitrary `halfStep` orbit comes from a non-trivial Collatz cycle.
 
-Does not prove: a lower or upper bound on Hamming distance, Radius 4, or any Collatz-cycle obstruction.
+## Exact odd-to-odd Collatz transitions
 
-## Radius-4 definitions and elementary consequences
+### `Collatz.OddToOddStep.reaches_target`
 
-### `Collatz.isRadiusFour_iff`
+Source: `Collatz/OddCycle.lean`
+
+Assumptions: positive odd `x` and `y`, positive exponent `a`, and the exact arithmetic equation `3*x+1 = 2^a*y`.
+
+Proves: the ordinary Collatz map reaches `y` from `x` after exactly one odd step followed by the stated `a` halving steps, i.e. `(step^[a+1]) x = y`.
+
+Does not prove: that arbitrary values `x,y,a` satisfying weaker congruences form a cycle.
+
+### `Collatz.OddToOddStep.halfStep_reaches_target`
+
+Source: `Collatz/OddCycle.lean`
+
+Same assumptions as above.
+
+Proves: the derived one-division map reaches `y` after exactly `a` transitions: `(halfStep^[a]) x = y`.
+
+Importance: this is the bridge that makes `A`, rather than `A+L`, the denominator-compatible cyclic length.
+
+### `Collatz.OddToOddStep.exact_removal`
+
+Source: `Collatz/OddCycle.lean`
+
+Same assumptions as above.
+
+Proves: every earlier ordinary post-odd state obtained before all `a` halvings have been performed is even, while the state after exactly `a` halvings is the odd target.
+
+Does not assume a two-adic valuation oracle; exactness is proved operationally from the equation and target oddness.
+
+## Positive odd-cycle model
+
+### `Collatz.OddCycle`
+
+Source: `Collatz/OddCycle.lean`
+
+Definition: a cyclic family of positive odd nodes and positive exponents satisfying `3*x_i+1 = 2^(a_i)*x_(i+1)` at every index in `ZMod L`.
+
+The cyclic closing edge is part of the structure. Radius-4 data is not built into this definition.
+
+### `Collatz.OddCycle.edge_reaches_next`
+
+Source: `Collatz/OddCycle.lean`
+
+Proves: every stored odd-cycle edge is realised by the ordinary Collatz map.
+
+### `Collatz.OddCycle.edge_halfStep_reaches_next`
+
+Source: `Collatz/OddCycle.lean`
+
+Proves: every stored edge is realised by exactly its exponent number of `halfStep` transitions.
+
+### `Collatz.OddCycle.rebase`
+
+Source: `Collatz/OddCycle.lean`
+
+Definition: changes the chosen odd-node origin of the cyclic data while preserving every local odd-to-odd equation.
+
+What remains: the final Radius-4 encoding still needs a theorem relating this odd-node rebasing to rotations of the length-`A` parity word.
+
+## Exponent sums and composed cycle arithmetic
+
+### `Collatz.OddCycle.prefixExponent_ge`
+
+Source: `Collatz/OddCycle.lean`
+
+Assumptions: an `OddCycle` of nonzero odd-node length.
+
+Proves: the sum of the first `k` positive exponents is at least `k`.
+
+Consequences: `Collatz.OddCycle.length_le_totalExponent` and `Collatz.OddCycle.totalExponent_pos` show `L ≤ A` and `A > 0`.
+
+### `Collatz.OddCycle.composed_identity`
+
+Source: `Collatz/OddCycle.lean`
+
+Assumptions: only the formal `OddCycle` data.
+
+Proves, by induction from the local cycle equations:
+
+`2^(prefixExponent k) * x_k = 3^k * x_0 + prefixNumerator k`.
+
+This formula is not postulated. `prefixNumerator` is recursively generated by the same induction.
+
+Does not prove: any Radius-4 combinatorial statement.
+
+### `Collatz.OddCycle.full_cycle_identity`
+
+Source: `Collatz/OddCycle.lean`
+
+Proves the one-full-traversal specialization:
+
+`2^A * x_0 = 3^L * x_0 + prefixNumerator L`.
+
+This is the formal derivation from which the characteristic denominator is obtained.
+
+## Bridge back to actual periodic Collatz behavior
+
+### `Collatz.OddCycle.reaches_prefix_node`
+
+Source: `Collatz/OddCycle.lean`
+
+Proves: the first `k` odd-to-odd edges are exactly the first `prefixExponent k + k` ordinary Collatz steps from the chosen base odd node.
+
+### `Collatz.OddCycle.node_zero_periodic`
+
+Source: `Collatz/OddCycle.lean`
+
+Proves: one full traversal returns the base node after `A+L` ordinary Collatz steps.
+
+### `Collatz.OddCycle.node_zero_isPositivePeriodicPoint`
+
+Source: `Collatz/OddCycle.lean`
+
+Proves: the base odd node of an `OddCycle` is a positive periodic point of the ordinary Collatz map, with period `A+L` (not asserted to be minimal).
+
+Important limitation: the repository has not yet proved the reverse extraction theorem saying that every hypothetical positive periodic orbit of the ordinary map can be canonically converted into an `OddCycle`. That reverse bridge remains a separate Stage-1 task if the final theorem is to begin from an arbitrary ordinary periodic orbit rather than from explicit odd-cycle data.
+
+### `Collatz.OddCycle.halfStep_reaches_prefix_node`
+
+Source: `Collatz/OddCycle.lean`
+
+Proves: the first `k` odd-to-odd edges are exactly the first `prefixExponent k` transitions of `halfStep`.
+
+### `Collatz.OddCycle.node_zero_halfStep_periodic`
+
+Source: `Collatz/OddCycle.lean`
+
+Proves: one full traversal returns the base node after exactly `A` `halfStep` transitions.
+
+This result is the representation bridge required for a length-`A` parity word.
+
+## Derived full denominator
+
+### `Collatz.cycleDenominator`
+
+Source: `Collatz/Cycle.lean`
+
+Definition: `cycleDenominator A L = 2^A - 3^L` as an integer.
+
+The definition itself does not assert that `(A,L)` comes from a Collatz cycle.
+
+### `Collatz.OddCycle.denominator_mul_base_eq_numerator`
+
+Source: `Collatz/Cycle.lean`
+
+Assumptions: an `OddCycle`.
+
+Proves, from `full_cycle_identity`:
+
+`(2^A - 3^L) * x_0 = prefixNumerator L`.
+
+This is the first substantive denominator theorem in the repository. The denominator is derived from the cycle equations rather than inserted into the cycle structure as an assumption.
+
+### `Collatz.OddCycle.cycleDenominator_pos`
+
+Source: `Collatz/Cycle.lean`
+
+Proves: `2^A - 3^L > 0` for every formal positive odd cycle.
+
+Does not currently prove the stronger repository predicate `PositiveCycleDenominator A L`, which was scaffolded as `1 < D`. Establishing `D > 1` under an appropriate non-triviality hypothesis is separate and should not be silently assumed.
+
+### `Collatz.OddCycle.fullDenominatorDivides_numerator`
+
+Source: `Collatz/Cycle.lean`
+
+Proves: the complete integer denominator `D = 2^A - 3^L` divides the exact recursively generated inhomogeneous numerator `prefixNumerator L`, with quotient `x_0`.
+
+This is a genuine Collatz-specific full-denominator divisibility theorem.
+
+Does not prove: that this numerator divisibility is already the final shift-specific arithmetic condition needed for the Radius-4 contradiction. The exact relationship between the parity word, a rotation, and the resulting numerator difference remains to be formalised.
+
+## Radius-4 encoding layer
+
+### `Collatz.OddCycle.parityWord`
+
+Source: `Collatz/Encoding.lean`
+
+Definition: a cyclic binary word of length `A`. At index `t : ZMod A`, the bit records whether the actual `halfStep` state after the canonical representative `t.val` is odd.
+
+This is the genuine Collatz-derived Radius-4 word: it is defined from the proved periodic `halfStep` orbit rather than from an arbitrary `CyclicWord`.
+
+### `Collatz.OddCycle.parityWord_eq_true_iff`
+
+Source: `Collatz/Encoding.lean`
+
+Proves: a bit of `parityWord` is true exactly when the corresponding actual `halfStep` state is odd.
+
+### `Collatz.OddCycle.oddStartPosition_is_odd`
+
+Source: `Collatz/Encoding.lean`
+
+Proves: each cumulative exponent boundary `prefixExponent j` is an actual odd position of the `halfStep` orbit.
+
+### `Collatz.OddCycle.oddStartWord`
+
+Source: `Collatz/Encoding.lean`
+
+Definition: an arithmetic marker word whose true positions are exactly the cumulative exponent boundaries.
+
+Important limitation: `oddStartWord = parityWord` is **not yet proved**. The missing direction is the finite block-cover theorem showing that every non-boundary position inside each exponent block is even. Keeping these two words distinct prevents this bridge from being hidden inside a definition.
+
+### `Collatz.OddCycle.IsCycleRadiusFour` and `Collatz.OddCycle.HasCycleRadiusFourRotation`
+
+Source: `Collatz/Encoding.lean`
+
+Definitions: exact Hamming distance four, respectively existence of a nonzero exact Radius-4 rotation, for the genuine length-`A` Collatz parity word.
+
+These definitions finally give Radius 4 a precise Collatz-specific object. They do not prove the local impossibility theorem.
+
+## Pure cyclic-word Radius-4 infrastructure
+
+### `Collatz.isRadiusFour_iff`, `Collatz.hasRadiusFourRotation_iff`, `Collatz.radiusFour_rotation_ne`
 
 Source: `Collatz/Radius4.lean`
 
-Proves: the predicate `IsRadiusFour w shift` is exactly the statement that `w` and `rotate w shift` have Hamming distance four.
+Proves only elementary facts about exact Hamming distance four for arbitrary cyclic binary words.
 
-This is a definitional theorem. It does not prove that Radius 4 is possible or impossible.
-
-### `Collatz.hasRadiusFourRotation_iff`
-
-Source: `Collatz/Radius4.lean`
-
-Proves: `HasRadiusFourRotation w` is exactly the existence of a nonzero shift at Hamming distance four.
-
-This is also definitional and contains no Collatz-specific eligibility claim.
-
-### `Collatz.radiusFour_rotation_ne`
-
-Source: `Collatz/Radius4.lean`
-
-Assumption: the specified rotation is at exact Radius 4.
-
-Proves: the rotated word is not exactly equal to the original word. The proof uses the fact that equal words have Hamming distance zero, contradicting exact distance four.
-
-Primitivity and a separate nonzero-shift assumption are not needed for this elementary consequence.
-
-This result does **not** prove the intended Radius-4 local impossibility theorem and does **not** exclude any Collatz cycle.
-
-## Arithmetic definitions currently without substantive theorem claims
-
-`Collatz.cycleDenominator`, `Collatz.PositiveCycleDenominator`, and `Collatz.FullDenominatorDivides` are definitions in `Collatz/Cycle.lean`. The file contains only small arithmetic examples checking those definitions.
-
-The repository does not yet claim that an arbitrary pair `(A, L)` arises from a Collatz cycle, nor that `FullDenominatorDivides` is the final Collatz-specific full-denominator eligibility condition.
+These results do not supply Collatz eligibility or a contradiction.
 
 ## Substantive target not yet proved
 
 ### Radius-4 local impossibility theorem
 
-Status: **not yet formalised**.
+Status: **not yet proved**.
 
-Intended scope: eligible primitive positive Collatz-cycle encodings satisfying the exact full-denominator condition.
+The strongest proved dependency chain now reaches:
 
-Intended conclusion: such an encoding cannot possess a nonzero rotation at exact Hamming distance four.
+1. explicit positive odd-cycle equations;
+2. actual ordinary Collatz periodicity;
+3. exact exponent removal;
+4. the denominator-compatible `halfStep` period `A`;
+5. the composed denominator identity `D*x_0 = N`;
+6. full-denominator divisibility of that numerator;
+7. a genuine length-`A` parity-word definition;
+8. an exact Collatz-specific Radius-4 predicate on that word.
 
-Even when completed, this will be a local obstruction theorem. It will not by itself prove the Collatz conjecture or exclude all non-trivial cycles, because a separate global encounter theorem would still be needed to show that every hypothetical non-trivial cycle necessarily produces an eligible Radius-4 configuration.
+The immediate missing local bridge is to connect cyclic rotation of `parityWord` to rebasing/advancing the same periodic orbit and to derive the corresponding full-denominator relation for the rotated arithmetic numerator. The arithmetic marker word must also be proved equal to the genuine parity word if cumulative exponent positions are used in that derivation.
+
+Only after those bridges are formalised is it legitimate to state and attack the final sparse Radius-4 contradiction.
+
+Even a completed local theorem would still not prove the Collatz conjecture or exclude all non-trivial cycles globally. A separate global encounter theorem would still be required to prove that every hypothetical non-trivial cycle necessarily yields an eligible Radius-4 configuration.

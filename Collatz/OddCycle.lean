@@ -91,8 +91,13 @@ theorem reaches_after_halvings (h : OddToOddStep x y a) {b : ℕ} (hb : b ≤ a)
   rw [Function.iterate_succ_apply]
   rw [h.first_step_eq]
   have hfactor : 2 ^ a * y = 2 ^ b * (2 ^ (a - b) * y) := by
-    rw [show a = b + (a - b) by omega, pow_add]
-    ring
+    have hab : a = b + (a - b) := by omega
+    calc
+      2 ^ a * y = 2 ^ (b + (a - b)) * y := by
+        exact congrArg (fun e : ℕ => 2 ^ e * y) hab
+      _ = 2 ^ b * (2 ^ (a - b) * y) := by
+        rw [pow_add]
+        ring
   rw [hfactor]
   exact iterate_step_pow_two_mul b (2 ^ (a - b) * y)
 
@@ -209,7 +214,8 @@ theorem prefixExponent_zero (c : OddCycle L) : c.prefixExponent 0 = 0 := by
 @[simp]
 theorem prefixExponent_succ (c : OddCycle L) (k : ℕ) :
     c.prefixExponent (k + 1) = c.prefixExponent k + c.exponent (k : ZMod L) := by
-  simp [prefixExponent]
+  unfold prefixExponent
+  rw [Finset.sum_range_succ]
 
 /-- Every odd-to-odd edge removes at least one factor of two, so the sum of the
 first `k` exponents is at least `k`. -/

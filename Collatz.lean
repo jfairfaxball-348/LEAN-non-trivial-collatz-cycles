@@ -5,3 +5,5 @@ import Collatz.Radius4
 import Collatz.Radius4Structure
 import Collatz.WordArithmetic
 import Collatz.CycleWordArithmetic
+import Collatz.RotationArithmetic
+import Collatz.RotationWord

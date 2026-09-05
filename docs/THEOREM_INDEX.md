@@ -100,29 +100,46 @@ Promoted theorems include:
 - `transportHeightTwo_rigid_of_cost_four`;
 - `exists_transportHeightTwo_pattern_of_cost_four_of_not_unit`.
 
-The final theorem proves the complete non-unit equal-weight cost-four branch has exactly the RL238 height profile
+The final theorem proves the complete non-unit equal-weight cost-four branch has exactly the RL238 height profile `(1,2,1)`.
 
-`(1,2,1)`.
+## Unit-height connected-component topology
 
-A height-two edge is strictly internal, its adjacent internal heights are both one, and those three displayed edges exhaust the full cost, excluding any additional positive-height edge.
+Source: `Collatz/Radius4TransportComponents.lean`.
+
+Promoted definitions:
+
+- `consecutiveOffsetRuns`;
+- `consecutiveOffsetRunLengths`;
+- `transportActiveEdgeOffsetList`;
+- `transportActiveEdgeRuns`;
+- `transportActiveEdgeRunLengths`.
+
+The active offsets are placed in natural increasing order and decomposed into maximal consecutive runs. The concrete ordered component list is retained for later topology-specific use.
+
+Key promoted theorem:
+
+- `transportActiveEdgeRunLengths_family_of_cost_four_of_unit`.
+
+At any cost-four unit-height cut, the four active internal edges have connected-run lengths, up to permutation of disconnected components, in exactly one of the five established RL238 families:
+
+- `[4]`;
+- `[3,1]`;
+- `[2,2]`;
+- `[2,1,1]`;
+- `[1,1,1,1]`.
+
+The use of `List.Perm` is only the family classification: orientations such as `[1,3]` are the same `[3,1]` topology family, while `transportActiveEdgeRuns` preserves the actual ordered components.
 
 ## Current R4-1 status
 
-R4-1 is **partially formalised and green**.
+The finite exact-cost-four topology classification is **kernel-verified and green**:
 
-Already classified:
+- non-unit branch: `(1,2,1)`;
+- unit-height branch: `[4]`, `[3,1]`, `[2,2]`, `[2,1,1]`, `[1,1,1,1]`.
 
-- non-unit branch: exactly `(1,2,1)`;
-- unit-height branch: exactly four active internal height-one edges.
+Before topology-specific arithmetic elimination begins, consult the authoritative RL238 Radius-4 blueprint and formalise only any remaining bridge it actually requires between this prefix-flow/component representation and the inherited cyclic adjacent-transposition / rotation / genuine `OddCycle.parityWord` statement.
 
-Still missing:
-
-- formal connected-run decomposition of those four unit-height active edges;
-- proof that the run-length multiset/list is exactly one of
-  `[4]`, `[3,1]`, `[2,2]`, `[2,1,1]`, `[1,1,1,1]`;
-- any remaining bridge from that representation to the genuine rotated `OddCycle.parityWord` and the inherited adjacent-transposition statement required by RL238.
-
-Only after R4-1 is complete should the established RL238 topology eliminations be translated.
+No such bridge should be invented merely for generality.
 
 ## Radius-4 local impossibility theorem
 
@@ -130,7 +147,7 @@ Status: **not yet kernel-verified in this repository**.
 
 The mathematics is already established in the research repository. The remaining task here is faithful reconstruction and formal verification, not discovery.
 
-After R4-1, translate the established elimination chain in this order:
+After R4-1 is fully connected to the exact RL238 statement, translate the established elimination chain in this order:
 
 1. `(1,2,1)` and connected `[4]`;
 2. `[3,1]`;

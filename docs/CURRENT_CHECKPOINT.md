@@ -2,116 +2,125 @@
 
 Date: 2026-09-05
 
-This file records the authoritative stopping point of the first substantive Radius-4 formalisation attack. The repository itself remains authoritative: a future session must still inspect `main`, recent commits, open pull requests, CI, and this file before continuing.
+The repository itself remains authoritative. A future session must still inspect live `main`, recent commits, open pull requests, CI, this file, and the theorem/roadmap documentation before continuing.
 
-## Promoted code checkpoint
+## Promoted mathematical checkpoint
 
-The last mathematical promotion before this handover is:
+The latest promoted mathematical `main` at this closeout is:
 
-`f6c40cabd3f62f372a64eef0c6ecfe8657b2ac2e`
+`24463e599f05098ad8e7584610334a1218cad4fa`
 
-It passed Lean CI and includes the promoted strict-denominator theorem for nontrivial odd cycles.
+This includes the green merge of PR #22, `Collapse weighted Radius-4 cyclic sum to four terms`.
 
-This handover file is a documentation-only commit after that mathematical checkpoint.
+Important immediately preceding promoted commits are:
 
-## Kernel-verified mathematical state
+- `afac4e21b6f86ab0c124fbf4c275561382d5767d` — exact weighted Radius-4 boundary support;
+- `ad10df5b0d749b3571512a63f13f41918e98b821` — exact weighted composition of the genuine shifted-minus-base numerator difference;
+- `1539ab7d6b97704ccd62ba60c88ba1044baf6c41` — exact sparse local difference forcing at the four Radius-4 mismatch positions;
+- `c6ed7b9d50880dcae950aa030905acd4b2a878e3` — freshly integrated weighted true-bit form of `wordNumerator`;
+- `f6c40cabd3f62f372a64eef0c6ecfe8657b2ac2e` — denominator one forces the trivial cycle, so every nontrivial odd cycle has `1 < 2^A - 3^L`.
 
-The following chain is now promoted on `main`.
+## Kernel-verified Radius-4 chain now promoted
 
-1. A genuine length-`A` `halfStep` parity-word encoding for an `OddCycle`.
-2. The exact cycle denominator `D = 2^A - 3^L`, derived from the odd-to-odd cycle equations.
-3. The full-period parity count `#odd bits = L`.
-4. Equality between the genuine parity-word denominator and `2^A - 3^L`.
-5. Full-`D` divisibility of the genuine parity-word numerator.
-6. Equality of the parity-word numerator with the independently composed odd-to-odd numerator.
-7. Exact Radius-4 directional balance: two `true -> false` and two `false -> true` mismatches.
-8. Exact rotation/advance semantics for the Collatz-derived parity word: rotating by a cyclic shift agrees with reading the same periodic `halfStep` orbit from the advanced state.
-9. Full-denominator arithmetic at arbitrary shifted origins.
-10. Finite-word append and block-swap numerator identities.
-11. Exact base-versus-advanced numerator comparison:
+The promoted development proves all of the following from genuine `OddCycle` / `halfStep` orbit data.
+
+1. The length-`A` genuine parity word and exact denominator `D = 2^A - 3^L`.
+2. Exactly `L` odd bits in one full `A`-step parity period.
+3. Equality of the parity-word denominator with `D` and full-`D` divisibility of the genuine parity-word numerator.
+4. Equality of that parity-word numerator with the independently composed odd-to-odd numerator.
+5. Exact Radius-4 directional balance: two `true -> false` and two `false -> true` mismatches.
+6. Exact rotation/advance semantics and full-denominator identities at shifted orbit origins.
+7. Exact relation
+
    `D * (advancedState - baseState) = shiftedNumerator - baseNumerator`.
-12. The corresponding full-`D` divisibility of the actual shifted-minus-base numerator difference, derived from the cycle rather than inserted as an eligibility assumption.
-13. Extraction of the four actual Collatz orbit boundary positions from Radius 4: two odd-to-nonodd and two nonodd-to-odd positions.
-14. At a Radius-4 shift the advanced `halfStep` state is not the base state, and therefore the exact full-`D` numerator difference is nonzero. No global primitivity hypothesis is needed for this particular conclusion.
-15. Denominator one forces `A = 2`, `L = 1`, and the trivial odd node `1`; consequently every `OddCycle.IsNontrivial` satisfies the strict eligibility predicate `1 < 2^A - 3^L`.
 
-Important promoted commits in this chain include:
+8. The Radius-4 shifted state is genuinely different from the base state, hence this numerator difference is nonzero.
+9. Every nontrivial `OddCycle` satisfies `D > 1`.
+10. `wordNumerator` is exposed as a sum of terms with exact powers `2^position * 3^(later odd-count)`.
+11. Subtracting the two actual `halfStep` recurrences gives an exact local forcing term. Under Radius 4 it is nonzero at exactly four genuine orbit positions: two negative odd forcings `-(2*x+1)` and two positive odd forcings `+(2*x+1)`.
+12. Those local forcings compose with the correct shifted suffix powers of three. Thus common odd bits between mismatch boundaries are retained correctly rather than ignored.
+13. The actual shifted-minus-base numerator difference is identified with the weighted finite-orbit forcing composition.
+14. Each cyclic local forcing has an exact positive positional/suffix weight. Weighting preserves support, so exact Radius 4 gives exactly four nonzero weighted terms.
+15. The sum of the cyclic weighted local terms over the whole encoding period collapses exactly to those four genuine boundary contributions, with two positive and two negative weighted odd forcings.
 
-- `fd7dafcbcda583ffd1de140e508c869396f5e8a6` — genuine parity-word/full-denominator bridge.
-- `acc1bc66d4d4060d48a1630cf8302f6928c4199c` — rotation/advance and shifted-denominator semantics.
-- `36722d8f23d895875cda4339ee8dd11fcbbced7d` — finite block arithmetic, exact rotated numerator comparison, four-boundary extraction, and nonzero Radius-4 numerator consequence.
-- `f6c40cabd3f62f372a64eef0c6ecfe8657b2ac2e` — strict denominator positivity for nontrivial cycles.
+The Radius-4 local impossibility theorem is still **not proved**.
 
-## The Radius-4 theorem is not proved
+## Exact remaining local gap
 
-Do not state or imply that the Radius-4 local impossibility theorem is complete.
+The two promoted sides are now very close:
 
-The representation and full-denominator bridges that were previously open are now closed. The first genuinely unresolved local step is the sparse arithmetic forced by the four mismatch boundaries.
+- the complete genuine numerator difference has an exact weighted forcing composition;
+- the cyclic weighted forcing sum has an exact four-boundary closed form.
 
-The exact challenge is not merely to say that four bits changed. `wordNumerator` weights a true bit by a positional power of two and by a power of three depending on the number of later true bits. Therefore a Radius-4 comparison may also change the weights of common true bits lying between mismatch boundaries. A correct proof must account for that structure, probably by decomposing the cyclic word into the intervals determined by the four boundaries or by proving an equivalent weighted-prefix/suffix identity.
+What is still missing on `main` is the clean bridge identifying the complete chronological/range weighted sum with the cyclic weighted-term sum in the form needed to combine those two facts without assumptions.
 
-The desired contradiction must be derived from the actual Collatz parity words and the already-proved exact relation
+Once that bridge is promoted, the numerator difference can be rewritten as an explicit four-boundary arithmetic expression. The next mathematical question is then whether the resulting exact identity, together with the already-proved nonzero quotient and `D > 1`, yields an actual contradiction for a nontrivial cycle or exposes a further genuine condition that must be proved.
 
-`D * (advancedState - baseState) = shiftedNumerator - baseNumerator`,
+Do not replace this with assumptions that the four-term expression is small, indivisible by `D`, conveniently ordered, primitive, or minimal.
 
-with the right-hand side nonzero under Radius 4 and `D > 1` available for nontrivial cycles.
+## Experimental PR #21 — useful but unpromoted
 
-Do not replace this missing arithmetic with an assumption saying that the numerator difference has the desired sparse form, is too small, or cannot be divisible by `D`.
+PR #21, `Identify the weighted forcing range sum`, was created from the earlier promoted base
 
-## Experimental branch deliberately not promoted
+`afac4e21b6f86ab0c124fbf4c275561382d5767d`
 
-PR #15, branch
+with head
 
-`formalize/word-numerator-weighted-terms-20260905`
+`267cbb739261e9749bd582a7f703e9e518995548`.
 
-at repaired head
+Its substantive Lean development introduces a telescoping potential for the pair of genuine `halfStep` orbits and proves:
 
-`aa3aae42db7732a8111eeedf100ae30ccc35c8cc`
+- each natural-indexed weighted local forcing is one adjacent potential difference;
+- the full chronological range telescopes;
+- an in-range natural representative agrees with the corresponding cyclic `radiusWeightedDifferenceTerm`;
+- intended full-period range-sum identities connecting the denominator/state difference and shifted-minus-base numerator difference to the weighted range sum.
 
-is an isolated experiment exposing the weighted true-bit form of `wordNumerator`.
+The first CI run reached the final endpoint-normalisation theorem and failed there for proof-engineering reasons:
 
-It defines a list of contributions of the form
+- one `orbitDifferencePotential ... 0` occurrence remained folded, so the attempted rewrite of the shifted full-period odd count did not match;
+- two `simp` arguments were flagged as unused.
 
-`2^(offset+j) * 3^(number of true bits after j)`
+The local telescoping mathematics compiled before that point. This is **not** evidence of a mathematical counterexample, but PR #21 is not green and is not authoritative.
 
-and proves on that branch that their sum equals the exact recursive `wordNumerator`.
+Because `main` has since advanced through PR #22, a future session must not merge PR #21 directly. Freshly transplant only the useful `DifferenceForcingRangeSum` delta onto current `main`, repair the endpoint proof by establishing the endpoint potentials explicitly, rerun full Lean CI, and promote only if green.
 
-The first CI run failed only on the elementary commutativity goal `listOnes bs + 1 = 1 + listOnes bs`. That proof was repaired, and the repaired CI run completed successfully.
+## Interpretation of the earlier `nonzero multiple of D` sanity check
 
-However, PR #15 was tested against the earlier base `36722d8f...`; `main` subsequently advanced through the strict-denominator promotion and this documentation handover. Therefore **none of PR #15 is authoritative or promoted at this freeze**. A future session should freshly transplant or rebase the small weighted-numerator delta onto current `main`, rerun full Lean CI, and promote only if that fresh integration is green.
+The observation that a nonzero multiple of `D` is not automatically contradictory remains only a warning against a shortcut. It does not weaken the promoted proof state.
 
-## Period/minimality discipline
+The repository already has the stronger exact quotient identity with the literal state difference. The final Radius-4 contradiction must come from the exact four-boundary arithmetic, not from the bare facts `D > 1`, divisibility, and nonzeroness alone.
 
-`OddCycle` records a positive cyclic representation but does not assert that its listed period is minimal. `IsNontrivial` is already defined separately.
+## Minimality / primitivity discipline
 
-Do not silently assume rotational primitivity or minimality. The proved Radius-4 nonzero-state/numerator step does not need primitivity because exact Hamming distance four already implies the rotated parity word differs from the base word.
+`OddCycle` does not assert a minimal represented period. `IsNontrivial`, primitivity, and minimality remain distinct notions.
 
-If a later sparse arithmetic theorem genuinely requires a primitive/minimal representation, state the exact condition and prove that the intended nontrivial cycle representation satisfies it, or keep it as an explicit local-theorem hypothesis with the scope documented. Do not conflate nontriviality, primitivity, and minimality.
+No promoted theorem in the current Radius-4 chain requires primitivity to show that the Radius-4 shifted state differs from the base state: exact Hamming distance four already implies the rotation differs.
 
-## Separate work that is not the current local blocker
+If later arithmetic genuinely needs minimality or primitivity, identify the exact required property and prove it from the intended cycle representation if possible. Otherwise keep it as an explicit hypothesis of a deliberately weaker theorem. Do not introduce it silently.
 
-The reverse extraction from an arbitrary ordinary positive periodic Collatz point into canonical `OddCycle` data is not complete. PR #6 is an older development line for that Stage-1 direction.
+## Separate problems that remain out of scope for this local attack
 
-That reverse bridge is not required to continue the present local Radius-4 theorem from explicit `OddCycle` data. Do not divert into it unless the local obstruction has been completed or the repository's current roadmap explicitly reprioritises it.
+The reverse extraction of an arbitrary ordinary positive periodic Collatz point into canonical `OddCycle` data remains separate and is not the present blocker.
 
-Likewise, even a completed local Radius-4 obstruction would not by itself exclude all nontrivial Collatz cycles. A separate global encounter theorem would still be required to show that every hypothetical nontrivial cycle necessarily produces an eligible Radius-4 configuration.
+Likewise, even a completed local Radius-4 impossibility theorem would not exclude all hypothetical nontrivial Collatz cycles. A separate global encounter theorem would still be needed to show that every such cycle necessarily produces an eligible Radius-4 rotation.
 
-## Recommended next attack
+## Recommended next session
 
-1. Inspect current `main`, this checkpoint, recent commits, open PRs, and CI before doing any work.
-2. Resolve PR #15 first. Its repaired head is green against the older base, so freshly transplant/rebase the small weighted-numerator delta onto current `main`, rerun full Lean CI, and promote only if the new integration is green.
-3. Use the weighted-numerator representation only as a tool, not as the conclusion. Formalise how an exact Radius-4 rotation partitions the chronological parity period into intervals on which suffix odd counts differ by fixed small offsets.
-4. Derive an exact closed formula for `shiftedNumerator - baseNumerator` from those four boundaries. Be alert that common true bits between boundaries can acquire different powers of three.
-5. Combine that exact formula with the promoted full-`D` identity, nonzero quotient, and `D > 1` for `IsNontrivial`.
-6. Attempt the actual arithmetic impossibility. If the intended contradiction is false or needs an additional hypothesis, stop and record the precise counterexample or missing condition rather than strengthening assumptions ad hoc.
-7. Only after a kernel-verified local theorem exists, update `THEOREM_INDEX.md`, `FORMALISATION_ROADMAP.md`, and the Radius-4 scope documentation.
+1. Verify live `main`, open PRs, CI, and this checkpoint.
+2. Inspect closed/experimental PR #21 and its CI failure, but do not merge its stale-base history.
+3. Freshly transplant `DifferenceForcingRangeSum.lean` onto current `main`.
+4. Repair the endpoint potential proof explicitly. A robust route is to prove separate lemmas for `orbitDifferencePotential ... total` and `orbitDifferencePotential ... 0`, then derive the full range-sum identity from those lemmas rather than relying on fragile unfolding/rewrite order.
+5. Run full Lean CI and promote only if green.
+6. Combine the promoted range-sum bridge with the already-promoted four-boundary cyclic-sum theorem to derive an exact four-term formula for the genuine shifted-minus-base numerator difference.
+7. Then attack the actual four-term arithmetic contradiction. If it fails, isolate the precise counterexample or missing condition rather than adding convenient assumptions.
+8. Update `THEOREM_INDEX.md`, `FORMALISATION_ROADMAP.md`, and this checkpoint after the next promoted mathematical result.
 
-## Repository hygiene at freeze
+## Repository hygiene at closeout
 
-- PR #14 was fully green and merged; its merge commit is `f6c40cabd3f62f372a64eef0c6ecfe8657b2ac2e`.
-- Stale PR #10 was closed as superseded by PR #14.
-- PRs #11 and #13 were already closed as superseded by the promoted PR #12 line.
-- PR #15 is green on its repaired old-base head but remains experimental and unpromoted; fresh current-main integration is required.
-- PR #6 remains an unrelated/open reverse-bridge development line.
-
-The next session should treat repository state, not this prose alone, as final authority.
+- PR #17: green and merged; clean current-main weighted numerator integration.
+- PR #18: green and merged; clean current-main sparse local forcing integration.
+- PR #19: green and merged; exact weighted difference-forcing composition.
+- PR #20: green and merged; exact four-position weighted boundary support.
+- PR #22: green and merged; full cyclic weighted sum collapses to the four Radius-4 boundaries.
+- PR #21: experimental range-sum bridge; CI failed only at endpoint proof normalisation and remains unpromoted/stale-base.
+- PR #6: older reverse-bridge development line; not the current local blocker.

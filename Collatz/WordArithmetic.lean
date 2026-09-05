@@ -85,4 +85,78 @@ theorem realizes_composed_identity {bits : List Bool} {x y : ℕ}
         simp [listOnes, wordNumerator, bitMultiplier, bitOffset, pow_succ] at hstep ⊢ <;>
         nlinarith
 
+/-- Parity bit used by the affine recurrence, written directly in terms of the
+same mod-two test used by `halfStep`. -/
+def stateBit (n : ℕ) : Bool :=
+  if n % 2 = 0 then false else true
+
+/-- Every actual `halfStep` transition satisfies the affine equation selected
+by its state bit. This is the local Collatz-to-word arithmetic bridge. -/
+theorem halfStep_affine (n : ℕ) :
+    2 * halfStep n = bitMultiplier (stateBit n) * n + bitOffset (stateBit n) := by
+  by_cases h : n % 2 = 0
+  · simp [halfStep, stateBit, bitMultiplier, bitOffset, h]
+    omega
+  · simp [halfStep, stateBit, bitMultiplier, bitOffset, h]
+    omega
+
+/-- The chronological list of parity bits seen during the first `k`
+`halfStep` transitions starting from `x`. -/
+def orbitBits (x : ℕ) : ℕ → List Bool
+  | 0 => []
+  | k + 1 => stateBit x :: orbitBits (halfStep x) k
+
+@[simp]
+theorem orbitBits_length (x k : ℕ) : (orbitBits x k).length = k := by
+  induction k generalizing x with
+  | zero => simp [orbitBits]
+  | succ k ih => simp [orbitBits, ih]
+
+/-- The actual `halfStep` orbit realises its chronological parity-bit list. -/
+theorem orbitBits_realizes (x k : ℕ) :
+    Realizes (orbitBits x k) x ((halfStep^[k]) x) := by
+  induction k generalizing x with
+  | zero => simp [orbitBits, Realizes]
+  | succ k ih =>
+      rw [orbitBits]
+      refine ⟨halfStep x, halfStep_affine x, ?_⟩
+      simpa [Function.iterate_succ_apply] using ih (x := halfStep x)
+
+/-- Word-level composed identity for an actual `halfStep` orbit. -/
+theorem halfStep_orbit_composed_identity (x k : ℕ) :
+    2 ^ k * (halfStep^[k]) x =
+      3 ^ listOnes (orbitBits x k) * x + wordNumerator (orbitBits x k) := by
+  have h := realizes_composed_identity (orbitBits_realizes x k)
+  simpa using h
+
+/-- Characteristic denominator attached to a finite parity word. -/
+def wordDenominator (bits : List Bool) : ℤ :=
+  (2 : ℤ) ^ bits.length - (3 : ℤ) ^ listOnes bits
+
+/-- If a `halfStep` orbit closes after `k` transitions, then the entire
+word-denominator multiplies the starting value to the exact word numerator.
+No proper factor or residue surrogate appears. -/
+theorem periodic_word_denominator_identity {x k : ℕ}
+    (hperiod : (halfStep^[k]) x = x) :
+    wordDenominator (orbitBits x k) * (x : ℤ) =
+      (wordNumerator (orbitBits x k) : ℤ) := by
+  have hnat := halfStep_orbit_composed_identity x k
+  rw [hperiod] at hnat
+  have hz :
+      (2 : ℤ) ^ k * (x : ℤ) =
+        (3 : ℤ) ^ listOnes (orbitBits x k) * (x : ℤ) +
+          (wordNumerator (orbitBits x k) : ℤ) := by
+    exact_mod_cast hnat
+  rw [wordDenominator, orbitBits_length]
+  linarith
+
+/-- The full word-denominator therefore divides the exact word numerator for
+any closed `halfStep` orbit. -/
+theorem periodic_word_fullDenominatorDivides {x k : ℕ}
+    (hperiod : (halfStep^[k]) x = x) :
+    wordDenominator (orbitBits x k) ∣
+      (wordNumerator (orbitBits x k) : ℤ) := by
+  refine ⟨(x : ℤ), ?_⟩
+  exact (periodic_word_denominator_identity hperiod).symm
+
 end Collatz

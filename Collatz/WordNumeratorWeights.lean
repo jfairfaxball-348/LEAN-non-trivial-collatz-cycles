@@ -21,7 +21,7 @@ theorem weightedOddTerms_length (offset : ℕ) (bits : List Bool) :
   induction bits generalizing offset with
   | nil => simp [weightedOddTerms, listOnes]
   | cons b bs ih =>
-      cases b <;> simp [weightedOddTerms, listOnes, ih]
+      cases b <;> simp [weightedOddTerms, listOnes, ih, Nat.add_comm]
 
 /-- Summing all weighted true-bit contributions recovers the exact word
 numerator, with an overall power-of-two offset. -/

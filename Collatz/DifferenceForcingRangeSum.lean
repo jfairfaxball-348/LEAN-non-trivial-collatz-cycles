@@ -125,13 +125,8 @@ theorem orbitDifferencePotential_total (c : OddCycle L)
         ((halfStep^[shift.val]) (c.node 0)) c.totalExponent c.totalExponent =
       (2 : ℤ) ^ c.totalExponent *
         ((((halfStep^[shift.val]) (c.node 0) : ℕ) : ℤ) - (c.node 0 : ℤ)) := by
-  change
-    (2 : ℤ) ^ c.totalExponent *
-        ((((halfStep^[c.totalExponent])
-            ((halfStep^[shift.val]) (c.node 0)) : ℕ) : ℤ) -
-          (((halfStep^[c.totalExponent]) (c.node 0) : ℕ) : ℤ)) =
-      (2 : ℤ) ^ c.totalExponent *
-        ((((halfStep^[shift.val]) (c.node 0) : ℕ) : ℤ) - (c.node 0 : ℤ))
+  rw [orbitDifferencePotential]
+  simp only [Nat.sub_self, orbitBits, listOnes_nil, pow_zero, mul_one]
   rw [c.node_zero_halfStep_periodic, c.halfStep_shift_periodic shift.val]
 
 /-- The initial potential is `3^L` times the same state difference. -/
@@ -143,12 +138,8 @@ theorem orbitDifferencePotential_zero (c : OddCycle L)
         ((((halfStep^[shift.val]) (c.node 0) : ℕ) : ℤ) - (c.node 0 : ℤ)) := by
   have hshift : shift.val ≤ c.totalExponent :=
     c.zmodShift_val_le_totalExponent shift
-  change
-    (3 : ℤ) ^ listOnes
-        (orbitBits ((halfStep^[shift.val]) (c.node 0)) c.totalExponent) *
-      ((((halfStep^[shift.val]) (c.node 0) : ℕ) : ℤ) - (c.node 0 : ℤ)) =
-    (3 : ℤ) ^ L *
-      ((((halfStep^[shift.val]) (c.node 0) : ℕ) : ℤ) - (c.node 0 : ℤ))
+  rw [orbitDifferencePotential]
+  simp only [pow_zero, one_mul, Function.iterate_zero_apply, Nat.sub_zero]
   rw [c.orbitBits_shift_total_ones hshift]
 
 /-- Over one complete genuine cycle, the natural-indexed weighted local

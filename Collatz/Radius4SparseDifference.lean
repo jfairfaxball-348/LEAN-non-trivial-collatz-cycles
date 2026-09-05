@@ -86,6 +86,7 @@ theorem radiusDifferenceOffset_ne_zero_iff (c : OddCycle L)
     c.radiusDifferenceOffset shift t ≠ 0 ↔
       c.parityWord t ≠ rotate c.parityWord shift t := by
   rw [radiusDifferenceOffset, affineDifferenceOffset_ne_zero_iff]
+  simp only [baseStateAt]
   rw [← c.parityWord_eq_stateBit t, c.shiftedStateBit_eq_rotatedParity shift t]
 
 /-- Exact Radius 4 makes the local difference recurrence genuinely sparse:
@@ -144,18 +145,22 @@ theorem radiusFour_sparse_difference_offsets (c : OddCycle L)
   have hu₂ := (hup u₂).2 (Or.inr rfl)
   refine ⟨d₁, d₂, u₁, u₂, hdne, hune, hd₁u₁, hd₁u₂, hd₂u₁, hd₂u₂,
     hsupport, ?_, ?_, ?_, ?_⟩
-  · rw [radiusDifferenceOffset, ← c.parityWord_eq_stateBit d₁,
+  · simp only [radiusDifferenceOffset, baseStateAt]
+    rw [← c.parityWord_eq_stateBit d₁,
       c.shiftedStateBit_eq_rotatedParity shift d₁, hd₁.1, hd₁.2]
-    exact affineDifferenceOffset_down (c.baseStateAt d₁)
-  · rw [radiusDifferenceOffset, ← c.parityWord_eq_stateBit d₂,
+    exact affineDifferenceOffset_down ((halfStep^[d₁.val]) (c.node 0))
+  · simp only [radiusDifferenceOffset, baseStateAt]
+    rw [← c.parityWord_eq_stateBit d₂,
       c.shiftedStateBit_eq_rotatedParity shift d₂, hd₂.1, hd₂.2]
-    exact affineDifferenceOffset_down (c.baseStateAt d₂)
-  · rw [radiusDifferenceOffset, ← c.parityWord_eq_stateBit u₁,
+    exact affineDifferenceOffset_down ((halfStep^[d₂.val]) (c.node 0))
+  · simp only [radiusDifferenceOffset, baseStateAt]
+    rw [← c.parityWord_eq_stateBit u₁,
       c.shiftedStateBit_eq_rotatedParity shift u₁, hu₁.1, hu₁.2]
-    exact affineDifferenceOffset_up (c.baseStateAt u₁)
-  · rw [radiusDifferenceOffset, ← c.parityWord_eq_stateBit u₂,
+    exact affineDifferenceOffset_up ((halfStep^[u₁.val]) (c.node 0))
+  · simp only [radiusDifferenceOffset, baseStateAt]
+    rw [← c.parityWord_eq_stateBit u₂,
       c.shiftedStateBit_eq_rotatedParity shift u₂, hu₂.1, hu₂.2]
-    exact affineDifferenceOffset_up (c.baseStateAt u₂)
+    exact affineDifferenceOffset_up ((halfStep^[u₂.val]) (c.node 0))
 
 end OddCycle
 end Collatz

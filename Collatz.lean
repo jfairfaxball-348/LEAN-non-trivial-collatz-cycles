@@ -15,3 +15,4 @@ import Collatz.Radius4CycleConsequences
 import Collatz.Radius4CycleBoundaries
 import Collatz.NontrivialDenominator
 import Collatz.Radius4SparseDifference
+import Collatz.DifferenceForcingComposition

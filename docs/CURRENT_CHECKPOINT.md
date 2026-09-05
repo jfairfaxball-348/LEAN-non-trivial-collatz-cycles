@@ -74,11 +74,11 @@ It defines a list of contributions of the form
 
 `2^(offset+j) * 3^(number of true bits after j)`
 
-and attempts to prove that their sum equals the exact recursive `wordNumerator`.
+and proves on that branch that their sum equals the exact recursive `wordNumerator`.
 
-The first CI run failed only on the elementary commutativity goal `listOnes bs + 1 = 1 + listOnes bs`. That proof was repaired. At the time of this freeze, the repaired CI run was still in progress, so **none of PR #15 is authoritative or promoted**.
+The first CI run failed only on the elementary commutativity goal `listOnes bs + 1 = 1 + listOnes bs`. That proof was repaired, and the repaired CI run completed successfully.
 
-A future session must inspect PR #15 and its CI afresh. Since `main` has advanced to include `f6c40cab...`, even a green PR #15 should be freshly rebased or transplanted onto current `main` and rerun before promotion.
+However, PR #15 was tested against the earlier base `36722d8f...`; `main` subsequently advanced through the strict-denominator promotion and this documentation handover. Therefore **none of PR #15 is authoritative or promoted at this freeze**. A future session should freshly transplant or rebase the small weighted-numerator delta onto current `main`, rerun full Lean CI, and promote only if that fresh integration is green.
 
 ## Period/minimality discipline
 
@@ -99,7 +99,7 @@ Likewise, even a completed local Radius-4 obstruction would not by itself exclud
 ## Recommended next attack
 
 1. Inspect current `main`, this checkpoint, recent commits, open PRs, and CI before doing any work.
-2. Resolve PR #15 first. If its repaired proof is green, transplant/rebase it onto current `main`, rerun full Lean CI, and promote only if green. If it is not green, repair or abandon it without contaminating `main`.
+2. Resolve PR #15 first. Its repaired head is green against the older base, so freshly transplant/rebase the small weighted-numerator delta onto current `main`, rerun full Lean CI, and promote only if the new integration is green.
 3. Use the weighted-numerator representation only as a tool, not as the conclusion. Formalise how an exact Radius-4 rotation partitions the chronological parity period into intervals on which suffix odd counts differ by fixed small offsets.
 4. Derive an exact closed formula for `shiftedNumerator - baseNumerator` from those four boundaries. Be alert that common true bits between boundaries can acquire different powers of three.
 5. Combine that exact formula with the promoted full-`D` identity, nonzero quotient, and `D > 1` for `IsNontrivial`.
@@ -111,7 +111,7 @@ Likewise, even a completed local Radius-4 obstruction would not by itself exclud
 - PR #14 was fully green and merged; its merge commit is `f6c40cabd3f62f372a64eef0c6ecfe8657b2ac2e`.
 - Stale PR #10 was closed as superseded by PR #14.
 - PRs #11 and #13 were already closed as superseded by the promoted PR #12 line.
-- PR #15 remains experimental and unpromoted at this checkpoint.
+- PR #15 is green on its repaired old-base head but remains experimental and unpromoted; fresh current-main integration is required.
 - PR #6 remains an unrelated/open reverse-bridge development line.
 
 The next session should treat repository state, not this prose alone, as final authority.

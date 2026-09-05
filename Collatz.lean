@@ -11,3 +11,4 @@ import Collatz.RotationWord
 import Collatz.WordAppendArithmetic
 import Collatz.RotationNumeratorComparison
 import Collatz.Radius4CycleConsequences
+import Collatz.Radius4CycleBoundaries

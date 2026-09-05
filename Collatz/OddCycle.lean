@@ -8,11 +8,28 @@ theorem step_of_odd {n : ℕ} (hn : Odd n) : step n = 3 * n + 1 := by
   rcases hn with ⟨k, rfl⟩
   simp [step]
 
+/-- One Collatz step halves an explicitly even number `2 * n`. -/
+@[simp]
+theorem step_two_mul (n : ℕ) : step (2 * n) = n := by
+  simp [step]
+
+/-- Repeated Collatz steps remove an explicitly supplied power of two. -/
+theorem iterate_step_pow_two_mul (a y : ℕ) :
+    (step^[a]) (2 ^ a * y) = y := by
+  induction a with
+  | zero => simp
+  | succ a ih =>
+      rw [Function.iterate_succ_apply]
+      rw [pow_succ]
+      have hrewrite : 2 ^ a * 2 * y = 2 * (2 ^ a * y) := by ring
+      rw [hrewrite, step_two_mul]
+      exact ih
+
 /-- Arithmetic data for one exact odd-to-odd Collatz transition.
 
-The equation says that after the odd Collatz step, exactly `2^a` is removed
-before the next odd value `y` is reached. Oddness of `y` is part of the data;
-a separate uniqueness theorem will make the word "exact" fully explicit. -/
+The equation records the odd `3x+1` step. The target is required to be odd, so
+after the stated `a` halving steps the accelerated transition has genuinely
+reached the next odd value rather than stopping early. -/
 structure OddToOddStep (x y a : ℕ) : Prop where
   source_pos : 0 < x
   target_pos : 0 < y
@@ -20,6 +37,26 @@ structure OddToOddStep (x y a : ℕ) : Prop where
   target_odd : Odd y
   exponent_pos : 0 < a
   equation : 3 * x + 1 = 2 ^ a * y
+
+namespace OddToOddStep
+
+variable {x y a : ℕ}
+
+/-- The first ordinary Collatz step of an odd-to-odd transition is exactly the
+power-of-two multiple appearing in its defining arithmetic equation. -/
+theorem first_step_eq (h : OddToOddStep x y a) : step x = 2 ^ a * y := by
+  rw [step_of_odd h.source_odd]
+  exact h.equation
+
+/-- An exact odd-to-odd relation really is realised by the ordinary Collatz
+map: one odd step followed by `a` halving steps reaches `y`. -/
+theorem reaches_target (h : OddToOddStep x y a) :
+    (step^[a + 1]) x = y := by
+  rw [Function.iterate_succ_apply]
+  rw [h.first_step_eq]
+  exact iterate_step_pow_two_mul a y
+
+end OddToOddStep
 
 /-- A positive odd Collatz cycle with `L` odd nodes, indexed cyclically.
 
@@ -37,6 +74,27 @@ structure OddCycle (L : ℕ) [NeZero L] where
 namespace OddCycle
 
 variable {L : ℕ} [NeZero L]
+
+/-- The local edge at cyclic position `i`, packaged as an exact odd-to-odd
+Collatz transition. -/
+def edge (c : OddCycle L) (i : ZMod L) :
+    OddToOddStep (c.node i) (c.node (i + 1)) (c.exponent i) where
+  source_pos := c.node_pos i
+  target_pos := c.node_pos (i + 1)
+  source_odd := c.node_odd i
+  target_odd := c.node_odd (i + 1)
+  exponent_pos := c.exponent_pos i
+  equation := c.step_eq i
+
+/-- Every edge of an `OddCycle` is realised by ordinary Collatz iteration. -/
+theorem edge_reaches_next (c : OddCycle L) (i : ZMod L) :
+    (step^[c.exponent i + 1]) (c.node i) = c.node (i + 1) :=
+  (c.edge i).reaches_target
+
+/-- A cycle is non-trivial when at least one of its odd nodes is not `1`.
+This is deliberately separate from the base cycle structure. -/
+def IsNontrivial (c : OddCycle L) : Prop :=
+  ∃ i : ZMod L, c.node i ≠ 1
 
 /-- The sum of exponents on the first `k` cyclic odd-to-odd edges, starting at
 index zero. At `k = L` this traverses the cycle exactly once. -/
@@ -70,6 +128,15 @@ theorem prefixNumerator_succ (c : OddCycle L) (k : ℕ) :
     c.prefixNumerator (k + 1) =
       3 * c.prefixNumerator k + 2 ^ c.prefixExponent k := by
   rfl
+
+/-- The composed inhomogeneous numerator is positive after at least one edge. -/
+theorem prefixNumerator_pos (c : OddCycle L) {k : ℕ} (hk : 0 < k) :
+    0 < c.prefixNumerator k := by
+  cases k with
+  | zero => omega
+  | succ k =>
+      rw [c.prefixNumerator_succ k]
+      positivity
 
 /-- Composition of the first `k` odd-to-odd equations.
 

@@ -91,26 +91,36 @@ theorem realizes_composed_identity {bits : List Bool} {x y : ℕ}
       have hcomp := ih htail
       cases b with
       | false =>
-          simp only [List.length_cons, listOnes_cons, Bool.false_eq_true,
-            if_false, zero_add, wordNumerator_cons, bitOffset, bitMultiplier,
-            one_mul, zero_mul, add_zero, pow_succ]
-          calc
-            2 ^ bs.length * 2 * y = 2 * (2 ^ bs.length * y) := by ring
-            _ = 2 * (3 ^ listOnes bs * z + wordNumerator bs) := by rw [hcomp]
-            _ = 3 ^ listOnes bs * (2 * z) + 2 * wordNumerator bs := by ring
-            _ = 3 ^ listOnes bs * x + 2 * wordNumerator bs := by rw [hstep]
+          have hstep' : 2 * z = x := by
+            simpa [bitMultiplier, bitOffset] using hstep
+          have hcalc :
+              2 ^ (bs.length + 1) * y =
+                3 ^ listOnes bs * x + 2 * wordNumerator bs := by
+            rw [pow_succ]
+            calc
+              2 ^ bs.length * 2 * y = 2 * (2 ^ bs.length * y) := by ring
+              _ = 2 * (3 ^ listOnes bs * z + wordNumerator bs) := by rw [hcomp]
+              _ = 3 ^ listOnes bs * (2 * z) + 2 * wordNumerator bs := by ring
+              _ = 3 ^ listOnes bs * x + 2 * wordNumerator bs := by rw [hstep']
+          simpa [listOnes, wordNumerator, bitOffset] using hcalc
       | true =>
-          simp only [List.length_cons, listOnes_cons, if_true,
-            wordNumerator_cons, bitOffset, bitMultiplier, one_mul, pow_succ]
-          calc
-            2 ^ bs.length * 2 * y = 2 * (2 ^ bs.length * y) := by ring
-            _ = 2 * (3 ^ listOnes bs * z + wordNumerator bs) := by rw [hcomp]
-            _ = 3 ^ listOnes bs * (2 * z) + 2 * wordNumerator bs := by ring
-            _ = 3 ^ listOnes bs * (3 * x + 1) + 2 * wordNumerator bs := by rw [hstep]
-            _ = 3 ^ (1 + listOnes bs) * x +
-                (3 ^ listOnes bs + 2 * wordNumerator bs) := by
-                  rw [show 1 + listOnes bs = listOnes bs + 1 by omega, pow_succ]
-                  ring
+          have hstep' : 2 * z = 3 * x + 1 := by
+            simpa [bitMultiplier, bitOffset] using hstep
+          have hcalc :
+              2 ^ (bs.length + 1) * y =
+                3 ^ (1 + listOnes bs) * x +
+                  (3 ^ listOnes bs + 2 * wordNumerator bs) := by
+            rw [pow_succ]
+            calc
+              2 ^ bs.length * 2 * y = 2 * (2 ^ bs.length * y) := by ring
+              _ = 2 * (3 ^ listOnes bs * z + wordNumerator bs) := by rw [hcomp]
+              _ = 3 ^ listOnes bs * (2 * z) + 2 * wordNumerator bs := by ring
+              _ = 3 ^ listOnes bs * (3 * x + 1) + 2 * wordNumerator bs := by rw [hstep']
+              _ = 3 ^ (1 + listOnes bs) * x +
+                  (3 ^ listOnes bs + 2 * wordNumerator bs) := by
+                    rw [show 1 + listOnes bs = listOnes bs + 1 by omega, pow_succ]
+                    ring
+          simpa [listOnes, wordNumerator, bitOffset] using hcalc
 
 /-- Parity bit used by the affine recurrence, written directly in terms of the
 same mod-two test used by `halfStep`. -/

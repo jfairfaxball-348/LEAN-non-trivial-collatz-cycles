@@ -31,11 +31,47 @@ cycle data, not as an additional eligibility hypothesis. -/
 theorem encodingPeriod_pos (c : OddCycle L) : 0 < c.encodingPeriod := by
   simpa [encodingPeriod] using c.totalExponent_pos
 
+/-- Typeclass form of the proved nonzeroness of the encoding period. -/
+instance encodingPeriod_neZero (c : OddCycle L) : NeZero c.encodingPeriod :=
+  ⟨Nat.ne_of_gt c.encodingPeriod_pos⟩
+
 /-- The base odd node is periodic for `halfStep` after exactly the derived
 encoding traversal length `A` (not necessarily its minimal period). -/
 theorem encodingPeriod_periodic (c : OddCycle L) :
     (halfStep^[c.encodingPeriod]) (c.node 0) = c.node 0 := by
   simpa [encodingPeriod] using c.node_zero_halfStep_periodic
+
+/-- The genuine denominator-compatible parity word of the formal cycle.
+
+At cyclic position `t : ZMod A`, the bit is true exactly when the actual
+`halfStep` state reached after the canonical representative `t.val` is odd.
+Thus this word is connected to a concrete Collatz-derived orbit by definition;
+no generic `CyclicWord` is being relabelled as a cycle encoding. -/
+def parityWord (c : OddCycle L) : CyclicWord c.encodingPeriod :=
+  fun t => decide (Odd ((halfStep^[t.val]) (c.node 0)))
+
+/-- Expands a parity-word bit back to the corresponding oddness statement on
+the actual `halfStep` orbit. -/
+theorem parityWord_eq_true_iff (c : OddCycle L) (t : ZMod c.encodingPeriod) :
+    c.parityWord t = true ↔
+      Odd ((halfStep^[t.val]) (c.node 0)) := by
+  simp [parityWord]
+
+/-- The chosen base position of the derived parity word is odd. -/
+@[simp]
+theorem parityWord_zero (c : OddCycle L) : c.parityWord 0 = true := by
+  rw [c.parityWord_eq_true_iff]
+  simpa using c.node_odd 0
+
+/-- Exact Radius 4 for the genuine parity word extracted from the formal
+`halfStep` orbit. -/
+def IsCycleRadiusFour (c : OddCycle L) (shift : ZMod c.encodingPeriod) : Prop :=
+  IsRadiusFour c.parityWord shift
+
+/-- The formal cycle has a nonzero exact Radius-4 rotation of its genuine
+parity word. -/
+def HasCycleRadiusFourRotation (c : OddCycle L) : Prop :=
+  HasRadiusFourRotation c.parityWord
 
 /-- The cumulative `halfStep` position at which odd node `j` begins. -/
 def oddStartPosition (c : OddCycle L) (j : Fin L) : ℕ :=
@@ -48,46 +84,31 @@ theorem oddStartPosition_is_odd (c : OddCycle L) (j : Fin L) :
   rw [oddStartPosition, c.halfStep_reaches_prefix_node j.1]
   exact c.node_odd (j.1 : ZMod L)
 
-/-- Candidate denominator-compatible binary encoding for the Radius-4 layer.
+/-- Arithmetic marker word obtained only from cumulative exponent boundaries.
 
-The ambient cyclic length is `A`, not `A + L`. A bit is true exactly at a
-cumulative odd-to-odd exponent boundary. This is the natural location of the
-`L` odd states in the `halfStep` orbit and is the representation compatible
-with `D = 2^A - 3^L`.
-
-The repository deliberately retains the name `oddStartWord` until the converse
-parity bridge is formalised: every unmarked position of the `halfStep` orbit
-must still be proved even. -/
+This word is retained as a bridge target because its true positions are easy
+to read from the exponent data. It is not used as the definition of the
+Collatz parity word: a separate theorem must prove `oddStartWord = parityWord`
+before arithmetic facts about these markers may be transferred silently to
+Radius-4 statements. -/
 noncomputable def oddStartWord (c : OddCycle L) : CyclicWord c.encodingPeriod := by
   classical
   exact fun t => decide (∃ j : Fin L,
     t = (c.oddStartPosition j : ZMod c.encodingPeriod))
 
-/-- Membership in the derived word is exactly membership in the finite set of
-cumulative odd-start positions. -/
+/-- Membership in the arithmetic marker word is exactly membership in the
+finite set of cumulative odd-start positions. -/
 theorem oddStartWord_eq_true_iff (c : OddCycle L) (t : ZMod c.encodingPeriod) :
     c.oddStartWord t = true ↔
       ∃ j : Fin L, t = (c.oddStartPosition j : ZMod c.encodingPeriod) := by
   classical
   simp [oddStartWord]
 
-/-- Every cumulative odd-node start is marked by the derived binary word. -/
+/-- Every cumulative odd-node start is marked by the arithmetic marker word. -/
 theorem oddStartWord_at_start (c : OddCycle L) (j : Fin L) :
     c.oddStartWord (c.oddStartPosition j : ZMod c.encodingPeriod) = true := by
   rw [c.oddStartWord_eq_true_iff]
   exact ⟨j, rfl⟩
-
-/-- Exact Radius 4 for the denominator-compatible derived word. Period
-nonzeroness is derived from the cycle data. -/
-def IsOddStartRadiusFour (c : OddCycle L) (shift : ZMod c.encodingPeriod) : Prop := by
-  letI : NeZero c.encodingPeriod := ⟨Nat.ne_of_gt c.encodingPeriod_pos⟩
-  exact IsRadiusFour c.oddStartWord shift
-
-/-- Existence of a nonzero exact Radius-4 rotation of the denominator-compatible
-word. -/
-def HasOddStartRadiusFourRotation (c : OddCycle L) : Prop := by
-  letI : NeZero c.encodingPeriod := ⟨Nat.ne_of_gt c.encodingPeriod_pos⟩
-  exact HasRadiusFourRotation c.oddStartWord
 
 end OddCycle
 end Collatz

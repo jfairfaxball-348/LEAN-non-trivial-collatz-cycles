@@ -61,6 +61,40 @@ theorem reaches_target (h : OddToOddStep x y a) :
   rw [h.first_step_eq]
   exact iterate_step_pow_two_mul a y
 
+/-- After the initial odd step and any `b ≤ a` halving steps, the remaining
+state is exactly `2^(a-b) * y`. -/
+theorem reaches_after_halvings (h : OddToOddStep x y a) {b : ℕ} (hb : b ≤ a) :
+    (step^[b + 1]) x = 2 ^ (a - b) * y := by
+  rw [Function.iterate_succ_apply]
+  rw [h.first_step_eq]
+  have hfactor : 2 ^ a * y = 2 ^ b * (2 ^ (a - b) * y) := by
+    rw [show a = b + (a - b) by omega, pow_add]
+    ring
+  rw [hfactor]
+  exact iterate_step_pow_two_mul b (2 ^ (a - b) * y)
+
+/-- Before all `a` factors of two have been removed, the ordinary trajectory
+is still at an even value. -/
+theorem intermediate_even (h : OddToOddStep x y a) {b : ℕ} (hb : b < a) :
+    Even ((step^[b + 1]) x) := by
+  rw [h.reaches_after_halvings (Nat.le_of_lt hb)]
+  have hpos : 0 < a - b := Nat.sub_pos_of_lt hb
+  obtain ⟨d, hd⟩ := Nat.exists_eq_succ_of_ne_zero (Nat.ne_of_gt hpos)
+  rw [hd, pow_succ]
+  refine ⟨2 ^ d * y, ?_⟩
+  ring
+
+/-- Operational exactness of the two-adic exponent: every earlier post-odd
+state is even, while the state after exactly `a` halvings is the odd target. -/
+theorem exact_removal (h : OddToOddStep x y a) :
+    (∀ b : ℕ, b < a → Even ((step^[b + 1]) x)) ∧
+      Odd ((step^[a + 1]) x) := by
+  constructor
+  · intro b hb
+    exact h.intermediate_even hb
+  · rw [h.reaches_target]
+    exact h.target_odd
+
 end OddToOddStep
 
 /-- A positive odd Collatz cycle with `L` odd nodes, indexed cyclically.
@@ -97,6 +131,14 @@ theorem edge (c : OddCycle L) (i : ZMod L) :
 theorem edge_reaches_next (c : OddCycle L) (i : ZMod L) :
     (step^[c.exponent i + 1]) (c.node i) = c.node (i + 1) :=
   (c.edge i).reaches_target
+
+/-- Every edge exponent in an `OddCycle` is exact in the operational sense:
+all earlier post-odd states are even and the stated endpoint is odd. -/
+theorem edge_exact_removal (c : OddCycle L) (i : ZMod L) :
+    (∀ b : ℕ, b < c.exponent i →
+      Even ((step^[b + 1]) (c.node i))) ∧
+      Odd ((step^[c.exponent i + 1]) (c.node i)) :=
+  (c.edge i).exact_removal
 
 /-- A cycle is non-trivial when at least one of its odd nodes is not `1`.
 This is deliberately separate from the base cycle structure. -/

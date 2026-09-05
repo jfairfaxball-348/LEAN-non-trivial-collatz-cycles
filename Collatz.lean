@@ -5,6 +5,7 @@ import Collatz.Radius4
 import Collatz.Radius4Structure
 import Collatz.Radius4BoundaryPositions
 import Collatz.WordArithmetic
+import Collatz.WordNumeratorWeights
 import Collatz.CycleWordArithmetic
 import Collatz.RotationArithmetic
 import Collatz.RotationWord

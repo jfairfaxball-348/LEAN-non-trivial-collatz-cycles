@@ -1,95 +1,114 @@
 # Formalisation roadmap
 
-This roadmap describes the intended order of work inside this standalone repository. Every mathematical dependency needed by a theorem must be defined or proved here; no unpublished or external argument is treated as an assumption.
+This repository has one objective: faithfully reconstruct and kernel-verify the already-proved RL238 Radius-4 local theorem in Lean.
+
+The research repository is a read-only mathematical blueprint, never a formal dependency. Do not invent new mathematics, move to Radius 5, or start global Gate work unless the user explicitly changes the objective.
 
 ## Stage 0 — Foundations
 
 Status: **complete as infrastructure**.
 
-The repository defines the ordinary Collatz map `step`, the one-division map `halfStep`, cyclic Boolean words, rotation, Hamming distance, exact Radius 4, and the denominator expression `2^A - 3^L`.
+The repository defines the ordinary Collatz map, `halfStep`, cyclic words, rotation, exact odd-to-odd cycle data, denominator arithmetic, and genuine parity-word encoding.
 
-## Stage 1 — Odd-to-odd Collatz cycle arithmetic
+## Stage 1 — Genuine cycle and denominator arithmetic
 
-Status: **forward direction complete for the present local theorem; reverse extraction separate**.
+Status: **complete for the local Radius-4 formalisation**.
 
-The repository proves exact odd-to-odd Collatz transitions, builds `OddCycle`, composes the cycle equations, derives the genuine ordinary and `halfStep` periods, and proves the exact denominator identity.
+Lean proves the exact `OddCycle` equations, full `halfStep` periodicity, the denominator `D = 2^A - 3^L`, positivity, the nontrivial bound `D > 1`, full-denominator word arithmetic, and shifted-origin identities.
 
-The reverse theorem extracting canonical `OddCycle` data from an arbitrary ordinary positive periodic point remains a separate future bridge and is not the current Radius-4 local blocker.
+Reverse extraction from an arbitrary ordinary periodic point remains separate and is not part of the present target.
 
-## Stage 2 — Genuine denominator-compatible parity encoding
+## Stage 2 — Earlier Hamming/four-boundary support arithmetic
 
-Status: **substantially complete for the present local attack**.
+Status: **kernel-verified support infrastructure; not the RL238 Radius-4 metric**.
 
-The repository defines the genuine length-`A` parity word directly from the actual `halfStep` orbit. It proves that one full parity period has exactly `L` odd bits, and that cyclic rotation agrees exactly with advancing the same periodic `halfStep` orbit.
+The repository proves exact Hamming-distance four mismatch structure and weighted four-boundary numerator formulas. These results may be reused only where their hypotheses match later transport-derived statements.
 
-No primitivity or minimal-period property is assumed.
+Never identify Hamming Radius 4 with RL238 transport Radius 4 without a theorem.
 
-## Stage 3 — Full-denominator and shifted-origin arithmetic
+## Stage 3 — RL238 transport-radius model
 
-Status: **complete through the exact shifted-minus-base numerator identity**.
+Status: **complete through endpoint and cost definitions**.
 
-Lean proves:
+`Collatz/Radius4Transport.lean` provides:
 
-- `D = 2^A - 3^L` from the cycle equations;
-- `D > 0` for every positive odd cycle;
-- `D > 1` for every `OddCycle.IsNontrivial`;
-- the genuine parity-word denominator equals `D`;
-- full-`D` divisibility of the genuine parity-word numerator;
-- full-denominator identities at every shifted orbit origin;
-- the exact comparison
+- signed binary transport increments;
+- prefix flow `G_k`;
+- one-Lipschitz flow steps;
+- cut cost `sum |G_k|` over internal edges;
+- exact minimum-over-cuts transport radius;
+- `OddCycle.IsCycleTransportRadiusFour` for the genuine parity word;
+- the full-prefix identity `G_n = ones(target)-ones(source)`;
+- zero full-prefix flow for equal-weight pairs and self-rotations.
 
-  `D * (advancedState - baseState) = shiftedNumerator - baseNumerator`;
+## Stage 4 — R4-1 exact cost-four topology classification
 
-- under exact Radius 4, the state difference and hence this numerator difference are nonzero.
+Status: **in progress; non-unit branch complete**.
 
-## Stage 4 — Radius-4 sparse weighted arithmetic
+Promoted results in `Collatz/Radius4TransportTopology.lean` and `Collatz/Radius4TransportHeightTwo.lean` prove:
 
-Status: **four-boundary support and cyclic four-term collapse promoted; chronological range bridge still open**.
+- zero-flow edges can be removed without changing cost;
+- the unit-height cost-four branch has exactly four active internal edges;
+- every cost-four internal height is at most two;
+- any non-unit cost-four flow has a height-two edge;
+- the complete non-unit branch is rigidly `(1,2,1)` and those three heights exhaust the cost.
 
-The repository now proves the following chain.
+### Next exact target
 
-1. Exact Radius 4 gives two `true -> false` and two `false -> true` genuine parity mismatches.
-2. Subtracting the actual `halfStep` affine recurrences gives an exact local state-difference forcing.
-3. That forcing is nonzero at exactly the four Radius-4 boundary positions, with values `-(2*x+1)` at the two down-boundaries and `+(2*x+1)` at the two up-boundaries.
-4. The complete numerator difference is a weighted composition of these local forcings. The weights contain the exact chronological power of two and the shifted suffix odd-count power of three, so common odd bits between mismatch boundaries are accounted for rather than discarded.
-5. Each cyclic local term is given its exact positive positional/suffix weight. Weighting preserves support.
-6. The cyclic weighted sum over the full encoding period collapses exactly to four genuine boundary terms: two positive and two negative weighted odd forcings.
+Formalise the connected-run decomposition of the four active unit-height edges and prove the exhaustive five partitions:
 
-The remaining bridge is to identify the complete chronological/range weighted forcing sum with the cyclic weighted-term sum on current `main`.
+- `[4]`;
+- `[3,1]`;
+- `[2,2]`;
+- `[2,1,1]`;
+- `[1,1,1,1]`.
 
-Experimental PR #21 developed a telescoping-potential proof of this bridge, but its CI failed in the final endpoint simplification. The underlying telescoping lemmas compiled. Since `main` advanced afterward, the useful delta must be freshly transplanted and reverified rather than merged from the stale base.
+Then complete any remaining representation/covariance bridge required to connect R4-1 to the genuine rotated `OddCycle.parityWord` and the exact RL238 adjacent-transposition setting.
 
-## Stage 5 — Radius-4 local impossibility theorem
+Do not begin topology elimination before the classification layer is complete and green.
 
-Status: **not proved**.
+## Stage 5 — Established RL238 topology eliminations
 
-After the range/cyclic bridge is promoted, combine it with the four-boundary collapse to obtain an exact four-term formula for the genuine shifted-minus-base numerator difference.
+Status: **not yet translated**.
 
-Then attempt the actual arithmetic contradiction using only already-derived Collatz data, including the nonzero state-difference quotient and `D > 1` for nontrivial cycles.
+Once R4-1 is complete, translate the already-established proof in its certified order:
 
-Do not insert assumptions that:
+1. height-two `(1,2,1)` and connected `[4]`;
+2. `[3,1]`;
+3. `[2,2]`;
+4. `[2,1,1]`;
+5. `[1,1,1,1]` quotient-cycle reduction and final closure.
 
-- the four-term expression is smaller than `D`;
-- `D` cannot divide it;
-- the four boundary positions have a convenient ordering;
-- the parity word is primitive or minimal.
+Do not improve, replace, or broaden these arguments. Reconstruct them faithfully and break them into Lean-sized lemmas as needed.
 
-If the intended contradiction is false under the current hypotheses, isolate the precise counterexample or missing condition and document it rather than strengthening the theorem ad hoc.
+## Stage 6 — Assemble the local theorem
 
-## Stage 6 — Scope and audit
+Status: **not yet kernel-verified**.
 
-For every substantive promotion:
+Assemble the exact primitive full-denominator transport-Radius-4 local impossibility theorem from the promoted topology classification and translated eliminations.
 
-- run full Lean CI with warnings as errors;
-- keep `main` self-contained;
-- update `docs/CURRENT_CHECKPOINT.md`;
-- update `docs/THEOREM_INDEX.md` and this roadmap when the theorem surface materially changes;
-- distinguish promoted mathematics from experimental branches.
+Preserve the exact established hypotheses. In particular, `OddCycle` does not imply primitivity or minimality; if RL238 requires `IsPrimitive c.parityWord`, retain it explicitly unless a separate formal reduction has actually been proved.
 
-For a completed local theorem, record its exact assumptions and keep the still-separate global encounter problem explicit.
+When this local theorem is proved and full Lean CI is green, the present repository objective is complete.
 
-## Separate future problem — global encounter theorem
+## Stage 7 — Audit and closeout
 
-A Radius-4 local impossibility theorem would not by itself exclude all hypothetical nontrivial Collatz cycles.
+At completion:
 
-A separate theorem would still be required to prove that every hypothetical nontrivial cycle necessarily encounters an eligible Radius-4 rotation. That global problem remains deliberately outside the present local formalisation attack.
+- run full Lean CI;
+- verify no `sorry`, axiom, imported research artefact, or silent Hamming/transport substitution entered the proof;
+- update `docs/CURRENT_CHECKPOINT.md`, `docs/THEOREM_INDEX.md`, and `docs/RL238_TO_LEAN_MAP.md`;
+- state the exact final theorem and hypotheses;
+- stop. There is no automatic Radius-5 or global-research successor.
+
+## Explicitly out of scope
+
+Unless the user later asks for them separately:
+
+- Radius 5;
+- Gate A;
+- Gate B;
+- global Radius-4 encounter/bridge research;
+- unrelated Collatz formalisation projects;
+- historical RL archives outside the authoritative RL238 blueprint;
+- redesigning the already-proved mathematics.

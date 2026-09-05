@@ -2,128 +2,112 @@
 
 Date: 2026-09-05
 
-The repository itself remains authoritative. A future session must still inspect live `main`, recent commits, open pull requests, CI, this file, and the theorem/roadmap documentation before continuing.
+The repository itself remains authoritative. Every future session must inspect live `main`, recent commits, open PRs, CI, this file, `docs/THEOREM_INDEX.md`, `docs/FORMALISATION_ROADMAP.md`, and `docs/RL238_TO_LEAN_MAP.md` before continuing.
 
-## Promoted mathematical checkpoint
+## Absolute objective
 
-The latest promoted mathematical checkpoint at this closeout is:
+This repository is a standalone Lean formalisation project for the already-established RL238 Radius-4 local theorem. It is not a mathematical research programme.
 
-`24463e599f05098ad8e7584610334a1218cad4fa`
+The corresponding research repository may be consulted only as a read-only mathematical blueprint for the established Radius-4 derivation. Nothing from that repository is a formal dependency: do not import its code or artefacts, do not add its conclusions as axioms, and prove every required proposition inside this repository from Lean definitions and previously proved lemmas.
 
-This is the green merge of PR #22, `Collapse weighted Radius-4 cyclic sum to four terms`.
+Do not search for new proof strategies, extend to Radius 5, work on Gate A/Gate B/global encounter questions, or revive unrelated historical derivations unless explicitly instructed by the user.
 
-Documentation-only closeout commits follow that mathematical checkpoint on `main`.
+## Latest promoted mathematical checkpoint
 
-Important immediately preceding promoted mathematical commits are:
+Current `main`:
 
-- `afac4e21b6f86ab0c124fbf4c275561382d5767d` — exact weighted Radius-4 boundary support;
-- `ad10df5b0d749b3571512a63f13f41918e98b821` — exact weighted composition of the genuine shifted-minus-base numerator difference;
-- `1539ab7d6b97704ccd62ba60c88ba1044baf6c41` — exact sparse local difference forcing at the four Radius-4 mismatch positions;
-- `c6ed7b9d50880dcae950aa030905acd4b2a878e3` — freshly integrated weighted true-bit form of `wordNumerator`;
-- `f6c40cabd3f62f372a64eef0c6ecfe8657b2ac2e` — denominator one forces the trivial cycle, so every nontrivial odd cycle has `1 < 2^A - 3^L`.
+`7dbce6e3015cbd58cd3f4ad997122e115fcded7d`
 
-## Kernel-verified Radius-4 chain now promoted
+This is the green merge of PR #29, `Formalize height-two transport rigidity`.
 
-The promoted development proves all of the following from genuine `OddCycle` / `halfStep` orbit data.
+PR #29's final head `0545fbce4524ae11f8a1ede8207238d518999e90` passed the full Lean CI `Build` step before merge.
 
-1. The length-`A` genuine parity word and exact denominator `D = 2^A - 3^L`.
-2. Exactly `L` odd bits in one full `A`-step parity period.
-3. Equality of the parity-word denominator with `D` and full-`D` divisibility of the genuine parity-word numerator.
-4. Equality of that parity-word numerator with the independently composed odd-to-odd numerator.
-5. Exact Radius-4 directional balance: two `true -> false` and two `false -> true` mismatches.
-6. Exact rotation/advance semantics and full-denominator identities at shifted orbit origins.
-7. Exact relation
+Immediately preceding transport promotions:
 
-   `D * (advancedState - baseState) = shiftedNumerator - baseNumerator`.
+- `64552275d0955f955929ad8d5d1dc60cb778e520` — PR #28, exact cost-four active-support decomposition and four-active-edge theorem for the unit-height branch;
+- `479780cccfee64e1c7768b026f5c27c9af4e7559` — PR #27, full-prefix endpoint identity `G_n = ones(target)-ones(source)` and zero endpoint for equal-weight/self-rotation pairs;
+- `aea4a2d87a64f3c1bd6d56752502f4752e07c566` — PR #26, faithful RL238 prefix-flow transport model, exact minimum-over-cuts Radius-4 predicate, one-Lipschitz local increments, and genuine parity-word wrapper;
+- `7d2afc2fb4c4061097d79c0c20ea5799763aedc3` — PR #25, earlier exact Hamming/four-boundary numerator support infrastructure. This remains valid Lean mathematics but is not the RL238 transport-radius theorem.
 
-8. The Radius-4 shifted state is genuinely different from the base state, hence this numerator difference is nonzero.
-9. Every nontrivial `OddCycle` satisfies `D > 1`.
-10. `wordNumerator` is exposed as a sum of terms with exact powers `2^position * 3^(later odd-count)`.
-11. Subtracting the two actual `halfStep` recurrences gives an exact local forcing term. Under Radius 4 it is nonzero at exactly four genuine orbit positions: two negative odd forcings `-(2*x+1)` and two positive odd forcings `+(2*x+1)`.
-12. Those local forcings compose with the correct shifted suffix powers of three. Thus common odd bits between mismatch boundaries are retained correctly rather than ignored.
-13. The actual shifted-minus-base numerator difference is identified with the weighted finite-orbit forcing composition.
-14. Each cyclic local forcing has an exact positive positional/suffix weight. Weighting preserves support, so exact Radius 4 gives exactly four nonzero weighted terms.
-15. The sum of the cyclic weighted local terms over the whole encoding period collapses exactly to those four genuine boundary contributions, with two positive and two negative weighted odd forcings.
+## Kernel-verified RL238 transport layer now promoted
 
-The Radius-4 local impossibility theorem is still **not proved**.
+The faithful transport-distance development is separate from the older Hamming predicate `IsRadiusFour`.
 
-## Exact remaining local gap
+Promoted Lean now proves:
 
-The two promoted sides are now very close:
+1. Binary transport increments are exactly in `{-1,0,1}`.
+2. Prefix flow is one-Lipschitz.
+3. `transportCostAtCut` is the sum of absolute internal prefix-flow heights `|G_1| + ... + |G_(n-1)|`.
+4. `IsExactTransportRadius` and `IsTransportRadiusFour` express exact minimum-over-cuts transport radius; `OddCycle.IsCycleTransportRadiusFour` applies this to the genuine Collatz parity word.
+5. The full prefix satisfies
 
-- the complete genuine numerator difference has an exact weighted forcing composition;
-- the cyclic weighted forcing sum has an exact four-boundary closed form.
+   `G_n = ones(target) - ones(source)`.
 
-What is still missing on `main` is the clean bridge identifying the complete chronological/range weighted sum with the cyclic weighted-term sum in the form needed to combine those two facts without assumptions.
+   Equal-weight pairs, and therefore every word/self-rotation pair, have `G_n = 0` at every cut.
+6. Active internal edges are precisely the nonzero flow heights; removing zero edges preserves transport cost.
+7. In the unit-height cost-four branch, exactly four internal edges are active.
+8. Absolute flow magnitude is one-Lipschitz in both directions; the first and last charged internal edges have height at most one for equal-weight words.
+9. At an equal-weight cost-four cut every internal height is at most two.
+10. If the cost-four cut is not unit-height, a height-two edge exists.
+11. The complete non-unit branch is rigid: a height-two edge is strictly internal, its two neighbours have height one, and those three heights exhaust the entire cost. Thus the non-unit topology is exactly the RL238 `(1,2,1)` family.
 
-Once that bridge is promoted, the numerator difference can be rewritten as an explicit four-boundary arithmetic expression. The next mathematical question is then whether the resulting exact identity, together with the already-proved nonzero quotient and `D > 1`, yields an actual contradiction for a nontrivial cycle or exposes a further genuine condition that must be proved.
+Key files:
 
-Do not replace this with assumptions that the four-term expression is small, indivisible by `D`, conveniently ordered, primitive, or minimal.
+- `Collatz/Radius4Transport.lean`
+- `Collatz/Radius4TransportTopology.lean`
+- `Collatz/Radius4TransportHeightTwo.lean`
 
-## Closed experimental PR #21 — useful but unpromoted
+## Exact remaining R4-1 gap
 
-PR #21, `Identify the weighted forcing range sum`, was created from the earlier promoted base
+R4-1 is not yet complete.
 
-`afac4e21b6f86ab0c124fbf4c275561382d5767d`.
+The next target is only the remaining unit-height classification. At a minimizing cost-four cut, Lean already proves there are exactly four active internal edges and each has height one. Formalise their connected-run decomposition and prove that the run lengths are exactly one of the five partitions of four used by RL238:
 
-Its branch eventually reached head
+- `[4]`;
+- `[3,1]`;
+- `[2,2]`;
+- `[2,1,1]`;
+- `[1,1,1,1]`.
 
-`7e505608d3945f50bc5ed001e3b2fcb65236d945`
+The representation may be chosen for Lean convenience, but it must faithfully encode connected runs of consecutive active internal edges. Do not alter the established mathematics.
 
-but remained CI-failing and has been closed unmerged because `main` advanced through PR #22.
+After that classification is kernel-verified, complete any remaining R4-1 bridge needed to connect the topology representation to the genuine rotated `OddCycle.parityWord` and the inherited cyclic adjacent-transposition formulation. Then translate the already-established RL238 topology eliminations in their existing order.
 
-Its substantive Lean development introduces a telescoping potential for the pair of genuine `halfStep` orbits and proves:
+## Established proof order after R4-1
 
-- each natural-indexed weighted local forcing is one adjacent potential difference;
-- the full chronological range telescopes;
-- an in-range natural representative agrees with the corresponding cyclic `radiusWeightedDifferenceTerm`.
+Use the research repository only to recover the exact already-proved statements and derivations. Continue in this order unless the blueprint itself requires a smaller prerequisite lemma:
 
-The first CI run failed in the full-period endpoint simplification because one `orbitDifferencePotential ... 0` occurrence remained folded and two `simp` arguments were unused.
+1. connected height-two `(1,2,1)` and connected `[4]` eliminations;
+2. `[3,1]`;
+3. `[2,2]`;
+4. `[2,1,1]`;
+5. `[1,1,1,1]` quotient-cycle reduction and final closure;
+6. assemble the primitive full-denominator transport-Radius-4 local impossibility theorem.
 
-A subsequent repair attempted to isolate the two endpoint potentials explicitly. That second run also reached only those endpoint lemmas and failed because `change` was used to replace the folded `orbitDifferencePotential` targets by expanded formulas that were not definitionally equal. The exact failures were at the intended `j = total` and `j = 0` endpoint lemmas.
+The final local theorem must preserve the exact RL238 hypotheses, including primitivity if it is genuinely required. `OddCycle` does not silently provide minimality or primitivity.
 
-This remains a proof-engineering issue, not evidence of a mathematical counterexample: the local telescoping and indexing mathematics compiled before those endpoint goals.
+## Important scope discipline
 
-Because the branch is stale relative to current `main`, do not reopen or merge PR #21 directly. Freshly transplant only the useful `DifferenceForcingRangeSum.lean` mathematics onto current `main` and repair the endpoint lemmas by explicitly unfolding `orbitDifferencePotential` (or using `simp [orbitDifferencePotential, ...]`) before rewriting periodicity and full-period odd counts. Do not rely on `change` to unfold the potential.
+- Hamming Radius 4 is not RL238 transport Radius 4. Never substitute one for the other without a proved equivalence theorem.
+- The older Hamming/four-boundary arithmetic chain remains support infrastructure only where its hypotheses actually match.
+- The research proof is a blueprint, not an axiom source.
+- A completed local Radius-4 theorem is the endpoint of this repository task unless the user explicitly asks for something further.
+- The old reverse ordinary-cycle PR #6 is separate and is not the current blocker.
 
-## Interpretation of the earlier `nonzero multiple of D` sanity check
+## Open PR state at closeout
 
-The observation that a nonzero multiple of `D` is not automatically contradictory remains only a warning against a shortcut. It does not weaken the promoted proof state.
+- PR #29: merged green; current mathematical checkpoint.
+- PR #28: merged green.
+- PR #27: merged green.
+- PR #26: merged green.
+- PR #6: older draft reverse-bridge line; leave untouched unless separately requested.
 
-The repository already has the stronger exact quotient identity with the literal state difference. The final Radius-4 contradiction must come from the exact four-boundary arithmetic, not from the bare facts `D > 1`, divisibility, and nonzeroness alone.
+## Next-session start
 
-## Minimality / primitivity discipline
-
-`OddCycle` does not assert a minimal represented period. `IsNontrivial`, primitivity, and minimality remain distinct notions.
-
-No promoted theorem in the current Radius-4 chain requires primitivity to show that the Radius-4 shifted state differs from the base state: exact Hamming distance four already implies the rotation differs.
-
-If later arithmetic genuinely needs minimality or primitivity, identify the exact required property and prove it from the intended cycle representation if possible. Otherwise keep it as an explicit hypothesis of a deliberately weaker theorem. Do not introduce it silently.
-
-## Separate problems that remain out of scope for this local attack
-
-The reverse extraction of an arbitrary ordinary positive periodic Collatz point into canonical `OddCycle` data remains separate and is not the present blocker.
-
-Likewise, even a completed local Radius-4 impossibility theorem would not exclude all hypothetical nontrivial Collatz cycles. A separate global encounter theorem would still be needed to show that every such cycle necessarily produces an eligible Radius-4 rotation.
-
-## Recommended next session
-
-1. Verify live `main`, open PRs, CI, and this checkpoint.
-2. Inspect closed experimental PR #21 and its final head `7e505608d3945f50bc5ed001e3b2fcb65236d945`, but do not merge its stale-base history.
-3. Freshly transplant the useful `DifferenceForcingRangeSum.lean` delta onto current `main`.
-4. Repair the endpoint potential lemmas by unfolding `orbitDifferencePotential` explicitly. At `j = total`, reduce the suffix to the empty orbit and use periodicity of both base and shifted states. At `j = 0`, reduce the power of two and use the already-proved shifted full-period odd count `L`.
-5. Derive the full chronological weighted range-sum identity from those two endpoint lemmas and the already-working telescoping theorem.
-6. Run full Lean CI and promote only if green.
-7. Combine the promoted range-sum bridge with the already-promoted four-boundary cyclic-sum theorem to derive an exact four-term formula for the genuine shifted-minus-base numerator difference.
-8. Then attack the actual four-term arithmetic contradiction. If it fails, isolate the precise counterexample or missing condition rather than adding convenient assumptions.
-9. Update `THEOREM_INDEX.md`, `FORMALISATION_ROADMAP.md`, and this checkpoint after the next promoted mathematical result.
-
-## Repository hygiene at closeout
-
-- PR #17: green and merged; clean current-main weighted numerator integration.
-- PR #18: green and merged; clean current-main sparse local forcing integration.
-- PR #19: green and merged; exact weighted difference-forcing composition.
-- PR #20: green and merged; exact four-position weighted boundary support.
-- PR #22: green and merged; full cyclic weighted sum collapses to the four Radius-4 boundaries.
-- PR #21: closed unmerged; useful telescoping/range-sum experiment, but both endpoint-proof attempts failed CI and the branch is stale-base.
-- PR #6: older reverse-bridge development line; not the current local blocker.
+1. Re-read live repository state; do not assume this SHA is still current.
+2. Confirm no newer R4 transport PR has appeared.
+3. Read `Collatz/Radius4TransportTopology.lean` and `Collatz/Radius4TransportHeightTwo.lean`.
+4. Consult only the authoritative RL238 research material needed to recover the exact unit-height run classification conventions.
+5. Formalise the connected-run representation and prove the five exhaustive unit-height partitions of four.
+6. Run full Lean CI and merge only when green.
+7. Update the theorem index, roadmap, RL238 map, and this checkpoint after promotion.

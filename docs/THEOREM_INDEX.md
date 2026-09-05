@@ -1,280 +1,144 @@
 # Theorem index
 
-This file is the human-readable scope register for formal results in the repository. A theorem is listed here only after its statement exists in Lean source. The repository itself and Lean kernel remain authoritative.
+This file is the human-readable scope register for the current formalisation. The Lean source and kernel remain authoritative.
 
 ## Foundations and exact Collatz-cycle model
 
-### Ordinary and one-division maps
+The repository contains the ordinary Collatz map, the one-division `halfStep` map, exact odd-to-odd transitions, `OddCycle`, the genuine denominator-compatible parity word, cyclic rotation, and the full denominator arithmetic needed by the Radius-4 development.
 
-Source: `Collatz/Basic.lean`
+Important existing theorem families include:
 
-The repository defines the ordinary Collatz map `step` and the one-division map `halfStep`, with exact odd/even branch lemmas. `halfStep` is used because one exact odd-to-odd edge of exponent `a` takes exactly `a` such transitions.
+- exact odd-to-odd and `halfStep` realisation in `Collatz/OddCycle.lean`;
+- `cycleDenominator A L = 2^A - 3^L` and the positive denominator identities in `Collatz/Cycle.lean`;
+- `OddCycle.positiveCycleDenominator_of_nontrivial` in `Collatz/NontrivialDenominator.lean`;
+- genuine full-period parity-word arithmetic in `Collatz/CycleWordArithmetic.lean`;
+- `OddCycle.rotate_parityWord_eq_advancedParityWord` in `Collatz/RotationWord.lean`;
+- exact shifted-origin/full-denominator comparison in the rotation arithmetic files.
 
-### `Collatz.OddToOddStep`
+`OddCycle` does not assert a minimal represented period or primitivity.
 
-Source: `Collatz/OddCycle.lean`
+## Earlier Hamming/four-boundary arithmetic infrastructure
 
-Represents one exact positive odd-to-odd Collatz transition
+The repository also kernel-verifies a substantial Radius-4 arithmetic chain under the older Hamming predicate `IsRadiusFour`, including directional mismatch balance, four genuine mismatch boundaries, weighted local difference forcing, chronological/cyclic weighted-sum identities, and an exact four-term representation of the genuine shifted-minus-base numerator difference.
 
-`3*x + 1 = 2^a * y`
+Key theorem:
 
-with positive odd source and target and positive exponent. Lean proves that the ordinary map and `halfStep` realise this transition exactly and that intermediate ordinary post-odd states are even until the stated odd target is reached.
+- `OddCycle.radiusFour_shifted_wordNumerator_difference_eq_four_terms`.
 
-### `Collatz.OddCycle`
+This mathematics remains valid but its Radius-4 hypothesis is Hamming distance. It is support infrastructure only and must not be identified with the RL238 adjacent-transposition transport theorem.
 
-Source: `Collatz/OddCycle.lean`
+## RL238 transport-radius model
 
-A cyclic family of positive odd nodes and positive exponents satisfying the exact odd-to-odd equations. Radius-4 assumptions are not built into this structure.
+Source: `Collatz/Radius4Transport.lean`.
 
-Important proved consequences include:
+### Definitions
 
-- `edge_reaches_next`;
-- `edge_halfStep_reaches_next`;
-- `prefixExponent_ge`;
-- `length_le_totalExponent`;
-- `totalExponent_pos`;
-- `composed_identity`;
-- `full_cycle_identity`;
-- `node_zero_periodic`;
-- `node_zero_halfStep_periodic`.
+- `transportBitValue`
+- `transportIncrement`
+- `transportPrefixFlow`
+- `transportCostAtCut`
+- `IsExactTransportRadius`
+- `IsTransportRadiusFour`
+- `OddCycle.IsCycleTransportRadiusFour`
 
-The represented period is not asserted to be minimal.
+The cut flow is
 
-## Exact denominator arithmetic
+`G_k = (# target ones in the first k positions) - (# source ones in the first k positions)`
 
-### `Collatz.cycleDenominator`
+and the charged cost is
 
-Source: `Collatz/Cycle.lean`
+`sum_{k=1}^{n-1} |G_k|`.
 
-Definition:
+Exact transport radius is represented as the minimum of this cost over cyclic cuts for equal-weight words.
 
-`cycleDenominator A L = 2^A - 3^L`.
+### Local increment and endpoint theorems
 
-### `Collatz.OddCycle.denominator_mul_base_eq_numerator`
+Promoted theorems include:
 
-Source: `Collatz/Cycle.lean`
+- `transportIncrement_eq_neg_one_or_zero_or_one`;
+- `transportPrefixFlow_succ`;
+- `transportPrefixFlow_step_natAbs_le_one`;
+- `transportPrefixFlow_full_eq_ones_sub_ones`;
+- `transportPrefixFlow_full_eq_zero_of_ones_eq`;
+- `transportPrefixFlow_full_rotate_eq_zero`;
+- `transportRadiusFour_exists_minimizing_cut`;
+- `transportRadiusFour_cost_ge_four`.
 
-Derived from the composed cycle equations:
+Thus the formal prefix flow is one-Lipschitz and has the correct zero endpoint for equal-weight words and genuine self-rotations.
 
-`(2^A - 3^L) * x₀ = prefixNumerator L`.
+## Cost-four active-support decomposition
 
-### `Collatz.OddCycle.cycleDenominator_pos`
+Source: `Collatz/Radius4TransportTopology.lean`.
 
-Source: `Collatz/Cycle.lean`
+Definitions and theorems:
 
-Proves `2^A - 3^L > 0` for every positive odd cycle.
+- `transportFlowMagnitude`;
+- `transportActiveEdgeOffsets`;
+- `transportCostAtCut_eq_sum_magnitudes`;
+- `transportCostAtCut_eq_sum_active_magnitudes`;
+- `transportCostAtCut_eq_active_card_of_unit`;
+- `transportActiveEdgeOffsets_card_eq_four_of_cost_four_of_unit`.
 
-### `Collatz.OddCycle.positiveCycleDenominator_of_nontrivial`
+Consequences:
 
-Source: `Collatz/NontrivialDenominator.lean`
+- zero-flow internal edges may be discarded without changing cost;
+- in the unit-height branch of a cost-four cut, exactly four internal edges are active.
 
-Uses the theorem that denominator one forces `A = 2`, `L = 1`, and the trivial odd node `1`. Consequently every `OddCycle.IsNontrivial` satisfies
+## Rigid height-two topology
 
-`1 < 2^A - 3^L`.
+Source: `Collatz/Radius4TransportHeightTwo.lean`.
 
-This strict denominator fact is derived, not assumed.
+Promoted theorems include:
 
-## Genuine parity-word arithmetic
+- `transportFlowMagnitude_succ_le_add_one`;
+- `transportFlowMagnitude_le_succ_add_one`;
+- `transportFlowMagnitude_one_le_one`;
+- `transportFlowMagnitude_last_le_one_of_ones_eq`;
+- `transportMagnitudeSum_le_cost_of_subset`;
+- `transportFlowMagnitude_le_two_of_cost_four`;
+- `exists_transportFlowMagnitude_eq_two_of_cost_four_of_not_unit`;
+- `transportHeightTwo_rigid_of_cost_four`;
+- `exists_transportHeightTwo_pattern_of_cost_four_of_not_unit`.
 
-### `Collatz.wordNumerator`
+The final theorem proves the complete non-unit equal-weight cost-four branch has exactly the RL238 height profile
 
-Source: `Collatz/WordArithmetic.lean`
+`(1,2,1)`.
 
-The exact inhomogeneous numerator produced by composing a finite parity word. Its recursive form retains powers of three determined by later odd bits.
+A height-two edge is strictly internal, its adjacent internal heights are both one, and those three displayed edges exhaust the full cost, excluding any additional positive-height edge.
 
-### `Collatz.realizes_composed_identity`
+## Current R4-1 status
 
-Source: `Collatz/WordArithmetic.lean`
+R4-1 is **partially formalised and green**.
 
-For any realised finite Boolean parity word:
+Already classified:
 
-`2^(length bits) * y = 3^(listOnes bits) * x + wordNumerator bits`.
+- non-unit branch: exactly `(1,2,1)`;
+- unit-height branch: exactly four active internal height-one edges.
 
-### `Collatz.orbitBits_realizes`
+Still missing:
 
-Source: `Collatz/WordArithmetic.lean`
+- formal connected-run decomposition of those four unit-height active edges;
+- proof that the run-length multiset/list is exactly one of
+  `[4]`, `[3,1]`, `[2,2]`, `[2,1,1]`, `[1,1,1,1]`;
+- any remaining bridge from that representation to the genuine rotated `OddCycle.parityWord` and the inherited adjacent-transposition statement required by RL238.
 
-The actual `halfStep` orbit realises its chronological parity list.
-
-### `Collatz.OddCycle.orbitBits_total_ones`
-
-Source: `Collatz/CycleWordArithmetic.lean`
-
-For one full denominator-compatible cycle period of length `A`, the genuine parity list contains exactly `L` odd bits.
-
-### `Collatz.OddCycle.wordDenominator_eq_cycleDenominator`
-
-Source: `Collatz/CycleWordArithmetic.lean`
-
-The denominator computed from the genuine full-period parity word equals the independently derived cycle denominator `2^A - 3^L`.
-
-### `Collatz.OddCycle.cycleDenominator_mul_base_eq_wordNumerator`
-
-Source: `Collatz/CycleWordArithmetic.lean`
-
-Proves
-
-`(2^A - 3^L) * x₀ = wordNumerator (orbitBits x₀ A)`.
-
-### `Collatz.OddCycle.fullDenominatorDivides_wordNumerator`
-
-Source: `Collatz/CycleWordArithmetic.lean`
-
-The complete denominator divides the genuine parity-word numerator.
-
-### `Collatz.OddCycle.wordNumerator_eq_prefixNumerator`
-
-Source: `Collatz/CycleWordArithmetic.lean`
-
-The parity-word numerator equals the independently composed odd-to-odd numerator.
-
-## Genuine Radius-4 encoding and rotation
-
-### `Collatz.OddCycle.parityWord`
-
-Source: `Collatz/Encoding.lean`
-
-A cyclic word of length `A` defined directly from the actual periodic `halfStep` orbit.
-
-### `Collatz.OddCycle.rotate_parityWord_eq_advancedParityWord`
-
-Source: `Collatz/RotationWord.lean`
-
-Proves that cyclic rotation of the genuine parity word is exactly the parity word obtained by advancing the same periodic `halfStep` orbit.
-
-### Shifted-origin denominator theorems
-
-Source: `Collatz/RotationArithmetic.lean`
-
-The repository proves that every shifted full-period orbit has the same `L` odd bits and the same complete denominator `2^A - 3^L`, and derives the exact full-denominator identity for every advanced starting state.
-
-## Exact shifted-minus-base numerator comparison
-
-### `Collatz.OddCycle.cycleDenominator_mul_shiftedState_sub_base_eq_wordNumerator_difference`
-
-Source: `Collatz/RotationNumeratorComparison.lean`
-
-For a genuine cyclic shift:
-
-`D * (advancedState - baseState) = shiftedNumerator - baseNumerator`.
-
-The numerator difference is the actual difference of the two genuine full-period `wordNumerator`s.
-
-### Radius-4 nonzero consequence
-
-Source: `Collatz/Radius4CycleConsequences.lean`
-
-Exact Hamming distance four implies that the rotated genuine parity word differs from the base word. Using the rotation/advance bridge, Lean proves that the advanced `halfStep` state differs from the base state. Therefore the exact numerator difference above is nonzero.
-
-This conclusion does not require a primitivity or minimality assumption.
-
-## Radius-4 directional and boundary structure
-
-### Directional balance
-
-Sources: `Collatz/Radius4Structure.lean`, `Collatz/Radius4BoundaryPositions.lean`
-
-Exact Radius 4 between a word and its rotation gives exactly two `true -> false` and two `false -> true` mismatches.
-
-### Genuine Collatz boundary extraction
-
-Source: `Collatz/Radius4CycleBoundaries.lean`
-
-For the actual `OddCycle.parityWord`, Lean extracts four genuine cyclic orbit positions: two down-boundaries and two up-boundaries, all distinct in the required cross-directions.
-
-## Weighted numerator expansion
-
-### Weighted true-bit form of `wordNumerator`
-
-Source: `Collatz/WordNumeratorWeights.lean`
-
-Lean expands the finite-word numerator as weighted contributions of true bits. Each contribution has the form
-
-`2^position * 3^(number of later true bits)`.
-
-This theorem is essential because changing four parity bits can change the powers of three attached to common odd bits between mismatch boundaries.
-
-## Sparse local difference forcing
-
-### `Collatz.affineDifferenceOffset`
-
-Source: `Collatz/Radius4SparseDifference.lean`
-
-The inhomogeneous term obtained by subtracting two one-step affine Collatz recurrences.
-
-Lean proves:
-
-- equal parity bits give zero forcing;
-- `true -> false` gives `-(2*x+1)`;
-- `false -> true` gives `+(2*x+1)`;
-- the forcing is nonzero exactly when the parity bits differ.
-
-### `Collatz.OddCycle.radiusFour_sparse_difference_offsets`
-
-Source: `Collatz/Radius4SparseDifference.lean`
-
-Under exact Radius 4, the actual shifted/base orbit difference forcing is nonzero at exactly four genuine cyclic positions. The two down-boundaries have exact negative odd forcing and the two up-boundaries exact positive odd forcing.
-
-## Exact weighted forcing composition
-
-### Difference-forcing composition
-
-Source: `Collatz/DifferenceForcingComposition.lean`
-
-The repository proves the finite-orbit composition of the local state-difference recurrence. Each local forcing receives the exact chronological power of two and the exact shifted suffix odd-count power of three.
-
-Consequently the actual shifted-minus-base `wordNumerator` difference is exactly the weighted composition of local forcing terms. Common odd bits between Radius-4 boundaries are therefore retained correctly rather than treated as unchanged-weight cancellations.
-
-## Exact weighted Radius-4 support
-
-### `Collatz.OddCycle.radiusDifferenceWeight`
-
-Source: `Collatz/Radius4WeightedBoundarySupport.lean`
-
-The exact positive weight attached to a cyclic local forcing:
-
-`2^position * 3^(shifted suffix odd-count)`.
-
-### `Collatz.OddCycle.radiusWeightedDifferenceTerm_ne_zero_iff`
-
-Source: `Collatz/Radius4WeightedBoundarySupport.lean`
-
-Weighting neither creates nor removes support: the weighted local term is nonzero exactly when the underlying local forcing is nonzero.
-
-### `Collatz.OddCycle.radiusFour_weighted_difference_support`
-
-Source: `Collatz/Radius4WeightedBoundarySupport.lean`
-
-Under exact Radius 4 there are exactly four nonzero weighted cyclic terms. Their values are the exact positional/suffix weights multiplied by the two negative and two positive genuine Collatz odd forcings.
-
-## Four-boundary cyclic sum collapse
-
-Source: `Collatz/Radius4FourTermSum.lean`
-
-The promoted Radius-4 finite-support theorem sums the cyclic weighted local terms over the whole encoding period and collapses the sum exactly to the four genuine mismatch boundaries.
-
-The resulting expression is an exact four-term signed arithmetic object: two positive weighted odd forcings and two negative weighted odd forcings. No convenient ordering, smallness, indivisibility, primitivity, or minimality assumption is inserted.
-
-## Current unpromoted range-sum bridge
-
-Experimental development: PR #21, `DifferenceForcingRangeSum.lean`.
-
-It introduces a telescoping potential for the pair of genuine `halfStep` orbits and proves the local telescoping identity and finite-range telescoping lemma. It also identifies an in-range natural index with the corresponding cyclic weighted term.
-
-Its CI failed only in the final endpoint normalization needed to derive the full-period range-sum identity. The experimental branch is not authoritative and must be freshly transplanted onto current `main` before any promotion.
+Only after R4-1 is complete should the established RL238 topology eliminations be translated.
 
 ## Radius-4 local impossibility theorem
 
-Status: **not proved**.
+Status: **not yet kernel-verified in this repository**.
 
-The next exact bridge is to identify the complete chronological weighted forcing range sum with the promoted cyclic weighted-term sum. Once that is green, the genuine shifted-minus-base numerator difference can be rewritten in the promoted four-boundary form.
+The mathematics is already established in the research repository. The remaining task here is faithful reconstruction and formal verification, not discovery.
 
-The remaining mathematical question is then whether this exact four-term identity, together with the already-proved nonzero state-difference quotient and `D > 1` for a nontrivial cycle, yields the desired contradiction.
+After R4-1, translate the established elimination chain in this order:
 
-If not, the precise missing condition or counterexample must be isolated rather than added as an assumption by convenience.
+1. `(1,2,1)` and connected `[4]`;
+2. `[3,1]`;
+3. `[2,2]`;
+4. `[2,1,1]`;
+5. `[1,1,1,1]` and the final quotient-cycle closure;
+6. assemble the primitive full-denominator transport-Radius-4 local theorem.
 
-## Scope limitations
+## Scope limitation
 
-The reverse extraction from an arbitrary ordinary positive periodic Collatz point into canonical `OddCycle` data is still separate from this local theorem.
-
-Even a completed local Radius-4 impossibility theorem would not by itself rule out every hypothetical nontrivial Collatz cycle. A separate global encounter theorem would be needed to prove that every such cycle necessarily has an eligible Radius-4 rotation.
+Do not treat the local theorem as a global non-trivial-cycle exclusion theorem. No Radius 5, Gate A, Gate B, or global encounter work is part of the present repository objective unless explicitly requested later.

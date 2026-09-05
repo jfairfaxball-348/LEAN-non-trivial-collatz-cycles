@@ -32,9 +32,9 @@ theorem transportIncrement_eq_neg_one_or_zero_or_one {n : ℕ} [NeZero n]
       transportIncrement source target cut j = 0 ∨
       transportIncrement source target cut j = 1 := by
   unfold transportIncrement
-  cases hs : source (cut + (j : ZMod n)) <;>
-    cases ht : target (cut + (j : ZMod n)) <;>
-      simp [hs, ht, transportBitValue]
+  by_cases hs : source (cut + (j : ZMod n)) = true <;>
+    by_cases ht : target (cut + (j : ZMod n)) = true <;>
+      simp [transportBitValue, hs, ht]
 
 /-- Prefix transport flow after `k` positions from a chosen cyclic cut.
 
@@ -60,7 +60,7 @@ theorem transportPrefixFlow_succ {n : ℕ} [NeZero n]
     transportPrefixFlow source target cut (k + 1) =
       transportPrefixFlow source target cut k +
         transportIncrement source target cut k := by
-  simp [transportPrefixFlow, Finset.sum_range_succ]
+  simp [transportPrefixFlow]
 
 /-- Consecutive prefix-flow values differ by at most one in absolute value. -/
 theorem transportPrefixFlow_step_natAbs_le_one {n : ℕ} [NeZero n]

@@ -156,4 +156,90 @@ theorem exists_transportFlowMagnitude_eq_two_of_cost_four_of_not_unit
   refine ⟨j, hj, ?_⟩
   omega
 
+/-- A height-two internal edge at an equal-weight cost-four cut is rigid: it is
+strictly internal, both neighbouring internal edges have height one, and these
+three edges consume the entire transport budget. This is exactly the
+`(1,2,1)` height profile certified in RL238. -/
+theorem transportHeightTwo_rigid_of_cost_four {n : ℕ} [NeZero n]
+    {source target : CyclicWord n} (hones : ones source = ones target)
+    (cut : ZMod n) (hcost : transportCostAtCut source target cut = 4)
+    {k : ℕ} (hkpos : 0 < k) (hklt : k < n)
+    (hk : transportFlowMagnitude source target cut k = 2) :
+    1 < k ∧ k + 1 < n ∧
+      transportFlowMagnitude source target cut (k - 1) = 1 ∧
+      transportFlowMagnitude source target cut (k + 1) = 1 ∧
+      transportCostAtCut source target cut =
+        transportFlowMagnitude source target cut (k - 1) +
+          transportFlowMagnitude source target cut k +
+          transportFlowMagnitude source target cut (k + 1) := by
+  have hfirst := transportFlowMagnitude_one_le_one source target cut
+  have hkgt : 1 < k := by
+    by_contra h
+    have hkone : k = 1 := by omega
+    rw [hkone] at hk
+    omega
+  have hlast := transportFlowMagnitude_last_le_one_of_ones_eq hones cut
+  have hknotlast : k ≠ n - 1 := by
+    intro hklast
+    rw [hklast] at hk
+    omega
+  have hksucc : k + 1 < n := by omega
+  have hleftRaw :=
+    transportFlowMagnitude_succ_le_add_one source target cut (k - 1)
+  have hkleft : k - 1 + 1 = k := by omega
+  rw [hkleft] at hleftRaw
+  have hleftPos :
+      1 ≤ transportFlowMagnitude source target cut (k - 1) := by omega
+  have hrightRaw :=
+    transportFlowMagnitude_le_succ_add_one source target cut k
+  have hrightPos :
+      1 ≤ transportFlowMagnitude source target cut (k + 1) := by omega
+  let s : Finset ℕ := {k - 2, k - 1, k}
+  have hsub : s ⊆ Finset.range (n - 1) := by
+    intro j hj
+    simp [s] at hj
+    simp only [Finset.mem_range]
+    rcases hj with rfl | rfl | rfl <;> omega
+  have hsum := transportMagnitudeSum_le_cost_of_subset source target cut s hsub
+  have hk0 : k - 2 + 1 = k - 1 := by omega
+  have hk1 : k - 1 + 1 = k := by omega
+  have h01 : k - 2 ≠ k - 1 := by omega
+  have h02 : k - 2 ≠ k := by omega
+  have h12 : k - 1 ≠ k := by omega
+  simp [s, hk0, hk1, h01, h02, h12, hcost] at hsum
+  have hleft : transportFlowMagnitude source target cut (k - 1) = 1 := by
+    omega
+  have hright : transportFlowMagnitude source target cut (k + 1) = 1 := by
+    omega
+  refine ⟨hkgt, hksucc, hleft, hright, ?_⟩
+  rw [hcost, hleft, hk, hright]
+
+/-- The complete non-unit branch of an equal-weight cost-four cut has the
+unique RL238 height-two profile `(1,2,1)`. The final equality records that the
+three displayed edges exhaust the full cost, so no additional positive-height
+edge can occur outside the displayed excursion. -/
+theorem exists_transportHeightTwo_pattern_of_cost_four_of_not_unit
+    {n : ℕ} [NeZero n] {source target : CyclicWord n}
+    (hones : ones source = ones target) (cut : ZMod n)
+    (hcost : transportCostAtCut source target cut = 4)
+    (hnotunit : ¬ ∀ j ∈ Finset.range (n - 1),
+      transportFlowMagnitude source target cut (j + 1) ≤ 1) :
+    ∃ k : ℕ, 1 < k ∧ k + 1 < n ∧
+      transportFlowMagnitude source target cut (k - 1) = 1 ∧
+      transportFlowMagnitude source target cut k = 2 ∧
+      transportFlowMagnitude source target cut (k + 1) = 1 ∧
+      transportCostAtCut source target cut =
+        transportFlowMagnitude source target cut (k - 1) +
+          transportFlowMagnitude source target cut k +
+          transportFlowMagnitude source target cut (k + 1) := by
+  obtain ⟨j, hj, hjtwo⟩ :=
+    exists_transportFlowMagnitude_eq_two_of_cost_four_of_not_unit
+      hones cut hcost hnotunit
+  have hjlt : j < n - 1 := Finset.mem_range.mp hj
+  have hkpos : 0 < j + 1 := by omega
+  have hklt : j + 1 < n := by omega
+  rcases transportHeightTwo_rigid_of_cost_four hones cut hcost hkpos hklt hjtwo with
+    ⟨hkgt, hksucc, hleft, hright, hspent⟩
+  exact ⟨j + 1, hkgt, hksucc, hleft, hjtwo, hright, hspent⟩
+
 end Collatz

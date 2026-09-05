@@ -32,6 +32,33 @@ theorem iterate_periodic_after_shift {α : Type*} (f : α → α) (x : α)
       rw [Function.iterate_add_apply]
     _ = (f^[shift]) x := by rw [hperiod]
 
+/-- A periodic point returns after every natural multiple of its period. -/
+theorem iterate_periodic_mul {α : Type*} (f : α → α) (x : α)
+    {period : ℕ} (hperiod : (f^[period]) x = x) (m : ℕ) :
+    (f^[m * period]) x = x := by
+  induction m with
+  | zero => simp
+  | succ m ih =>
+      rw [Nat.succ_mul, Function.iterate_add_apply, hperiod, ih]
+
+/-- At a positive periodic point, iteration count may be reduced modulo the
+period. This is the generic arithmetic fact needed to interpret `ZMod period`
+indices as actual orbit positions. -/
+theorem iterate_mod_period {α : Type*} (f : α → α) (x : α)
+    {period : ℕ} (hperiod_pos : 0 < period)
+    (hperiod : (f^[period]) x = x) (k : ℕ) :
+    (f^[k % period]) x = (f^[k]) x := by
+  have hdecomp := Nat.mod_add_div k period
+  calc
+    (f^[k % period]) x =
+        (f^[k % period]) ((f^[(k / period) * period]) x) := by
+      rw [iterate_periodic_mul f x hperiod (k / period)]
+    _ = (f^[k % period + (k / period) * period]) x := by
+      rw [Function.iterate_add_apply]
+    _ = (f^[k % period + period * (k / period)]) x := by
+      rw [Nat.mul_comm]
+    _ = (f^[k]) x := by rw [hdecomp]
+
 /-- If `shift ≤ period`, advancing by `shift` and then by the remaining
 `period-shift` iterations reaches the original periodic point. -/
 theorem iterate_remaining_after_shift {α : Type*} (f : α → α) (x : α)
@@ -49,6 +76,23 @@ theorem iterate_remaining_after_shift {α : Type*} (f : α → α) (x : α)
 namespace OddCycle
 
 variable {L : ℕ} [NeZero L]
+
+/-- The genuine cyclic Collatz parity word uses exactly the same Boolean bit as
+the finite chronological word arithmetic. -/
+theorem parityWord_eq_stateBit (c : OddCycle L)
+    (t : ZMod c.encodingPeriod) :
+    c.parityWord t =
+      stateBit ((halfStep^[t.val]) (c.node 0)) := by
+  let y := (halfStep^[t.val]) (c.node 0)
+  cases hp : c.parityWord t <;> cases hs : stateBit y
+  · rfl
+  · have hy : Odd y := (stateBit_eq_true_iff y).1 hs
+    have htrue : c.parityWord t = true := (c.parityWord_eq_true_iff t).2 hy
+    simp [hp] at htrue
+  · have hy : Odd y := (c.parityWord_eq_true_iff t).1 hp
+    have htrue : stateBit y = true := (stateBit_eq_true_iff y).2 hy
+    simp [hs] at htrue
+  · rfl
 
 /-- Every advanced state of the denominator-compatible cycle is again
 `A`-periodic under `halfStep`. This is the dynamical half of the rotation

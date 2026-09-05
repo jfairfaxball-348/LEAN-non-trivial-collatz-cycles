@@ -24,6 +24,18 @@ def transportIncrement {n : ℕ} [NeZero n]
   transportBitValue (target (cut + (j : ZMod n))) -
     transportBitValue (source (cut + (j : ZMod n)))
 
+/-- A binary transport increment is always `-1`, `0`, or `1`.  This is the
+local one-Lipschitz input used by the Radius-4 flow-topology classification. -/
+theorem transportIncrement_eq_neg_one_or_zero_or_one {n : ℕ} [NeZero n]
+    (source target : CyclicWord n) (cut : ZMod n) (j : ℕ) :
+    transportIncrement source target cut j = -1 ∨
+      transportIncrement source target cut j = 0 ∨
+      transportIncrement source target cut j = 1 := by
+  unfold transportIncrement
+  cases hs : source (cut + (j : ZMod n)) <;>
+    cases ht : target (cut + (j : ZMod n)) <;>
+      simp [hs, ht, transportBitValue]
+
 /-- Prefix transport flow after `k` positions from a chosen cyclic cut.
 
 For equal-weight words this is the standard one-dimensional transport flow
@@ -49,6 +61,17 @@ theorem transportPrefixFlow_succ {n : ℕ} [NeZero n]
       transportPrefixFlow source target cut k +
         transportIncrement source target cut k := by
   simp [transportPrefixFlow, Finset.sum_range_succ]
+
+/-- Consecutive prefix-flow values differ by at most one in absolute value. -/
+theorem transportPrefixFlow_step_natAbs_le_one {n : ℕ} [NeZero n]
+    (source target : CyclicWord n) (cut : ZMod n) (k : ℕ) :
+    Int.natAbs
+        (transportPrefixFlow source target cut (k + 1) -
+          transportPrefixFlow source target cut k) ≤ 1 := by
+  rw [transportPrefixFlow_succ]
+  simp only [add_sub_cancel_left]
+  rcases transportIncrement_eq_neg_one_or_zero_or_one source target cut k with
+    h | h | h <;> rw [h] <;> norm_num
 
 /-- Linear adjacent-transposition transport cost after cutting the cyclic word
 at `cut`.  The internal flow edges are `G_1, ..., G_{n-1}`; `G_0` and `G_n`

@@ -56,22 +56,42 @@ words.  The exhaustive flow topologies are:
 5. `[2,1,1]`;
 6. `[1,1,1,1]`.
 
-`Collatz/Radius4Transport.lean` begins this reconstruction with separate
+`Collatz/Radius4Transport.lean` reconstructs this layer with separate
 transport-flow names.  No equivalence with Hamming distance is assumed.
 
-## Lean-only bridge work required for R4-1
+## R4-1 bridge status
 
-The transport layer must prove, rather than assume:
+Already proved on `main` before the present transport layer:
 
-- binary local increments are in `{-1,0,1}` and hence prefix flow is
-  one-Lipschitz;
-- full-prefix flow vanishes for equal-weight words;
-- cyclic rotation preserves word weight;
-- the minimum-over-cuts prefix-flow formulation matches the cyclic
-  adjacent-transposition metric used by the theorem;
-- an exact cost-four minimizing cut yields exactly one of the six certified
-  topology families;
-- each topology representation is connected back to the rotated genuine
+- cyclic rotation preserves word weight: `ones_rotate`.
+
+Proved by the transport reconstruction through PR #26:
+
+- binary local increments are in `{-1,0,1}`:
+  `transportIncrement_eq_neg_one_or_zero_or_one`;
+- prefix flow is one-Lipschitz:
+  `transportPrefixFlow_step_natAbs_le_one`;
+- exact Radius 4 is represented as a minimum-over-cuts prefix-flow cost:
+  `IsExactTransportRadius` and `IsTransportRadiusFour`;
+- the genuine parity-word wrapper is
+  `OddCycle.IsCycleTransportRadiusFour`.
+
+The current endpoint bridge proves the next required transport fact:
+
+- a full prefix has value `ones target - ones source`:
+  `transportPrefixFlow_full_eq_ones_sub_ones`;
+- therefore equal-weight words satisfy `G_n = 0` at every cut:
+  `transportPrefixFlow_full_eq_zero_of_ones_eq`;
+- in particular every self-rotation satisfies the endpoint condition:
+  `transportPrefixFlow_full_rotate_eq_zero`.
+
+After this endpoint bridge is promoted, the first missing R4-1 propositions are:
+
+- formal equivalence between the minimum-over-cuts prefix-flow formulation and
+  the cyclic adjacent-transposition metric used by RL238;
+- exhaustive classification of an exact cost-four minimizing flow into the six
+  certified topology families;
+- connection of each topology representation back to the rotated genuine
   `OddCycle.parityWord`.
 
 Only after those bridges are proved may the established RL238 covariance and

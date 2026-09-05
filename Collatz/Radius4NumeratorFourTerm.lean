@@ -12,9 +12,11 @@ theorem zmod_sum_eq_sum_range {n : ℕ} [NeZero n] {α : Type*}
     (∑ i : ZMod n, f i) =
       (Finset.range n).sum (fun j => f (j : ZMod n)) := by
   rw [← Fin.sum_univ_eq_sum_range]
-  cases n
-  · exact (neZero_zero_iff_false.mp ‹_›).elim
-  · simp [ZMod]
+  cases n with
+  | zero =>
+      exact (neZero_zero_iff_false.mp ‹_›).elim
+  | succ n =>
+      exact Fintype.sum_equiv (ZMod.finEquiv (n + 1)).symm.toEquiv _ _ (fun _ => rfl)
 
 namespace OddCycle
 

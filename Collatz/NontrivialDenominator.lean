@@ -8,12 +8,7 @@ theorem three_pow_mod_eight (n : ℕ) :
   induction n with
   | zero => simp
   | succ n ih =>
-      rw [pow_succ, Nat.mul_mod]
-      rcases ih with h | h
-      · right
-        rw [h]
-      · left
-        rw [h]
+      rcases ih with h | h <;> simp [pow_succ, Nat.mul_mod, h]
 
 namespace OddCycle
 
@@ -70,9 +65,11 @@ theorem denominator_eq_one_forces_trivial (c : OddCycle L)
   have hexp : c.exponent 0 = 2 := by
     simpa [totalExponent, prefixExponent] using hA
   have hstep := c.step_eq (0 : ZMod 1)
+  have hnode : c.node ((0 : ZMod 1) + 1) = c.node 0 := by
+    apply congrArg c.node
+    exact Subsingleton.elim _ _
+  rw [hexp, hnode] at hstep
   have hx : c.node 0 = 1 := by
-    have hidx : (0 : ZMod 1) + 1 = 0 := Subsingleton.elim _ _
-    rw [hidx, hexp] at hstep
     norm_num at hstep
     omega
   intro hnontrivial

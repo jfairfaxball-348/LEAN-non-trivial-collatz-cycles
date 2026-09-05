@@ -7,18 +7,12 @@ The period is required to be nonzero, but not minimal. -/
 def IsPositivePeriodicPoint (n period : ℕ) : Prop :=
   0 < n ∧ 0 < period ∧ (step^[period]) n = n
 
-/-- For an odd natural number, the unaccelerated Collatz map takes the
-`3 * n + 1` branch. -/
-theorem step_of_odd {n : ℕ} (hn : Odd n) : step n = 3 * n + 1 := by
-  rcases hn with ⟨k, rfl⟩
-  simp [step]
+/-- A positive periodic point of the one-division map `halfStep`.
+The period is required to be nonzero, but not minimal. -/
+def IsPositiveHalfPeriodicPoint (n period : ℕ) : Prop :=
+  0 < n ∧ 0 < period ∧ (halfStep^[period]) n = n
 
-/-- One Collatz step halves an explicitly even number `2 * n`. -/
-@[simp]
-theorem step_two_mul (n : ℕ) : step (2 * n) = n := by
-  simp [step]
-
-/-- Repeated Collatz steps remove an explicitly supplied power of two. -/
+/-- Repeated ordinary Collatz steps remove an explicitly supplied power of two. -/
 theorem iterate_step_pow_two_mul (a y : ℕ) :
     (step^[a]) (2 ^ a * y) = y := by
   induction a with
@@ -28,6 +22,18 @@ theorem iterate_step_pow_two_mul (a y : ℕ) :
       rw [pow_succ]
       have hrewrite : 2 ^ a * 2 * y = 2 * (2 ^ a * y) := by ring
       rw [hrewrite, step_two_mul]
+      exact ih
+
+/-- Repeated `halfStep` transitions remove an explicitly supplied power of two. -/
+theorem iterate_halfStep_pow_two_mul (a y : ℕ) :
+    (halfStep^[a]) (2 ^ a * y) = y := by
+  induction a with
+  | zero => simp
+  | succ a ih =>
+      rw [Function.iterate_succ_apply]
+      rw [pow_succ]
+      have hrewrite : 2 ^ a * 2 * y = 2 * (2 ^ a * y) := by ring
+      rw [hrewrite, halfStep_two_mul]
       exact ih
 
 /-- Arithmetic data for one exact odd-to-odd Collatz transition.
@@ -61,8 +67,25 @@ theorem reaches_target (h : OddToOddStep x y a) :
   rw [h.first_step_eq]
   exact iterate_step_pow_two_mul a y
 
-/-- After the initial odd step and any `b ≤ a` halving steps, the remaining
-state is exactly `2^(a-b) * y`. -/
+/-- The same odd-to-odd relation takes exactly `a` iterations of `halfStep`.
+This is why the natural denominator-compatible cyclic length is `A`, not
+`A + L`. -/
+theorem halfStep_reaches_target (h : OddToOddStep x y a) :
+    (halfStep^[a]) x = y := by
+  obtain ⟨b, rfl⟩ := Nat.exists_eq_succ_of_ne_zero (Nat.ne_of_gt h.exponent_pos)
+  rw [Function.iterate_succ_apply]
+  have hfirst : halfStep x = 2 ^ b * y := by
+    rw [halfStep_of_odd h.source_odd]
+    have hfactor : 2 ^ (b + 1) * y = 2 * (2 ^ b * y) := by
+      rw [pow_succ]
+      ring
+    rw [h.equation, hfactor]
+    simp
+  rw [hfirst]
+  exact iterate_halfStep_pow_two_mul b y
+
+/-- After the initial odd ordinary step and any `b ≤ a` halving steps, the
+remaining state is exactly `2^(a-b) * y`. -/
 theorem reaches_after_halvings (h : OddToOddStep x y a) {b : ℕ} (hb : b ≤ a) :
     (step^[b + 1]) x = 2 ^ (a - b) * y := by
   rw [Function.iterate_succ_apply]
@@ -84,8 +107,9 @@ theorem intermediate_even (h : OddToOddStep x y a) {b : ℕ} (hb : b < a) :
   refine ⟨2 ^ d * y, ?_⟩
   ring
 
-/-- Operational exactness of the two-adic exponent: every earlier post-odd
-state is even, while the state after exactly `a` halvings is the odd target. -/
+/-- Operational exactness of the two-adic exponent for the ordinary map: every
+earlier post-odd state is even, while the state after exactly `a` halvings is
+the odd target. -/
 theorem exact_removal (h : OddToOddStep x y a) :
     (∀ b : ℕ, b < a → Even ((step^[b + 1]) x)) ∧
       Odd ((step^[a + 1]) x) := by
@@ -132,8 +156,15 @@ theorem edge_reaches_next (c : OddCycle L) (i : ZMod L) :
     (step^[c.exponent i + 1]) (c.node i) = c.node (i + 1) :=
   (c.edge i).reaches_target
 
-/-- Every edge exponent in an `OddCycle` is exact in the operational sense:
-all earlier post-odd states are even and the stated endpoint is odd. -/
+/-- Every edge is also realised by exactly `exponent i` iterations of the
+one-division map `halfStep`. -/
+theorem edge_halfStep_reaches_next (c : OddCycle L) (i : ZMod L) :
+    (halfStep^[c.exponent i]) (c.node i) = c.node (i + 1) :=
+  (c.edge i).halfStep_reaches_target
+
+/-- Every edge exponent in an `OddCycle` is exact in the operational ordinary
+Collatz sense: all earlier post-odd states are even and the stated endpoint is
+odd. -/
 theorem edge_exact_removal (c : OddCycle L) (i : ZMod L) :
     (∀ b : ℕ, b < c.exponent i →
       Even ((step^[b + 1]) (c.node i))) ∧
@@ -196,6 +227,11 @@ def totalExponent (c : OddCycle L) : ℕ := c.prefixExponent L
 /-- The total exponent is at least the number of odd nodes. -/
 theorem length_le_totalExponent (c : OddCycle L) : L ≤ c.totalExponent := by
   exact c.prefixExponent_ge L
+
+/-- The total exponent is positive. -/
+theorem totalExponent_pos (c : OddCycle L) : 0 < c.totalExponent := by
+  have hL : 0 < L := Nat.pos_of_ne_zero (NeZero.ne L)
+  exact lt_of_lt_of_le hL c.length_le_totalExponent
 
 /-- Number of ordinary Collatz steps used by the first `k` odd-to-odd edges.
 Each edge contributes its halving exponent plus the initial odd step. -/
@@ -286,6 +322,20 @@ theorem reaches_prefix_node (c : OddCycle L) (k : ℕ) :
       rw [ih]
       simpa using c.edge_reaches_next (k : ZMod L)
 
+/-- The first `k` odd-to-odd edges are exactly the first `prefixExponent k`
+iterations of the one-division map. -/
+theorem halfStep_reaches_prefix_node (c : OddCycle L) (k : ℕ) :
+    (halfStep^[c.prefixExponent k]) (c.node 0) = c.node (k : ZMod L) := by
+  induction k with
+  | zero =>
+      simp
+  | succ k ih =>
+      rw [c.prefixExponent_succ k]
+      rw [Nat.add_comm]
+      rw [Function.iterate_add_apply]
+      rw [ih]
+      simpa using c.edge_halfStep_reaches_next (k : ZMod L)
+
 /-- The composed identity after one full traversal of the odd cycle. -/
 theorem full_cycle_identity (c : OddCycle L) :
     2 ^ c.totalExponent * c.node 0 =
@@ -298,13 +348,25 @@ theorem node_zero_periodic (c : OddCycle L) :
     (step^[c.totalExponent + L]) (c.node 0) = c.node 0 := by
   simpa [prefixStepCount, totalExponent] using c.reaches_prefix_node L
 
-/-- The base odd node of an `OddCycle` is therefore a positive periodic point
-of the ordinary, unaccelerated Collatz map. -/
+/-- One full traversal is also a genuine period of `halfStep`, now of length
+exactly `A`. This is the period compatible with `2^A - 3^L`. -/
+theorem node_zero_halfStep_periodic (c : OddCycle L) :
+    (halfStep^[c.totalExponent]) (c.node 0) = c.node 0 := by
+  simpa [totalExponent] using c.halfStep_reaches_prefix_node L
+
+/-- The base odd node of an `OddCycle` is a positive periodic point of the
+ordinary, unaccelerated Collatz map. -/
 theorem node_zero_isPositivePeriodicPoint (c : OddCycle L) :
     IsPositivePeriodicPoint (c.node 0) (c.totalExponent + L) := by
   refine ⟨c.node_pos 0, ?_, c.node_zero_periodic⟩
   have hL : 0 < L := Nat.pos_of_ne_zero (NeZero.ne L)
   omega
+
+/-- The base odd node is also a positive periodic point of the denominator-
+compatible map `halfStep`, with period `A`. -/
+theorem node_zero_isPositiveHalfPeriodicPoint (c : OddCycle L) :
+    IsPositiveHalfPeriodicPoint (c.node 0) c.totalExponent := by
+  exact ⟨c.node_pos 0, c.totalExponent_pos, c.node_zero_halfStep_periodic⟩
 
 end OddCycle
 

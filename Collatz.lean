@@ -18,3 +18,4 @@ import Collatz.Radius4SparseDifference
 import Collatz.DifferenceForcingComposition
 import Collatz.Radius4WeightedBoundarySupport
 import Collatz.Radius4FourTermSum
+import Collatz.DifferenceForcingRangeSum

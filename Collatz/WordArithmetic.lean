@@ -59,7 +59,7 @@ theorem listOnes_append (xs ys : List Bool) :
   induction xs with
   | nil => simp
   | cons b bs ih =>
-      cases b <;> simp [listOnes, ih]
+      cases b <;> simp [listOnes, ih, Nat.add_assoc]
 
 @[simp]
 theorem wordNumerator_nil : wordNumerator [] = 0 := by
@@ -85,13 +85,32 @@ theorem realizes_composed_identity {bits : List Bool} {x y : ℕ}
     2 ^ bits.length * y = 3 ^ listOnes bits * x + wordNumerator bits := by
   induction bits generalizing x y with
   | nil =>
-      simpa [Realizes] using h
+      simpa [Realizes] using h.symm
   | cons b bs ih =>
       rcases h with ⟨z, hstep, htail⟩
       have hcomp := ih htail
-      cases b <;>
-        simp [listOnes, wordNumerator, bitMultiplier, bitOffset, pow_succ] at hstep ⊢ <;>
-        nlinarith
+      cases b with
+      | false =>
+          simp only [List.length_cons, listOnes_cons, Bool.false_eq_true,
+            if_false, zero_add, wordNumerator_cons, bitOffset, bitMultiplier,
+            one_mul, zero_mul, add_zero, pow_succ]
+          calc
+            2 ^ bs.length * 2 * y = 2 * (2 ^ bs.length * y) := by ring
+            _ = 2 * (3 ^ listOnes bs * z + wordNumerator bs) := by rw [hcomp]
+            _ = 3 ^ listOnes bs * (2 * z) + 2 * wordNumerator bs := by ring
+            _ = 3 ^ listOnes bs * x + 2 * wordNumerator bs := by rw [hstep]
+      | true =>
+          simp only [List.length_cons, listOnes_cons, if_true,
+            wordNumerator_cons, bitOffset, bitMultiplier, one_mul, pow_succ]
+          calc
+            2 ^ bs.length * 2 * y = 2 * (2 ^ bs.length * y) := by ring
+            _ = 2 * (3 ^ listOnes bs * z + wordNumerator bs) := by rw [hcomp]
+            _ = 3 ^ listOnes bs * (2 * z) + 2 * wordNumerator bs := by ring
+            _ = 3 ^ listOnes bs * (3 * x + 1) + 2 * wordNumerator bs := by rw [hstep]
+            _ = 3 ^ (1 + listOnes bs) * x +
+                (3 ^ listOnes bs + 2 * wordNumerator bs) := by
+                  rw [show 1 + listOnes bs = listOnes bs + 1 by omega, pow_succ]
+                  ring
 
 /-- Parity bit used by the affine recurrence, written directly in terms of the
 same mod-two test used by `halfStep`. -/

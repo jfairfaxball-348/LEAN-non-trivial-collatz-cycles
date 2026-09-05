@@ -16,3 +16,4 @@ import Collatz.Radius4CycleBoundaries
 import Collatz.NontrivialDenominator
 import Collatz.Radius4SparseDifference
 import Collatz.DifferenceForcingComposition
+import Collatz.Radius4WeightedBoundarySupport

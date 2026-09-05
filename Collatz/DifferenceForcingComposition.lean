@@ -77,10 +77,10 @@ theorem halfStep_difference_composed_identity (x y k : ℕ) :
               (bitMultiplier (stateBit y) : ℤ) := by
         cases hy : stateBit y with
         | false =>
-            simp [orbitBits, listOnes, hy, bitMultiplier]
+            simp [orbitBits, hy, bitMultiplier]
         | true =>
             rw [orbitBits, listOnes, hy]
-            simp only [Bool.true_eq, ite_true, bitMultiplier]
+            simp only [ite_true, bitMultiplier]
             rw [show 1 + listOnes (orbitBits (halfStep y) k) =
                 listOnes (orbitBits (halfStep y) k) + 1 by omega,
               pow_succ]

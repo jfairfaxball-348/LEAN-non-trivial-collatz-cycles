@@ -12,10 +12,8 @@ theorem three_pow_mod_eight (n : ℕ) :
       rcases ih with h | h
       · right
         rw [h]
-        norm_num
       · left
         rw [h]
-        norm_num
 
 namespace OddCycle
 
@@ -73,8 +71,9 @@ theorem denominator_eq_one_forces_trivial (c : OddCycle L)
     simpa [totalExponent, prefixExponent] using hA
   have hstep := c.step_eq (0 : ZMod 1)
   have hx : c.node 0 = 1 := by
-    have hs : 3 * c.node 0 + 1 = 4 * c.node 0 := by
-      simpa [hexp] using hstep
+    have hidx : (0 : ZMod 1) + 1 = 0 := Subsingleton.elim _ _
+    rw [hidx, hexp] at hstep
+    norm_num at hstep
     omega
   intro hnontrivial
   rcases hnontrivial with ⟨i, hi⟩

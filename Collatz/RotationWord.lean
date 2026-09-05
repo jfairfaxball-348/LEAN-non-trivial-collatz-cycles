@@ -30,7 +30,7 @@ theorem halfStep_zmod_add_state (c : OddCycle L)
         (halfStep^[(t.val + shift.val) % c.encodingPeriod]) (c.node 0) := by
       rw [c.encoding_val_add t shift]
     _ = (halfStep^[t.val + shift.val]) (c.node 0) := by
-      exact iterate_mod_period halfStep (c.node 0) c.encodingPeriod_pos
+      exact iterate_mod_period halfStep (c.node 0)
         c.encodingPeriod_periodic (t.val + shift.val)
     _ = (halfStep^[t.val]) ((halfStep^[shift.val]) (c.node 0)) := by
       rw [Function.iterate_add_apply]

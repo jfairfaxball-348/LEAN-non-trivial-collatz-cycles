@@ -60,7 +60,8 @@ theorem halfStep_two_mul (n : ℕ) : halfStep (2 * n) = n := by
 theorem halfStep_eq_step_of_even {n : ℕ} (hn : Even n) :
     halfStep n = step n := by
   rcases hn with ⟨k, rfl⟩
-  simp [halfStep, step]
+  have hmod : (k + k) % 2 = 0 := by omega
+  simp [halfStep, step, hmod]
 
 /-- A binary word indexed cyclically modulo `n`.
 

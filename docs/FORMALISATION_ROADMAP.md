@@ -43,29 +43,33 @@ Status: **complete through endpoint and cost definitions**.
 
 ## Stage 4 — R4-1 exact cost-four topology classification
 
-Status: **in progress; non-unit branch complete**.
+Status: **finite topology classification complete; exact bridge audit next**.
 
-Promoted results in `Collatz/Radius4TransportTopology.lean` and `Collatz/Radius4TransportHeightTwo.lean` prove:
+Promoted results in `Collatz/Radius4TransportTopology.lean`, `Collatz/Radius4TransportHeightTwo.lean`, and `Collatz/Radius4TransportComponents.lean` prove:
 
 - zero-flow edges can be removed without changing cost;
 - the unit-height cost-four branch has exactly four active internal edges;
 - every cost-four internal height is at most two;
 - any non-unit cost-four flow has a height-two edge;
-- the complete non-unit branch is rigidly `(1,2,1)` and those three heights exhaust the cost.
+- the complete non-unit branch is rigidly `(1,2,1)` and those three heights exhaust the cost;
+- active unit-height offsets can be decomposed into maximal consecutive connected runs;
+- the resulting four-edge run lengths are exhaustively, up to component-order permutation, `[4]`, `[3,1]`, `[2,2]`, `[2,1,1]`, or `[1,1,1,1]`.
+
+Key theorem:
+
+`transportActiveEdgeRunLengths_family_of_cost_four_of_unit`.
 
 ### Next exact target
 
-Formalise the connected-run decomposition of the four active unit-height edges and prove the exhaustive five partitions:
+Consult only the authoritative RL238 Radius-4 blueprint and determine whether R4-1 requires any further formal bridge between the current prefix-flow/component representation and:
 
-- `[4]`;
-- `[3,1]`;
-- `[2,2]`;
-- `[2,1,1]`;
-- `[1,1,1,1]`.
+- the inherited cyclic adjacent-transposition metric;
+- cyclic cut/rotation covariance;
+- the genuine rotated `OddCycle.parityWord` statement.
 
-Then complete any remaining representation/covariance bridge required to connect R4-1 to the genuine rotated `OddCycle.parityWord` and the exact RL238 adjacent-transposition setting.
+Prove only the bridge actually used by RL238. Do not add a general equivalence or covariance theory merely because it could be useful.
 
-Do not begin topology elimination before the classification layer is complete and green.
+Do not begin topology elimination until that exact R4-1 bridge obligation, if any, has been identified and kernel-verified.
 
 ## Stage 5 — Established RL238 topology eliminations
 

@@ -26,29 +26,29 @@ theorem mem_transportActiveEdgeOffsets_iff {n : ℕ} [NeZero n]
 theorem transportCostAtCut_eq_sum_magnitudes {n : ℕ} [NeZero n]
     (source target : CyclicWord n) (cut : ZMod n) :
     transportCostAtCut source target cut =
-      ∑ j in Finset.range (n - 1),
-        transportFlowMagnitude source target cut (j + 1) := by
+      (Finset.range (n - 1)).sum (fun j =>
+        transportFlowMagnitude source target cut (j + 1)) := by
   rfl
 
 /-- Removing zero-flow internal edges does not change transport cost. -/
 theorem transportCostAtCut_eq_sum_active_magnitudes {n : ℕ} [NeZero n]
     (source target : CyclicWord n) (cut : ZMod n) :
     transportCostAtCut source target cut =
-      ∑ j in transportActiveEdgeOffsets source target cut,
-        transportFlowMagnitude source target cut (j + 1) := by
+      (transportActiveEdgeOffsets source target cut).sum (fun j =>
+        transportFlowMagnitude source target cut (j + 1)) := by
   classical
   calc
     transportCostAtCut source target cut =
-        ∑ j in Finset.range (n - 1),
-          transportFlowMagnitude source target cut (j + 1) :=
+        (Finset.range (n - 1)).sum (fun j =>
+          transportFlowMagnitude source target cut (j + 1)) :=
       transportCostAtCut_eq_sum_magnitudes source target cut
-    _ = ∑ j in transportActiveEdgeOffsets source target cut,
-          transportFlowMagnitude source target cut (j + 1) := by
+    _ = (transportActiveEdgeOffsets source target cut).sum (fun j =>
+          transportFlowMagnitude source target cut (j + 1)) := by
       symm
       rw [transportActiveEdgeOffsets, Finset.sum_filter]
       apply Finset.sum_congr rfl
       intro j hj
-      by_cases h : transportFlowMagnitude source target cut (j + 1) ≠ 0 <;>
+      by_cases h : transportFlowMagnitude source target cut (j + 1) = 0 <;>
         simp [h]
 
 /-- If every charged internal edge has flow height at most one, transport cost
@@ -63,10 +63,10 @@ theorem transportCostAtCut_eq_active_card_of_unit {n : ℕ} [NeZero n]
   classical
   calc
     transportCostAtCut source target cut =
-        ∑ j in transportActiveEdgeOffsets source target cut,
-          transportFlowMagnitude source target cut (j + 1) :=
+        (transportActiveEdgeOffsets source target cut).sum (fun j =>
+          transportFlowMagnitude source target cut (j + 1)) :=
       transportCostAtCut_eq_sum_active_magnitudes source target cut
-    _ = ∑ _j in transportActiveEdgeOffsets source target cut, 1 := by
+    _ = (transportActiveEdgeOffsets source target cut).sum (fun _j => 1) := by
       apply Finset.sum_congr rfl
       intro j hj
       have hj' := (mem_transportActiveEdgeOffsets_iff source target cut j).mp hj

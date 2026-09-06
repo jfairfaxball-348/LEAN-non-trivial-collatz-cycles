@@ -20,3 +20,8 @@ import Collatz.Radius4WeightedBoundarySupport
 import Collatz.Radius4FourTermSum
 import Collatz.DifferenceForcingRangeSum
 import Collatz.Radius4NumeratorFourTerm
+import Collatz.Radius4Transport
+import Collatz.Radius4TransportTopology
+import Collatz.Radius4TransportHeightTwo
+import Collatz.Radius4TransportComponents
+import Collatz.Radius4TransportCovariance

@@ -20,7 +20,7 @@ theorem transportFlowMagnitude_succ_le_add_one {n : ℕ} [NeZero n]
       (transportPrefixFlow source target cut k)
       (transportPrefixFlow source target cut (k + 1) -
         transportPrefixFlow source target cut k)
-    convert this using 1 <;> ring
+    simpa only [← add_sub_assoc, add_sub_cancel_left] using this
   simpa [transportFlowMagnitude] using
     (le_trans htri (Nat.add_le_add_left hstep _))
 
@@ -41,12 +41,14 @@ theorem transportFlowMagnitude_le_succ_add_one {n : ℕ} [NeZero n]
       (transportPrefixFlow source target cut (k + 1))
       (transportPrefixFlow source target cut k -
         transportPrefixFlow source target cut (k + 1))
-    convert this using 1 <;> ring
+    simpa only [← add_sub_assoc, add_sub_cancel_left] using this
   have hstep' :
       Int.natAbs
           (transportPrefixFlow source target cut k -
             transportPrefixFlow source target cut (k + 1)) ≤ 1 := by
-    simpa [Int.natAbs_neg] using hstep
+    rw [← neg_sub (transportPrefixFlow source target cut (k + 1))
+      (transportPrefixFlow source target cut k), Int.natAbs_neg]
+    exact hstep
   simpa [transportFlowMagnitude] using
     (le_trans htri (Nat.add_le_add_left hstep' _))
 
@@ -77,7 +79,7 @@ transport heights above two at cost four. -/
 theorem transportMagnitudeSum_le_cost_of_subset {n : ℕ} [NeZero n]
     (source target : CyclicWord n) (cut : ZMod n) (s : Finset ℕ)
     (hsub : s ⊆ Finset.range (n - 1)) :
-    (∑ j in s, transportFlowMagnitude source target cut (j + 1)) ≤
+    s.sum (fun j => transportFlowMagnitude source target cut (j + 1)) ≤
       transportCostAtCut source target cut := by
   rw [transportCostAtCut_eq_sum_magnitudes]
   exact Finset.sum_le_sum_of_subset_of_nonneg hsub
@@ -88,7 +90,7 @@ have absolute height greater than two. A height at least three would, by the
 one-Lipschitz rule and the zero boundary flow, force predecessor heights at
 least two and one, contributing at least six to the cost. -/
 theorem transportFlowMagnitude_le_two_of_cost_four {n : ℕ} [NeZero n]
-    {source target : CyclicWord n} (hones : ones source = ones target)
+    {source target : CyclicWord n} (_hones : ones source = ones target)
     (cut : ZMod n) (hcost : transportCostAtCut source target cut = 4)
     {k : ℕ} (hkpos : 0 < k) (hklt : k < n) :
     transportFlowMagnitude source target cut k ≤ 2 := by
@@ -146,7 +148,7 @@ theorem exists_transportFlowMagnitude_eq_two_of_cost_four_of_not_unit
       transportFlowMagnitude source target cut (j + 1) ≤ 1) :
     ∃ j ∈ Finset.range (n - 1),
       transportFlowMagnitude source target cut (j + 1) = 2 := by
-  push_neg at hnotunit
+  push Not at hnotunit
   obtain ⟨j, hj, hjgt⟩ := hnotunit
   have hjlt : j < n - 1 := Finset.mem_range.mp hj
   have hkpos : 0 < j + 1 := by omega

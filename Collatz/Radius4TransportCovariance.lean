@@ -9,7 +9,7 @@ theorem transportIncrement_rotate_cut {n : ℕ} [NeZero n]
     (source target : CyclicWord n) (cut : ZMod n) (j : ℕ) :
     transportIncrement source target cut j =
       transportIncrement (rotate source cut) (rotate target cut) 0 j := by
-  simp [transportIncrement, rotate, add_comm, add_left_comm, add_assoc]
+  simp [transportIncrement, rotate, add_comm]
 
 /-- The complete prefix-flow profile is unchanged when a chosen cyclic cut is
 absorbed into simultaneous rotation of source and target. -/
@@ -39,7 +39,7 @@ theorem rotate_rotate_comm {n : ℕ} (w : CyclicWord n)
     (a b : ZMod n) :
     rotate (rotate w a) b = rotate (rotate w b) a := by
   funext i
-  simp [rotate, add_comm, add_left_comm, add_assoc]
+  simp [rotate, add_comm, add_left_comm]
 
 /-- For a self-rotation, normalizing a cut preserves the same relative shift:
 cutting at `cut` is the same cost as comparing the cut-rotated word with its

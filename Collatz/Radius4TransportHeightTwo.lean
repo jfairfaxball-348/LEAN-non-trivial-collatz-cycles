@@ -77,7 +77,7 @@ transport heights above two at cost four. -/
 theorem transportMagnitudeSum_le_cost_of_subset {n : ℕ} [NeZero n]
     (source target : CyclicWord n) (cut : ZMod n) (s : Finset ℕ)
     (hsub : s ⊆ Finset.range (n - 1)) :
-    (∑ j in s, transportFlowMagnitude source target cut (j + 1)) ≤
+    s.sum (fun j => transportFlowMagnitude source target cut (j + 1)) ≤
       transportCostAtCut source target cut := by
   rw [transportCostAtCut_eq_sum_magnitudes]
   exact Finset.sum_le_sum_of_subset_of_nonneg hsub

@@ -46,7 +46,7 @@ The endpoint `k = n` is handled separately; this definition deliberately does
 not bake equal weight into the data. -/
 def transportPrefixFlow {n : ℕ} [NeZero n]
     (source target : CyclicWord n) (cut : ZMod n) (k : ℕ) : ℤ :=
-  ∑ j in Finset.range k, transportIncrement source target cut j
+  (Finset.range k).sum (fun j => transportIncrement source target cut j)
 
 @[simp]
 theorem transportPrefixFlow_zero {n : ℕ} [NeZero n]
@@ -70,7 +70,7 @@ theorem sum_transportBitValue_eq_ones {n : ℕ} [NeZero n]
   classical
   calc
     (∑ i : ZMod n, transportBitValue (w i)) =
-        ∑ i in Finset.univ.filter (fun i : ZMod n => w i = true), (1 : ℤ) := by
+        (Finset.univ.filter (fun i : ZMod n => w i = true)).sum (fun _ => (1 : ℤ)) := by
       rw [Finset.sum_filter]
       simp [transportBitValue]
     _ = (ones w : ℤ) := by
@@ -165,8 +165,8 @@ prefix-flow description of cyclic adjacent-transposition distance used by
 RL238. -/
 def transportCostAtCut {n : ℕ} [NeZero n]
     (source target : CyclicWord n) (cut : ZMod n) : ℕ :=
-  ∑ j in Finset.range (n - 1),
-    Int.natAbs (transportPrefixFlow source target cut (j + 1))
+  (Finset.range (n - 1)).sum (fun j =>
+    Int.natAbs (transportPrefixFlow source target cut (j + 1)))
 
 /-- Exact cyclic transport radius stated directly in the prefix-flow language.
 

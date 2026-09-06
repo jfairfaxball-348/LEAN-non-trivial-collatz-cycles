@@ -48,7 +48,7 @@ theorem transportCostAtCut_eq_sum_active_magnitudes {n : ℕ} [NeZero n]
       rw [transportActiveEdgeOffsets, Finset.sum_filter]
       apply Finset.sum_congr rfl
       intro j hj
-      by_cases h : transportFlowMagnitude source target cut (j + 1) ≠ 0 <;>
+      by_cases h : transportFlowMagnitude source target cut (j + 1) = 0 <;>
         simp [h]
 
 /-- If every charged internal edge has flow height at most one, transport cost

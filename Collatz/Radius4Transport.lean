@@ -61,7 +61,8 @@ theorem transportPrefixFlow_succ {n : ℕ} [NeZero n]
     transportPrefixFlow source target cut (k + 1) =
       transportPrefixFlow source target cut k +
         transportIncrement source target cut k := by
-  simp [transportPrefixFlow]
+  unfold transportPrefixFlow
+  rw [Finset.sum_range_succ]
 
 /-- The integer-valued bit indicator sums to the number of true bits. -/
 theorem sum_transportBitValue_eq_ones {n : ℕ} [NeZero n]

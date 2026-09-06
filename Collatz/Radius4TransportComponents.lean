@@ -70,11 +70,12 @@ private theorem consecutiveOffsetRunLengths_four_family
       (consecutiveOffsetRunLengths [a, b, c, d]).Perm [2, 2] ∨
       (consecutiveOffsetRunLengths [a, b, c, d]).Perm [2, 1, 1] ∨
       (consecutiveOffsetRunLengths [a, b, c, d]).Perm [1, 1, 1, 1] := by
-  by_cases hab : b = a + 1 <;>
-    by_cases hbc : c = b + 1 <;>
-      by_cases hcd : d = c + 1 <;>
-        simp [consecutiveOffsetRunLengths, consecutiveOffsetRuns,
-          consecutiveOffsetRunsAux, hab, hbc, hcd] <;> decide
+  simp only [consecutiveOffsetRunLengths, consecutiveOffsetRuns,
+    consecutiveOffsetRunsAux]
+  split_ifs <;>
+    simp only [List.map_cons, List.map_nil, List.length_reverse,
+      List.length_cons, List.length_nil] <;>
+    decide
 
 /-- The remaining unit-height half of RL238's R4-1 topology classification.
 At a cost-four unit-height cut there are four active internal edges, and their

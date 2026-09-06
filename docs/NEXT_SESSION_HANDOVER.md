@@ -1,6 +1,6 @@
 # Next session handover
 
-Date: 2026-09-05
+Date: 2026-09-06
 
 Repository: `jfairfaxball-348/LEAN-non-trivial-collatz-cycles`
 
@@ -14,53 +14,43 @@ Do not search for new proof strategies, improve the mathematics, move to Radius 
 
 ## Authoritative promoted checkpoint
 
-At this handover, `main` is:
+At this handover, the latest promoted mathematical `main` is:
 
-`7dbce6e3015cbd58cd3f4ad997122e115fcded7d`
+`98922c2d125bdc24e6094fb879f7dc447c764ca9`
 
-This is the green merge of PR #29.
+This is the green merge of PR #31, `Formalize Radius-4 unit-height component families`.
 
-Do not assume this SHA is still current in the next session. First inspect live `main`, recent commits, open PRs, CI, and the current documentation.
+PR #31 final head:
+
+`a7f609ef9e3bcac8b4b338e81b943531e9fb616f`
+
+GitHub Actions run `33994980788` completed the full Lean CI `Build` step successfully before merge.
+
+Do not assume this SHA is still current in the next session. First inspect live `main`, recent commits, open PRs, CI, and the current authoritative documentation.
 
 ## What was completed this session
 
-PR #27 — merged green:
+The remaining unit-height half of the finite R4-1 exact-cost-four topology classification is now kernel-verified.
 
-- full-prefix identity `G_n = ones(target)-ones(source)`;
-- zero full-prefix flow for equal-weight pairs and self-rotations.
+New source:
 
-PR #28 — merged green:
+`Collatz/Radius4TransportComponents.lean`
 
-- absolute internal flow magnitudes;
-- active-edge support;
-- zero-edge removal preserves cost;
-- unit-height cost-four branch has exactly four active internal edges.
+Promoted definitions retain the actual connected components of active internal edges:
 
-PR #29 — merged green:
+- `consecutiveOffsetRuns`;
+- `consecutiveOffsetRunLengths`;
+- `transportActiveEdgeOffsetList`;
+- `transportActiveEdgeRuns`;
+- `transportActiveEdgeRunLengths`.
 
-- magnitude one-Lipschitz bounds in both directions;
-- first/last internal-edge height bounds;
-- no cost-four internal height exceeds two;
-- every non-unit cost-four cut contains a height-two edge;
-- complete non-unit branch is rigidly `(1,2,1)` and these three heights exhaust the cost.
+The active offsets are listed in increasing order and decomposed into maximal consecutive runs. The concrete run ordering is retained for later topology-specific arguments.
 
-Key final theorem:
+Key promoted theorem:
 
-`exists_transportHeightTwo_pattern_of_cost_four_of_not_unit`
+`transportActiveEdgeRunLengths_family_of_cost_four_of_unit`
 
-in `Collatz/Radius4TransportHeightTwo.lean`.
-
-## Unique next target
-
-Finish R4-1 by classifying the unit-height cost-four branch.
-
-Already available:
-
-`transportActiveEdgeOffsets_card_eq_four_of_cost_four_of_unit`
-
-So at a unit-height minimizing cut there are exactly four active internal height-one edges.
-
-Introduce a Lean-friendly but faithful notion of connected runs/components of consecutive active offsets and prove the exhaustive run-length classification:
+At every unit-height cost-four cut, the four active internal edges have run lengths, up to permutation of disconnected components, in exactly one of the established RL238 families:
 
 - `[4]`;
 - `[3,1]`;
@@ -68,51 +58,74 @@ Introduce a Lean-friendly but faithful notion of connected runs/components of co
 - `[2,1,1]`;
 - `[1,1,1,1]`.
 
-Do not begin the topology-specific arithmetic eliminations until this five-family classification is kernel-verified.
+`List.Perm` is used only for the family label, so orientations such as `[1,3]` are not treated as new topology families; the actual ordered components remain available through `transportActiveEdgeRuns`.
+
+Together with the previously promoted non-unit rigidity theorem, Lean now kernel-verifies all six finite exact-cost-four topology families:
+
+1. `(1,2,1)`;
+2. `[4]`;
+3. `[3,1]`;
+4. `[2,2]`;
+5. `[2,1,1]`;
+6. `[1,1,1,1]`.
+
+## Unique next target
+
+Do not begin topology-specific arithmetic elimination yet.
+
+First recover from the authoritative RL238 Radius-4 blueprint the exact remaining R4-1 bridge, if any, between the promoted Lean prefix-flow/component classification and the statement actually used by RL238.
+
+The bridge may involve only what the blueprint genuinely requires, for example:
+
+- equivalence with the inherited cyclic adjacent-transposition formulation;
+- covariance under cyclic cut/rotation;
+- connection of the component representation to the genuine rotated `OddCycle.parityWord`.
+
+Do not invent a bridge merely for generality. If the promoted Lean definitions already supply the required connection, record that precisely and move directly to the first established elimination. Otherwise formalise only the missing established bridge on a fresh branch and run full Lean CI.
 
 ## Required source policy
 
 Formal authority:
 
-- this Lean repository for definitions, theorem statements already present, branches, PRs, and CI.
+- this Lean repository for definitions, existing Lean theorems, branches, PRs, CI, and checkpoint documentation.
 
 Mathematical blueprint:
 
-- the authoritative RL238 Radius-4 material in `jfairfaxball-348/Proof-that-non-trivial-cycles-cannot-exist-in-Collatz`, read only as needed to recover exact established conventions/statements.
+- only the authoritative RL238 Radius-4 material in `jfairfaxball-348/Proof-that-non-trivial-cycles-cannot-exist-in-Collatz`, read only as needed to recover exact established conventions/statements and proof order.
 
 Forbidden:
 
-- importing research code/artefacts as dependencies;
+- importing research code or artefacts as Lean dependencies;
 - asserting research conclusions as axioms;
 - unrelated historical RL archives;
 - external Collatz formalisation projects;
-- new Radius-4 proof invention.
+- new Radius-4 mathematical exploration.
 
 ## Important distinctions
 
 - RL238 Radius 4 is cyclic adjacent-transposition transport distance, not Hamming distance.
 - `IsTransportRadiusFour` and `OddCycle.IsCycleTransportRadiusFour` are the relevant current predicates.
-- Older Hamming/four-boundary theorems remain valid support infrastructure only where hypotheses match.
-- `OddCycle` does not imply primitivity/minimality; preserve exact RL238 hypotheses.
+- Older Hamming/four-boundary theorems remain valid support infrastructure only where their hypotheses genuinely match.
+- `OddCycle` does not imply primitivity/minimality; preserve the exact RL238 hypotheses.
 
-## After the unit-height classification
+## Established order after R4-1 is fully connected
 
-Complete only any R4-1 bridge actually required by the established blueprint, such as connecting the chosen component representation to cyclic cut/rotation semantics or the inherited adjacent-transposition formulation.
-
-Then translate the established eliminations in order:
+Translate only the already-proved RL238 elimination chain, in this order:
 
 1. `(1,2,1)` and connected `[4]`;
 2. `[3,1]`;
 3. `[2,2]`;
 4. `[2,1,1]`;
-5. `[1,1,1,1]` and final quotient-cycle closure;
-6. final primitive full-denominator transport-Radius-4 local impossibility theorem.
+5. `[1,1,1,1]` quotient-cycle reduction and final closure;
+6. assemble the primitive full-denominator transport-Radius-4 local impossibility theorem.
 
-Once that final local theorem is Lean-verified, stop: the repository objective is complete unless the user explicitly supplies a new objective.
+Do not strengthen, replace, reorder, or generalise these arguments unless a small prerequisite lemma is required to faithfully encode the established proof.
+
+Once the final local theorem is Lean-verified and full CI is green, stop: the repository objective is complete unless the user explicitly supplies a new objective.
 
 ## Repository hygiene
 
-The old draft PR #6 is a separate reverse ordinary-cycle line and is not part of the current target. Do not revive it during R4 formalisation.
+The old draft PR #6 is a separate reverse ordinary-cycle line and is not part of the current target. Do not revive it during Radius-4 formalisation.
 
 After every substantive promotion, update:
 
@@ -120,4 +133,4 @@ After every substantive promotion, update:
 - `docs/THEOREM_INDEX.md`;
 - `docs/FORMALISATION_ROADMAP.md`;
 - `docs/RL238_TO_LEAN_MAP.md`;
-- this handover if the session closes.
+- this handover when the session closes.

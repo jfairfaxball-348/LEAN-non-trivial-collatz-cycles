@@ -1,6 +1,28 @@
 # Theorem index
 
-This file is the human-readable scope register for the current formalisation. The Lean source and kernel remain authoritative.
+This index records the meaning and scope of the verified library. The final
+local impossibility theorem is unproved. Verified status refers to the main
+revision and build evidence in [CURRENT_CHECKPOINT.md](CURRENT_CHECKPOINT.md).
+
+## Model and notation
+
+The ordinary Collatz map halves even `x` and sends odd `x` to `3*x+1`. Its
+familiar positive cycle is `1 → 4 → 2 → 1`. The auxiliary `halfStep` map
+also divides the odd result by two, giving a binary parity word of length
+`A` with `L` odd source positions. Bits are written as zero and one.
+
+An `OddCycle L` records positive odd nodes and positive exponents satisfying
+`3*x_i+1 = 2^a_i*x_(i+1)`, with `A = sum a_i`. For a chronological list,
+`Q = wordNumerator` satisfies `Q([])=0` and
+`Q(b::bs)=3^(listOnes bs)*bitOffset b+2*Q(bs)`. `bitOffset` is the bit's
+zero-or-one value, and `listOnes` counts ones. The full integer denominator
+is `D = 2^A-3^L`.
+
+The generic target retains `0 < L < A`, `D > 1`, `D ∣ Q(w)`, primitivity,
+and a nonzero self-rotation shift. Primitivity means only the zero rotation
+fixes the cyclic word. The target excludes exact transport radius four,
+defined below. These explicit arithmetic and word hypotheses must not be
+replaced by an unstated cycle assumption.
 
 ## Foundations and exact Collatz-cycle model
 
@@ -10,7 +32,9 @@ Important existing theorem families include:
 
 - exact odd-to-odd and `halfStep` realisation in `Collatz/OddCycle.lean`;
 - `cycleDenominator A L = 2^A - 3^L` and the positive denominator identities in `Collatz/Cycle.lean`;
-- `OddCycle.positiveCycleDenominator_of_nontrivial` in `Collatz/NontrivialDenominator.lean`;
+- `OddCycle.positiveCycleDenominator_of_nontrivial` in
+  `Collatz/NontrivialDenominator.lean`, proving `D > 1` from
+  `c.IsNontrivial`, meaning at least one odd node is not `1`;
 - genuine full-period parity-word arithmetic in `Collatz/CycleWordArithmetic.lean`;
 - `OddCycle.rotate_parityWord_eq_advancedParityWord` in `Collatz/RotationWord.lean`;
 - exact shifted-origin/full-denominator comparison in the rotation arithmetic files.
@@ -25,9 +49,11 @@ Key theorem:
 
 - `OddCycle.radiusFour_shifted_wordNumerator_difference_eq_four_terms`.
 
-This mathematics remains valid but its Radius-4 hypothesis is Hamming distance. It is support infrastructure only and must not be identified with the RL238 adjacent-transposition transport theorem.
+Hamming distance counts unequal word positions. These results remain valid
+under their stated Hamming hypotheses, but do not establish the transport
+hypothesis or the intended transport impossibility theorem.
 
-## RL238 transport-radius model
+## Transport-radius model
 
 Source: `Collatz/Radius4Transport.lean`.
 
@@ -64,7 +90,8 @@ Promoted theorems include:
 - `transportRadiusFour_exists_minimizing_cut`;
 - `transportRadiusFour_cost_ge_four`.
 
-Thus the formal prefix flow is one-Lipschitz and has the correct zero endpoint for equal-weight words and genuine self-rotations.
+Thus the formal prefix flow changes by at most one per position and has
+endpoint zero for equal-weight words and genuine self-rotations.
 
 ## Cost-four active-support decomposition
 
@@ -100,7 +127,10 @@ Promoted theorems include:
 - `transportHeightTwo_rigid_of_cost_four`;
 - `exists_transportHeightTwo_pattern_of_cost_four_of_not_unit`.
 
-The final theorem proves the complete non-unit equal-weight cost-four branch has exactly the RL238 height profile `(1,2,1)`.
+The final theorem in this module proves that an equal-weight cost-four cut
+with some internal magnitude greater than one has exactly three consecutive
+nonzero magnitudes `(1,2,1)`, exhausting the cost. This classifies the branch;
+it does not exclude it arithmetically.
 
 ## Unit-height connected-component topology
 
@@ -120,7 +150,9 @@ Key promoted theorem:
 
 - `transportActiveEdgeRunLengths_family_of_cost_four_of_unit`.
 
-At any cost-four unit-height cut, the four active internal edges have connected-run lengths, up to permutation of disconnected components, in exactly one of the five established RL238 families:
+An active edge is an internal boundary with nonzero prefix flow. At a
+cost-four unit-height cut, the four active edges have maximal consecutive-run
+lengths, up to permutation of disconnected components, in one of five families:
 
 - `[4]`;
 - `[3,1]`;
@@ -130,16 +162,15 @@ At any cost-four unit-height cut, the four active internal edges have connected-
 
 The use of `List.Perm` is only the family classification: orientations such as `[1,3]` are the same `[3,1]` topology family, while `transportActiveEdgeRuns` preserves the actual ordered components.
 
-## Current R4-1 status
+## Verified classification and cut normalization
 
 The finite exact-cost-four topology classification is **kernel-verified and green**:
 
 - non-unit branch: `(1,2,1)`;
 - unit-height branch: `[4]`, `[3,1]`, `[2,2]`, `[2,1,1]`, `[1,1,1,1]`.
 
-R4-1 is complete. The authorized RL238 blueprint audit confirms that PR #33
-provides the required cut normalization; no further general metric-equivalence
-theorem is needed for the prefix-flow target.
+The finite classification and cut normalization are complete for the
+minimum-over-cuts prefix-flow definition used here.
 
 Source: `Collatz/Radius4TransportCovariance.lean`.
 
@@ -155,13 +186,15 @@ PR #33 imports every intended transport module from the root and repairs the
 Lean 4.34 elaboration failures that previous root builds had not exercised.
 Its full local build and GitHub Actions Build passed before merge.
 
-## R4-2 elementary prerequisites
+## Elementary prerequisites for the first exclusions
 
 These lemmas are prerequisites, not a completed height-two or connected `[4]`
 elimination. All four modules are imported by `Collatz.lean`.
+PR #34 promoted this layer with green PR and post-merge main Builds.
 The full local root build passed with 8,912 jobs. All 27 new public lemmas were
-also dependency-audited: only `propext`, `Classical.choice`, and `Quot.sound`
-occur, with no research-conclusion or proof-placeholder axiom.
+also dependency-audited: only the standard core axioms `propext`,
+`Classical.choice`, and `Quot.sound` occur, with no additional mathematical
+axiom or proof placeholder.
 
 ### Signed flow and height-two local bits
 
@@ -184,9 +217,12 @@ Source: `Collatz/Radius4TransportSigned.lean`.
 
 Source: `Collatz/Radius4ConnectedCoefficients.lean`.
 
-- `wordNumerator_localReplacement_difference` factors a replacement with equal
-  local length and weight, in a common prefix/suffix, by `2^a * 3^b`.
-- `transportConnectedFourCoefficient` and its `_mem` theorem give the eight
+- `wordNumerator_localReplacement_difference` assumes equal local lengths and
+  equal local numbers of ones, in a common prefix `pre` and suffix `suffix`.
+  It factors the target-minus-source integer numerator difference by exactly
+  `2^(pre.length) * 3^(listOnes suffix)`.
+- `transportConnectedFourCoefficient` and
+  `transportConnectedFourCoefficient_mem` give the eight
   coefficients `15,29,21,47,17,35,27,65` in Boolean lexicographic order.
 - `wordNumerator_connectedFour_difference` proves
   `Q(0abc1) − Q(1abc0)` equals that coefficient.
@@ -226,30 +262,144 @@ Source: `Collatz/Radius4LogDefect.lean`.
 - `cycleDenominator_exponent_lt_twice_of_le_sixty_five` proves `A < 2L`
   under `D ≤ 65` and `4 ≤ L`.
 
-None of these elementary lemmas asserts an LMN lower bound or the cutoff `L < 7000`.
+None of these elementary lemmas asserts the required quantitative
+logarithmic lower bound or the cutoff `L < 7000`.
 
-## Analytic dependency for the first elimination
+## Unverified work and analytic dependency
 
-The height-two and connected `[4]` elimination already requires the explicit
-LMN two-logarithm lower bound. No equivalent theorem was located in pinned
-Mathlib. See `docs/RL238_ANALYTIC_DEPENDENCY.md` for the exact proposition and
-the audited support. It is not an axiom or hypothesis in any Lean theorem.
+New component helpers and a height-two outside-bit agreement lemma in
+`Collatz/Radius4TransportSigned.lean`, together with
+`Collatz/CyclicWordList.lean`, `Collatz/Radius4WordRotation.lean`,
+`Collatz/Radius4FullDenominatorWord.lean`,
+`Collatz/Radius4TransportConnectedBits.lean`,
+`Collatz/Radius4TransportLocalWords.lean`, and
+`Collatz/Radius4ConnectedBounds.lean`,
+on branch `codex/r4-local-word-bridge`, have not completed full validation or
+promotion at this checkpoint. Individual module checks do not establish
+whole-branch coverage. These additions are not included in the promoted
+scope above.
+
+### Working-branch inventory — under validation, not promoted
+
+The following are the 24 new public lemma statements in the current source.
+Their descriptions specify the intended application boundary; listing them
+here does not assert that the branch's full build or axiom audit has passed.
+
+`Collatz/CyclicWordList.lean` defines `cyclicWordList`, the chronological list
+of a cyclic word's bits starting at position zero, and contains eight lemmas:
+
+- `length_cyclicWordList` and `getElem_cyclicWordList` identify its length
+  and indexed entries.
+- `cyclicWordList_rotate` identifies rotation of a nonempty cyclic word
+  with rotation of its chronological list.
+- `listOnes_eq_sum_map` expresses a list's weight as the sum of its bit values.
+- `listOnes_cyclicWordList` identifies list weight with cyclic weight for a
+  nonempty word.
+- `take_drop_eq_of_getElem_eq_outside` gives equal prefixes and suffixes for
+  equal-length lists agreeing outside a specified interval.
+- `shared_prefix_suffix_of_getElem_eq_outside` gives the complete common-context
+  decomposition when that interval lies within the lists.
+- `cyclicWordList_take_drop_eq_of_eq_outside` carries pointwise cyclic
+  agreement outside an interval into equal list prefixes and suffixes.
+
+`Collatz/Radius4WordRotation.lean` contains three generic list-arithmetic lemmas:
+
+- `wordNumerator_blockSwap_covariance` gives the exact integer numerator
+  identity for exchanging two consecutive blocks.
+- `cycleDenominator_dvd_wordNumerator_blockSwap` preserves source-numerator
+  divisibility by the full denominator under that exchange, assuming
+  positive total length and positive total weight.
+- `cycleDenominator_dvd_wordNumerator_rotate` carries the same divisibility
+  through any natural-number list rotation under the corresponding hypotheses.
+
+`Collatz/Radius4FullDenominatorWord.lean` contains five application lemmas:
+
+- `cycleDenominator_dvd_cyclicWordList_rotate` preserves full-denominator
+  source-numerator divisibility under rotation of an arbitrary nonempty
+  positive-weight cyclic word.
+- `cycleDenominator_dvd_cyclicWordList_rotate_sub` derives divisibility of
+  the rotated-minus-source numerator difference from that source hypothesis.
+- `cycleDenominator_natAbs_mem_of_dvd_connectedFourCoefficient` applies the
+  finite divisor list to the absolute value of the actual full denominator,
+  assuming positive length and weight, `D > 1`, and connected-coefficient
+  divisibility.
+- `cycleDenominator_le_sixty_five_of_dvd_connectedFourCoefficient` concludes
+  `D ≤ 65` under those same hypotheses.
+- `cycleDenominator_eq_five_of_dvd_fifteen` concludes `D = 5` from positive
+  length and weight, `D > 1`, and `D ∣ 15`.
+
+The existing component and signed-flow modules gain three lemmas:
+
+- `consecutiveOffsetRunLengths_four_connected_iff`, in
+  `Collatz/Radius4TransportComponents.lean`, characterizes when four offsets
+  have the single-run family label `[4]` by successive offset equalities.
+- `transportActiveEdgeOffsetList_eq_four_consecutive_of_connected`, in the
+  same file, extracts the actual ordered list `[p,p+1,p+2,p+3]` from cost-four,
+  unit-height, connected-family hypotheses, with `p+4 < n`.
+- `transportHeightTwo_bits_eq_outside_of_cost_four`, in
+  `Collatz/Radius4TransportSigned.lean`, gives source/target bit agreement
+  outside the four-position height-two window, assuming equal weight,
+  cut cost four, and an internal magnitude-two edge.
+
+`Collatz/Radius4TransportConnectedBits.lean` contains
+`transportConnectedFour_local_bits_of_cost_four`. Under equal weight, cut
+cost four, unit height, and family label `[4]`, its statement extracts the
+endpoint exchange `1abc0 ↔ 0abc1`, with all three interior bits and every
+bit outside the five-position window unchanged. It retains the actual cut
+and the bounded chronological window.
+
+`Collatz/Radius4TransportLocalWords.lean` contains two common-context statements:
+
+- `transportConnectedFour_exists_word_context_of_cost_four` writes the
+  complete chronological source and target lists with the same prefix and
+  suffix around `1abc0 ↔ 0abc1`, under equal weight and the connected
+  unit-height cost-four hypotheses at cut zero.
+- `transportHeightTwo_exists_word_context_of_cost_four` gives the corresponding
+  common-context lists around `0011 ↔ 1100`, under equal weight, cut-zero
+  cost four, and an internal magnitude-two edge.
+
+`Collatz/Radius4ConnectedBounds.lean` contains the two branch-bound applications:
+
+- `transportConnectedFour_fullDenominator_le_sixty_five` concludes `D ≤ 65`
+  for a nonempty positive-weight generic word whose full denominator satisfies
+  `D > 1` and divides its source numerator, assuming its self-rotation has
+  cost four at cut zero, unit height, and connected family label `[4]`.
+- `transportHeightTwo_fullDenominator_eq_five` concludes `D = 5` under the
+  same word and source-divisibility assumptions, with cut-zero cost four and
+  an internal magnitude-two edge instead of the unit-height family hypotheses.
+
+These last two statements derive the local replacements and their difference
+divisibility from the source hypothesis and geometry; they do not assume those
+intermediate conclusions separately. They do not require primitivity, do not
+exclude a complete family, and do not establish the intended final theorem.
+
+### Required analytic lower bound — unproved
+
+The height-two and connected `[4]` exclusions require a quantitative lower
+bound for `log |A log 2-L log 3|`. No equivalent theorem was located in pinned
+Mathlib. [ANALYTIC_DEPENDENCY.md](ANALYTIC_DEPENDENCY.md) states the exact
+proposition, constants, hypotheses, and useful library support. It is not an
+axiom or hypothesis in any current Lean theorem. The cutoff and the subsequent
+finite exponent certificate remain unproved.
 
 ## Radius-4 local impossibility theorem
 
 Status: **not yet kernel-verified in this repository**.
 
-The mathematics is already established in the research repository. The remaining task here is faithful reconstruction and formal verification, not discovery.
-
-With R4-1 complete, translate the established elimination chain in this order:
+The generic target assumes `0 < L < A`, `D > 1`, `D ∣ Q(w)`, primitivity,
+and a nonzero rotation shift, and excludes `IsTransportRadiusFour w shift`.
+The remaining family exclusions and assembly are:
 
 1. `(1,2,1)` and connected `[4]`;
 2. `[3,1]`;
 3. `[2,2]`;
 4. `[2,1,1]`;
-5. `[1,1,1,1]` and the final quotient-cycle closure;
+5. `[1,1,1,1]`, including the required reduction to a smaller cyclic object
+   and a proof closing that reduction;
 6. assemble the primitive full-denominator transport-Radius-4 local theorem.
 
 ## Scope limitation
 
-Do not treat the local theorem as a global non-trivial-cycle exclusion theorem. No Radius 5, Gate A, Gate B, or global encounter work is part of the present repository objective unless explicitly requested later.
+Even a completed local theorem would not show that every other Collatz cycle
+contains the excluded rotation configuration. It would therefore not by itself
+exclude all other cycles or prove the Collatz conjecture.

@@ -36,7 +36,7 @@ theorem transportIncrement_eq_zero_iff {n : ℕ} [NeZero n]
 
 /-- Adjacent unit-height nonzero edges have the same signed flow. Opposite
 signs would require a step of magnitude two, contrary to the binary increment
-bound. This is the signed refinement of a connected RL238 unit-height run. -/
+bound. This is the signed refinement of a connected unit-height run. -/
 theorem transportPrefixFlow_succ_eq_of_magnitudes_eq_one
     {n : ℕ} [NeZero n] (source target : CyclicWord n)
     (cut : ZMod n) (k : ℕ)
@@ -95,7 +95,7 @@ theorem transportHeightTwo_signed_of_magnitudes
       · simpa using hr
 
 /-- The existing rigid cost-four height-two theorem supplies the signed
-RL238 profile without adding any hypothesis to the equal-weight setting. -/
+profile without adding any hypothesis to the equal-weight setting. -/
 theorem transportHeightTwo_signed_of_cost_four
     {n : ℕ} [NeZero n] {source target : CyclicWord n}
     (hones : ones source = ones target) (cut : ZMod n)
@@ -201,5 +201,33 @@ theorem transportHeightTwo_local_bits_of_cost_four
     obtain ⟨h2s, h2t⟩ := (transportIncrement_eq_one_iff source target cut _).mp (by simpa using hinc2)
     obtain ⟨h3s, h3t⟩ := (transportIncrement_eq_one_iff source target cut _).mp (by simpa using hinc3)
     exact ⟨true, h0s, h1s, h2s, h3s, h0t, h1t, h2t, h3t⟩
+
+/-- Outside the four positions of a rigid height-two local replacement, the
+two words agree. This makes its unchanged prefix and suffix explicit. -/
+theorem transportHeightTwo_bits_eq_outside_of_cost_four
+    {n : ℕ} [NeZero n] {source target : CyclicWord n}
+    (hones : ones source = ones target) (cut : ZMod n)
+    (hcost : transportCostAtCut source target cut = 4)
+    {k : ℕ} (hkpos : 0 < k) (hklt : k < n)
+    (hk : transportFlowMagnitude source target cut k = 2)
+    {j : ℕ} (hj : j < n) (houtside : j < k - 2 ∨ k + 2 ≤ j) :
+    source (cut + (j : ZMod n)) = target (cut + (j : ZMod n)) := by
+  have hzero : ∀ t, t ≤ n → t ≠ k - 1 → t ≠ k → t ≠ k + 1 →
+      transportPrefixFlow source target cut t = 0 := by
+    intro t ht hl hc hr
+    by_cases ht0 : t = 0
+    · subst t
+      exact transportPrefixFlow_zero source target cut
+    by_cases htn : t = n
+    · subst t
+      exact transportPrefixFlow_full_eq_zero_of_ones_eq hones cut
+    exact transportHeightTwo_flow_eq_zero_outside hones cut hcost hkpos hklt hk
+      (by omega) (by omega) hl hc hr
+  apply (transportIncrement_eq_zero_iff source target cut j).mp
+  have hz := hzero j (by omega) (by omega) (by omega) (by omega)
+  have hzs := hzero (j + 1) (by omega) (by omega) (by omega) (by omega)
+  have hstep := transportPrefixFlow_succ source target cut j
+  rw [hz, hzs] at hstep
+  omega
 
 end Collatz

@@ -1,60 +1,79 @@
-# Proof scope policy
+# Proof scope and documentation policy
 
-This repository is intended to be readable as a self-contained mathematical object. A reader should not need unpublished notes, another repository, or historical context to understand what a theorem means.
+This repository studies a local obstruction to possible Collatz cycles. The
+Collatz map halves an even natural number and sends an odd `x` to `3*x+1`.
+The familiar positive cycle is `1 → 4 → 2 → 1`. A local obstruction excludes
+one specified configuration; it does not show that every other hypothetical
+cycle contains that configuration.
 
-## Required documentation for substantial theorems
+Every document must explain its mathematical objects and proof status within
+this repository. Readers should be able to follow it without personal notes,
+project history, or additional unpublished material.
 
-Every substantial theorem should document all of the following.
+## What substantial theorems must document
 
-### 1. Plain-English statement
+For each substantial theorem, provide:
 
-Explain the result before presenting technical notation. Introduce any Collatz-specific terminology from first principles.
+1. A plain-English statement introducing its terminology and notation.
+2. The exact Lean theorem name and source file.
+3. All meaningful hypotheses: positivity, primitivity, cycle encoding,
+   full-denominator divisibility, exact or bounded radius, and any local
+   geometric assumptions.
+4. The conclusion actually proved, together with nearby stronger claims
+   that do not follow.
+5. Its formal dependencies and any unresolved application steps.
 
-### 2. Formal statement
+For this project, a primitive cyclic word is one fixed only by the zero
+rotation. The full denominator is the entire integer `D = 2^A-3^L`, where
+`A` is the parity-word length and `L` its number of ones. `Q(w)` is its exact
+chronological numerator `wordNumerator`. Retain `D ∣ Q(w)` when required;
+divisibility of a difference alone is a weaker hypothesis.
 
-Give the Lean theorem name and identify the source file in which it is proved.
+Transport radius minimizes the sum of absolute target-minus-source prefix
+weights over cyclic cuts. Hamming distance counts unequal positions. The
+predicates for these two notions must not be interchanged. `OddCycle` records
+exact positive odd-node transitions but does not assert primitivity or a
+minimal represented period.
 
-### 3. Assumptions
+## Status language and evidence
 
-List every mathematically meaningful hypothesis. In particular, distinguish assumptions about:
+Use these descriptions consistently:
 
-- positivity;
-- primitivity;
-- cycle encoding;
-- arithmetic divisibility or denominator conditions;
-- exact versus bounded radius, and Hamming distance versus transport distance;
-- local versus global structure.
+- **Defined:** the stated definition has been checked by Lean.
+- **Proved:** Lean has checked the theorem with no proof placeholder or new
+  mathematical axiom.
+- **Verified on main:** the exact revision is merged and the required root
+  build has passed.
+- **Unverified work:** source has been edited but has not yet passed its
+  required checks.
+- **Target:** a proposition intended for proof, with no claim of completion.
+- **Out of scope:** a result not included in the stated objective.
 
-### 4. What the theorem proves
+Record the revision and actual CI Build result supporting a promotion. An
+older green build does not validate later edits, and a module omitted from
+root imports is not covered by the root build. A Markdown statement or a
+file's presence is never evidence of a theorem proof.
 
-State the strongest conclusion that follows from the Lean theorem itself.
+Required proofs must use this repository's checked results or declared Lean
+and Mathlib dependencies. Do not introduce `sorry`, `admit`, new mathematical
+axioms, or `native_decide`. Standard kernel-checked finite `decide` proofs are
+acceptable. Report axiom-audit results accurately; the accepted standard core
+may include `propext`, `Classical.choice`, and `Quot.sound`.
 
-### 5. What the theorem does not prove
+## Unresolved dependencies and the endpoint
 
-Explicitly list nearby stronger claims that are not consequences of the theorem. For local Collatz obstructions, this normally includes whether the theorem does or does not exclude all non-trivial cycles and whether a separate global bridge is still needed.
+The intended final theorem excludes exact transport radius four for generic
+cyclic words with `0 < L < A`, `D > 1`, `D ∣ Q(w)`, primitivity, and a nonzero
+self-rotation shift. It is currently unproved. Its quantitative logarithmic
+obligation is stated explicitly in
+[ANALYTIC_DEPENDENCY.md](ANALYTIC_DEPENDENCY.md). Removing background material
+must never remove that mathematical dependency or turn it into an assumption.
 
-### 6. Dependency boundary
+A theorem conditional on an unproved lower bound is not completion of the
+intended unconditional local result. Every component family and every
+required arithmetic check must be handled before claiming that result.
 
-All mathematical dependencies needed for the theorem must appear in this repository or in its declared Lean/mathlib dependencies. Informal external results must either be formalised here, replaced by a formally imported theorem, or clearly identified as an unformalised blocker. No theorem should be presented as complete while relying on an unstated external argument.
-
-## Status language
-
-Use status descriptions conservatively:
-
-- **defined**: Lean accepts a definition;
-- **proved**: Lean accepts the theorem without `sorry` or an equivalent placeholder;
-- **scaffolded**: the relevant source structure exists but the intended substantial theorem is not yet complete;
-- **target**: a statement intended for future formalisation and not yet claimed as proved;
-- **out of scope**: intentionally not part of the theorem under discussion.
-
-A Markdown description of a target is never evidence that the target has been proved.
-
-## Local theorem versus global bridge
-
-A recurring distinction in this project is between a **local obstruction** and a **global bridge**.
-
-A local obstruction says that a particular configuration cannot occur in an eligible hypothetical Collatz cycle.
-
-A global bridge would say that every hypothetical non-trivial cycle must contain such a configuration.
-
-Only the conjunction of those two kinds of results can exclude all hypothetical cycles through that route. The repository must never describe a local obstruction as a global no-cycle theorem unless the required bridge has also been formalised.
+Even the completed local obstruction would require a separate theorem saying
+that every other hypothetical cycle contains the excluded configuration to
+support a general no-cycle conclusion. Excluding cycles alone would also not
+prove that every positive Collatz trajectory reaches the familiar cycle.

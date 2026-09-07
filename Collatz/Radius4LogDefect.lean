@@ -2,7 +2,7 @@ import Collatz.Cycle
 
 namespace Collatz
 
-/-- The logarithmic defect used in RL238 is the logarithm of the exact
+/-- The logarithmic defect is the logarithm of the exact
 full-denominator ratio. This identity is elementary and contains no
 two-logarithm lower-bound assumption. -/
 theorem cycleDenominator_log_defect_eq (A L : ℕ) :
@@ -27,7 +27,7 @@ theorem cycleDenominator_log_defect_pos {A L : ℕ}
   have hquot : 0 < (cycleDenominator A L : ℝ) / (3 : ℝ) ^ L := by positivity
   linarith
 
-/-- RL238's elementary exponential upper bound for the logarithmic defect.
+/-- An elementary exponential upper bound for the logarithmic defect.
 The full denominator is retained exactly. -/
 theorem cycleDenominator_log_defect_lt_ratio {A L : ℕ}
     (hD : 0 < cycleDenominator A L) :
@@ -42,7 +42,7 @@ theorem cycleDenominator_log_defect_lt_ratio {A L : ℕ}
   linarith
 
 /-- The connected-branch coefficient bound gives exactly the exponential
-defect used before RL238's external LMN cutoff. This theorem does not assert
+defect needed for the quantitative two-logarithm cutoff. This theorem does not assert
 that cutoff. -/
 theorem cycleDenominator_log_defect_lt_sixty_five {A L : ℕ}
     (hD : 0 < cycleDenominator A L) (hsmall : cycleDenominator A L ≤ 65) :
@@ -62,8 +62,8 @@ private theorem three_pow_add_sixty_five_lt_four_pow {L : ℕ} (hL : 4 ≤ L) :
       simp only [Nat.add_succ, pow_succ]
       nlinarith [pow_pos (by norm_num : 0 < (4 : ℕ)) (4 + m)]
 
-/-- The elementary exponent reduction used by RL238 before enlarging the
-LMN parameter: denominators at most sixty-five and `L ≥ 4` force `A < 2L`. -/
+/-- The elementary exponent reduction used before enlarging the
+two-logarithm parameter: denominators at most sixty-five and `L ≥ 4` force `A < 2L`. -/
 theorem cycleDenominator_exponent_lt_twice_of_le_sixty_five {A L : ℕ}
     (hsmall : cycleDenominator A L ≤ 65) (hL : 4 ≤ L) :
     A < 2 * L := by

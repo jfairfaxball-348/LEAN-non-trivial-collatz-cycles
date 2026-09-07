@@ -1,80 +1,92 @@
 # Formalisation roadmap
 
-The sole objective is the standalone kernel verification of the established
-RL238 primitive full-denominator transport-Radius-4 local impossibility theorem.
-The research repository is a read-only blueprint. The final theorem is not yet proved.
+The objective is to prove a local impossibility theorem for cyclic binary
+words arising in Collatz-cycle arithmetic. The ordinary Collatz map sends
+even `x` to `x/2` and odd `x` to `3*x+1`; the parity encoding uses `halfStep`,
+which also divides the odd result by two.
 
-## Stages 0–1 — foundations and genuine cycle arithmetic
+For a word of length `A` with `L` ones, let `D = 2^A-3^L` and let `Q(w)` be
+its exact chronological affine numerator. The target retains `0 < L < A`,
+`D > 1`, `D ∣ Q(w)`, primitivity, and a nonzero rotation shift. Primitivity
+means no nonzero rotation fixes the word. Transport radius is the minimum
+over cyclic cuts of the sum of absolute differences between target and
+source prefix weights. The target excludes exact radius four under these
+hypotheses; it remains unproved.
 
-Complete as infrastructure for the local theorem: ordinary Collatz and halfStep,
-exact OddCycle data, genuine parity-word encoding, full denominator arithmetic,
-positive nontrivial denominator, and shifted-origin numerator identities.
-Reverse extraction from ordinary periodic points is separate; draft PR #6 is out of scope.
+## Cycle model and arithmetic — verified
 
-## Stage 2 — earlier Hamming support
+The library defines ordinary Collatz steps, `halfStep`, exact odd-to-odd
+transitions, and `OddCycle`. It proves the genuine parity encoding, the full
+denominator identity, denominator positivity, the strict denominator bound
+for a nontrivial cycle, and shifted-origin identities. `OddCycle` does not
+assert a minimal represented period or primitivity.
 
-The four-boundary arithmetic chain remains valid support infrastructure under
-its stated Hamming hypotheses. It cannot stand in for transport radius.
-Reuse requires an explicit formal derivation of its hypotheses.
+## Transport classification and cut normalization — verified
 
-## Stages 3–4 — transport model and R4-1
+The prefix-flow model has increments in `{-1,0,1}` and endpoint zero for
+equal-weight words. At cost four, the possible nonzero magnitude patterns are
+the height-two profile `(1,2,1)` or four unit-height edges. Maximal consecutive
+runs of those four edges have lengths `[4]`, `[3,1]`, `[2,2]`, `[2,1,1]`, or
+`[1,1,1,1]`, up to component permutation. Actual component order is retained.
 
-Complete, including the cut-normalisation bridge promoted in PR #33.
+A minimizing cut can be normalized to zero by rotating the words. For cycle
+parity words, `OddCycle.cycleTransportRadiusFour_exists_advanced_zero_cut`
+identifies the actual advanced orbit origin. All required classification
+modules are imported by the root library and included in the recorded builds.
 
-The prefix flow has binary increments, one-Lipschitz steps, equal-weight zero
-endpoint, and exact minimum-over-cuts cost. The cost-four families are the
-height-two `(1,2,1)` profile and the five ordered-component families, labeled
-up to permutation as `[4]`, `[3,1]`, `[2,2]`, `[2,1,1]`, and `[1,1,1,1]`.
+## Height-two and connected four-edge exclusions — in progress
 
-The chosen cut is normalized to zero in a rotated genuine parity word using
-`OddCycle.cycleTransportRadiusFour_exists_advanced_zero_cut`.
-The authorized RL238 blueprint requires no additional general metric equivalence.
+The verified prerequisites include signed height-two bits `0011 ↔ 1100`,
+exact local coefficients, coprime context cancellation, a finite divisor list,
+and elementary logarithmic upper bounds. PR #34 promoted these prerequisites;
+see the [checkpoint](CURRENT_CHECKPOINT.md) for build evidence.
 
-All intended transport modules are root-imported. PR #33 repaired the earlier
-coverage gap and passed full local build and GitHub Build before merge.
+The following steps remain:
 
-## Stage 5 — established eliminations
+1. Extract `0abc1 ↔ 1abc0` from the connected four-edge geometry.
+2. Express each comparison using common prefix and suffix lists, and prove
+   that full-denominator source divisibility passes through generic rotation.
+3. Apply the local coefficient and divisor lemmas to the actual word pair.
+4. Prove the precise quantitative logarithmic lower bound, use it to obtain
+   `L < 7000`, and verify the resulting finite exponent list and exclusions.
 
-In progress at the elementary prerequisites to the **first** elimination.
-No complete topology elimination is yet proved.
+New component, cyclic-list, word-rotation, full-denominator-word, local-bit,
+and common-context work on `codex/r4-local-word-bridge`, including the
+application statements in `Collatz/Radius4ConnectedBounds.lean`, has not
+completed full validation or promotion at this checkpoint. The application
+statements target `D = 5` for height-two and `D ≤ 65` for connected
+four-edge flow. Source presence is not evidence that any of these steps
+has been completed.
 
-The present elementary layer includes signed height-two local bits, exact
-replacement coefficients, coprime cancellation, the strict natural divisor
-list, and the logarithmic defect with `A < 2L` for `L ≥ 4` and `D ≤ 65`.
-The remaining first-branch glue is the `[4]` local word, common-context list
-decompositions, and full-denominator divisibility under generic word rotation. These
-applications are not implicit in the generic prerequisite lemmas.
+The logarithmic proposition is stated in
+[ANALYTIC_DEPENDENCY.md](ANALYTIC_DEPENDENCY.md). No equivalent formal theorem
+was located in the pinned Mathlib. It must receive a kernel proof and cannot
+be added as an axiom or an extra hypothesis of the intended final theorem.
 
-Preserve the established order:
+## Remaining component families — unproved
 
-1. Signed height-two and connected `[4]` words, exact local coefficients,
-   coprime context cancellation, LMN cutoff and finite tail.
-2. `[3,1]`.
-3. `[2,2]`.
-4. `[2,1,1]`.
-5. `[1,1,1,1]` quotient cycle and final closure.
+The planned order after the first exclusions is:
 
-The LMN two-logarithm lower bound is already needed in item 1. No corresponding
-theorem was located in pinned Mathlib. The exact obligation and available
-support are recorded in [RL238_ANALYTIC_DEPENDENCY.md](RL238_ANALYTIC_DEPENDENCY.md).
-It must be proved internally, not added as an axiom or a new final hypothesis.
+1. `[3,1]`: one run of three active edges and one isolated active edge.
+2. `[2,2]`: two runs of two active edges.
+3. `[2,1,1]`: one run of two and two isolated active edges.
+4. `[1,1,1,1]`: four isolated active edges, including the required reduction
+   to a smaller cyclic object and its closure argument.
 
-## Stage 6 — assemble the local theorem
+Each family needs its full arithmetic exclusion. The classification alone
+does not supply these conclusions. The [local proof map](LOCAL_PROOF_MAP.md)
+locates existing ingredients and their application gaps.
 
-Not yet proved. Preserve all exact RL238 hypotheses, including explicit
-primitivity where required. OddCycle does not silently supply primitivity
-or a minimal period. The endpoint must concern `IsTransportRadiusFour` and
-retain the generic primitive full-denominator word scope of RL238;
-`OddCycle.IsCycleTransportRadiusFour` belongs to its genuine-cycle application,
-not a narrower replacement for that endpoint. In particular,
-retain `D ∣ Q(w)`, not merely divisibility of a numerator difference.
+## Assemble and audit the local theorem — unproved
 
-## Stage 7 — audit and completion
+Combine all families into the generic primitive-word statement. Retain the
+full `D ∣ Q(w)` hypothesis and exact transport radius. The separate Hamming
+distance predicates count mismatches and do not state this result. Cycle
+applications must establish any required primitivity explicitly.
 
-Before declaring completion, verify the exact final theorem on main, actual
-full green CI, root coverage, no proof placeholders, no research-conclusion
-axioms or external research dependency, explicit hypotheses, all topology
-families, no required unmerged PR, and synchronized documentation.
-
-The endpoint is the local Radius-4 theorem. Radius 5, Gate A, Gate B, global
-encounter work, alternative proof strategies, and other research are not successor tasks.
+Completion requires the final theorem and dependencies on main, every needed
+module in the root build, successful local and GitHub Actions builds, an axiom
+audit, no proof placeholders or `native_decide`, and consistent documentation.
+Even a completed local theorem would require an additional result showing
+that every other cycle contains the excluded configuration before it could
+imply a general no-cycle conclusion.

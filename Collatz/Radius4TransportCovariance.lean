@@ -4,7 +4,7 @@ namespace Collatz
 
 /-- Moving the cyclic cut into both words leaves each local transport increment
 unchanged, once the new cut is placed at zero.  This is the cut-normalisation
-covariance used by the RL238 Radius-4 proof. -/
+covariance needed for the transport-radius-four local proof. -/
 theorem transportIncrement_rotate_cut {n : ℕ} [NeZero n]
     (source target : CyclicWord n) (cut : ZMod n) (j : ℕ) :
     transportIncrement source target cut j =
@@ -58,7 +58,7 @@ theorem transportCostAtCut_selfRotation_rotate_cut {n : ℕ} [NeZero n]
 /-- An exact transport-Radius-4 self-rotation therefore has a rotated origin
 at which the same relative self-rotation has zero-cut transport cost exactly
 four.  This is the precise combinatorial bridge from the minimum-over-cuts
-model to the cut-normalized RL238 topology eliminations. -/
+model to the cut-normalized topology eliminations. -/
 theorem transportRadiusFour_exists_rotated_zero_cut {n : ℕ} [NeZero n]
     {w : CyclicWord n} {shift : ZMod n}
     (h : IsTransportRadiusFour w shift) :
@@ -76,7 +76,7 @@ variable {L : ℕ} [NeZero L]
 /-- The cut-normalized Radius-4 witness for a genuine Collatz parity word can
 be stated at the corresponding advanced parity origin.  The existing theorem
 `rotate_parityWord_eq_advancedParityWord` supplies the semantic identification;
-no research-side fact is imported. -/
+the identification follows entirely from the proved parity-word identity. -/
 theorem cycleTransportRadiusFour_exists_advanced_zero_cut (c : OddCycle L)
     {shift : ZMod c.encodingPeriod}
     (h : c.IsCycleTransportRadiusFour shift) :

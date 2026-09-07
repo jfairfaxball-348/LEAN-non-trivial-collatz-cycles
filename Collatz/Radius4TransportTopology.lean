@@ -53,7 +53,7 @@ theorem transportCostAtCut_eq_sum_active_magnitudes {n : ℕ} [NeZero n]
 
 /-- If every charged internal edge has flow height at most one, transport cost
 is exactly the number of active internal edges.  This is the unit-height branch
-of the RL238 Radius-4 topology classification. -/
+of the transport topology classification. -/
 theorem transportCostAtCut_eq_active_card_of_unit {n : ℕ} [NeZero n]
     (source target : CyclicWord n) (cut : ZMod n)
     (hunit : ∀ j ∈ Finset.range (n - 1),
@@ -79,7 +79,7 @@ theorem transportCostAtCut_eq_active_card_of_unit {n : ℕ} [NeZero n]
 
 /-- At a cost-four cut, the unit-height branch has exactly four active internal
 edges.  Their connected-component lengths are therefore a partition of four;
-RL238's next classification step refines those four edges into `[4]`, `[3,1]`,
+The connected-component classification refines those four edges into `[4]`, `[3,1]`,
 `[2,2]`, `[2,1,1]`, or `[1,1,1,1]`. -/
 theorem transportActiveEdgeOffsets_card_eq_four_of_cost_four_of_unit
     {n : ℕ} [NeZero n] (source target : CyclicWord n) (cut : ZMod n)

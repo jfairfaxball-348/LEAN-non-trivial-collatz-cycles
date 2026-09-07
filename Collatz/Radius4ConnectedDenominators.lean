@@ -4,7 +4,7 @@ import Collatz.Cycle
 namespace Collatz
 
 /-- The full cycle denominator is coprime to six for positive exponents.
-This supplies the monomial cancellation required by RL238 R4-2 internally. -/
+This supplies the monomial cancellation for the connected-branch arithmetic. -/
 theorem cycleDenominator_isCoprime_six {A L : ℕ}
     (hA : 0 < A) (hL : 0 < L) :
     IsCoprime (cycleDenominator A L) 6 := by
@@ -59,7 +59,7 @@ theorem cycleDenominator_dvd_fifteen_of_heightTwo_context_difference
   have h := (cycleDenominator_dvd_transport_context_iff hA hL _ _ _).mp hdiv
   simpa only [dvd_neg] using h
 
-/-- The exact finite divisor calculation in RL238 R4-2: a denominator
+/-- The exact finite divisor calculation for the connected branch: a denominator
 greater than one, coprime to six, dividing a connected local coefficient
 belongs to the established eight-element list. -/
 theorem transportConnected_denominator_mem {d c : ℕ}

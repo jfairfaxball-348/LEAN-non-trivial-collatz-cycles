@@ -77,7 +77,7 @@ private theorem consecutiveOffsetRunLengths_four_family
       List.length_cons, List.length_nil] <;>
     decide
 
-/-- The remaining unit-height half of RL238's R4-1 topology classification.
+/-- The unit-height half of the cost-four transport topology classification.
 At a cost-four unit-height cut there are four active internal edges, and their
 connected-run lengths are exhaustively one of the five established families:
 `[4]`, `[3,1]`, `[2,2]`, `[2,1,1]`, or `[1,1,1,1]`, up to the irrelevant
@@ -101,5 +101,45 @@ theorem transportActiveEdgeRunLengths_family_of_cost_four_of_unit
       (transportActiveEdgeOffsetList source target cut) hlen
   rw [transportActiveEdgeRunLengths, hlist]
   exact consecutiveOffsetRunLengths_four_family a b c d
+
+/-- The single connected four-edge family retains the concrete three
+successor relations between its ordered offsets. This is the local-word
+refinement of the existing family label, not a new topology classification. -/
+theorem consecutiveOffsetRunLengths_four_connected_iff (a b c d : ℕ) :
+    (consecutiveOffsetRunLengths [a, b, c, d]).Perm [4] ↔
+      b = a + 1 ∧ c = b + 1 ∧ d = c + 1 := by
+  simp only [consecutiveOffsetRunLengths, consecutiveOffsetRuns,
+    consecutiveOffsetRunsAux]
+  split_ifs <;> simp_all
+
+/-- In the `[4]` branch, the actual ordered active-edge list is four
+consecutive offsets. Offset `p` is edge `G_(p+1)`, so the corresponding local
+word occupies the five positions `p` through `p+4`. -/
+theorem transportActiveEdgeOffsetList_eq_four_consecutive_of_connected
+    {n : ℕ} [NeZero n] (source target : CyclicWord n) (cut : ZMod n)
+    (hcost : transportCostAtCut source target cut = 4)
+    (hunit : ∀ j ∈ Finset.range (n - 1),
+      transportFlowMagnitude source target cut (j + 1) ≤ 1)
+    (hconnected : (transportActiveEdgeRunLengths source target cut).Perm [4]) :
+    ∃ p, p + 4 < n ∧
+      transportActiveEdgeOffsetList source target cut =
+        [p, p + 1, p + 2, p + 3] := by
+  have hcard := transportActiveEdgeOffsets_card_eq_four_of_cost_four_of_unit
+    source target cut hcost hunit
+  have hlen : (transportActiveEdgeOffsetList source target cut).length = 4 := by
+    simpa [transportActiveEdgeOffsetList] using hcard
+  obtain ⟨a, b, c, d, hlist⟩ := List.length_eq_four.mp hlen
+  have hfamily : (consecutiveOffsetRunLengths [a, b, c, d]).Perm [4] := by
+    simpa only [transportActiveEdgeRunLengths, hlist] using hconnected
+  obtain ⟨rfl, rfl, rfl⟩ :=
+    (consecutiveOffsetRunLengths_four_connected_iff a b c d).mp hfamily
+  have hmem : a + 1 + 1 + 1 ∈ transportActiveEdgeOffsetList source target cut := by
+    rw [hlist]
+    simp
+  have hmem' : a + 1 + 1 + 1 ∈ transportActiveEdgeOffsets source target cut := by
+    simpa only [transportActiveEdgeOffsetList, Finset.mem_sort] using hmem
+  have hlt := (mem_transportActiveEdgeOffsets_iff source target cut _).mp hmem'
+  refine ⟨a, by omega, ?_⟩
+  simpa [Nat.add_assoc] using hlist
 
 end Collatz

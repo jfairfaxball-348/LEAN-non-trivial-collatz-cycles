@@ -139,7 +139,7 @@ theorem transportFlowMagnitude_le_two_of_cost_four {n : ℕ} [NeZero n]
 
 /-- The non-unit branch of an equal-weight cost-four cut necessarily contains
 an internal edge of absolute flow height exactly two. This is the existence
-half of RL238's unique height-two topology. -/
+half of the unique height-two topology. -/
 theorem exists_transportFlowMagnitude_eq_two_of_cost_four_of_not_unit
     {n : ℕ} [NeZero n] {source target : CyclicWord n}
     (hones : ones source = ones target) (cut : ZMod n)
@@ -161,7 +161,7 @@ theorem exists_transportFlowMagnitude_eq_two_of_cost_four_of_not_unit
 /-- A height-two internal edge at an equal-weight cost-four cut is rigid: it is
 strictly internal, both neighbouring internal edges have height one, and these
 three edges consume the entire transport budget. This is exactly the
-`(1,2,1)` height profile certified in RL238. -/
+rigid `(1,2,1)` height profile. -/
 theorem transportHeightTwo_rigid_of_cost_four {n : ℕ} [NeZero n]
     {source target : CyclicWord n} (hones : ones source = ones target)
     (cut : ZMod n) (hcost : transportCostAtCut source target cut = 4)
@@ -217,7 +217,7 @@ theorem transportHeightTwo_rigid_of_cost_four {n : ℕ} [NeZero n]
   rw [hcost, hleft, hk, hright]
 
 /-- The complete non-unit branch of an equal-weight cost-four cut has the
-unique RL238 height-two profile `(1,2,1)`. The final equality records that the
+unique height-two profile `(1,2,1)`. The final equality records that the
 three displayed edges exhaust the full cost, so no additional positive-height
 edge can occur outside the displayed excursion. -/
 theorem exists_transportHeightTwo_pattern_of_cost_four_of_not_unit

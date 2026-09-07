@@ -29,3 +29,9 @@ import Collatz.Radius4TransportSigned
 import Collatz.Radius4ConnectedCoefficients
 import Collatz.Radius4ConnectedDenominators
 import Collatz.Radius4LogDefect
+import Collatz.CyclicWordList
+import Collatz.Radius4WordRotation
+import Collatz.Radius4FullDenominatorWord
+import Collatz.Radius4TransportConnectedBits
+import Collatz.Radius4TransportLocalWords
+import Collatz.Radius4ConnectedBounds

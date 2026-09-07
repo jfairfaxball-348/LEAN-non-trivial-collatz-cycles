@@ -18,7 +18,7 @@ theorem transportBitValue_true : transportBitValue true = 1 := by
 /-- Signed local change in prefix mass when transporting `source` to `target`,
 read from the cyclic cut `cut` at chronological offset `j`.
 
-The sign convention matches the RL238 prefix flow:
+The sign convention is target prefix weight minus source prefix weight:
 `target-prefix-ones - source-prefix-ones`. -/
 def transportIncrement {n : ℕ} [NeZero n]
     (source target : CyclicWord n) (cut : ZMod n) (j : ℕ) : ℤ :=
@@ -128,7 +128,7 @@ theorem transportPrefixFlow_full_eq_ones_sub_ones {n : ℕ} [NeZero n]
       rw [ones_rotate, ones_rotate]
 
 /-- Equal-weight words have zero full-prefix flow at every cyclic cut.  This is
-the endpoint condition `G_n = 0` used in the RL238 Radius-4 topology
+the endpoint condition `G_n = 0` used in the transport topology
 classification. -/
 theorem transportPrefixFlow_full_eq_zero_of_ones_eq {n : ℕ} [NeZero n]
     {source target : CyclicWord n} (hones : ones source = ones target)
@@ -162,8 +162,7 @@ at `cut`.  The internal flow edges are `G_1, ..., G_{n-1}`; `G_0` and `G_n`
 are boundary edges and are not charged.
 
 For equal-weight words, minimizing this quantity over cyclic cuts is the
-prefix-flow description of cyclic adjacent-transposition distance used by
-RL238. -/
+prefix-flow model of cyclic adjacent-transposition distance used in this library. -/
 def transportCostAtCut {n : ℕ} [NeZero n]
     (source target : CyclicWord n) (cut : ZMod n) : ℕ :=
   (Finset.range (n - 1)).sum (fun j =>
@@ -176,10 +175,8 @@ cyclic cut has linear prefix-flow cost at least `radius`, and at least one cut
 attains that cost.  Thus this is a minimum-over-cuts transport notion, not the
 Hamming-distance notion in `Collatz.Radius4`.
 
-The equivalence between this prefix-flow minimum and adjacent cyclic
-transpositions is the inherited one-dimensional transport identity that the
-next formal layer will prove explicitly where needed; it is not assumed as an
-axiom here. -/
+This library uses the prefix-flow minimum directly as its formal transport
+model. The definition does not assume a separate theorem about swap sequences. -/
 def IsExactTransportRadius {n : ℕ} [NeZero n] (radius : ℕ)
     (source target : CyclicWord n) : Prop :=
   ones source = ones target ∧
@@ -223,7 +220,7 @@ namespace OddCycle
 
 variable {L : ℕ} [NeZero L]
 
-/-- RL238's transport-distance Radius-4 condition applied to the genuine
+/-- The transport-distance Radius-4 condition applied to the genuine
 Collatz parity word.  This is a separate predicate from the older
 Hamming-distance `IsCycleRadiusFour`. -/
 def IsCycleTransportRadiusFour (c : OddCycle L)

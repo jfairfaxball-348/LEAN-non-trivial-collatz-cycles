@@ -30,7 +30,7 @@ def transportConnectedFourCoefficient : Bool → Bool → Bool → ℕ
   | true, true, true => 65
 
 /-- The connected four-edge local coefficient is exactly one of the eight
-RL238 coefficients. -/
+connected four-edge coefficients. -/
 theorem transportConnectedFourCoefficient_mem (a b c : Bool) :
     transportConnectedFourCoefficient a b c ∈
       ([15, 29, 21, 47, 17, 35, 27, 65] : List ℕ) := by

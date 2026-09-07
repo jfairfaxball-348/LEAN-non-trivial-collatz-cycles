@@ -1,81 +1,92 @@
-# Radius 4: meaning and formal boundary
+# Radius 4: definitions, target, and verified boundary
 
-## Genuine cycle encoding
+The ordinary Collatz map sends even `x` to `x/2` and odd `x` to `3*x+1`.
+Its familiar positive cycle is `1 → 4 → 2 → 1`. This project studies a
+specific obstruction to possible additional cycles, using binary parity
+words and a distance between a word and a rotation of itself.
 
-The ordinary Collatz map is `n/2` on even inputs and `3n+1` on odd inputs.
-An `OddCycle L` records positive odd nodes with exact equations
+## Cycle encoding and arithmetic
 
-`3*x_i + 1 = 2^a_i * x_(i+1)`.
+An `OddCycle L` records positive odd nodes and exact equations
 
-Lean derives their operational interpretation, ordinary periodicity, and the
-denominator-compatible `halfStep` period of length `A = sum a_i`.
-The genuine `parityWord : ZMod A → Bool` records the parity of the actual
-`halfStep` orbit at each cyclic position. It has `L` ones.
+`3*x_i+1 = 2^a_i*x_(i+1)`.
 
-The integer `D = 2^A - 3^L` is derived from the composed cycle equations.
-Lean proves full-denominator numerator identities at the base and advanced
-origins, positivity, and `D > 1` for a nontrivial OddCycle.
+The positive exponent `a_i` counts divisions by two before the next odd node.
+The auxiliary map `halfStep` divides by two on every transition, including
+its odd transition `(3*x+1)/2`. The resulting parity word has length
+`A = sum a_i` and exactly `L` ones, with a one marking an odd source state.
+`parityWord : ZMod A → Bool` indexes this actual orbit cyclically.
+
+Composition gives `D*x_0 = Q(w)`, with full integer denominator
+`D = 2^A-3^L` and exact chronological numerator `Q = wordNumerator`.
+The numerator satisfies `Q([])=0` and
+`Q(b::bs)=3^(listOnes bs)*bitOffset b+2*Q(bs)`, where `bitOffset` is zero
+for a zero bit and one for a one bit. Lean proves the full identity and
+its shifted-origin versions, denominator positivity, and `D > 1` under
+`c.IsNontrivial`, meaning at least one odd node is not `1`.
 
 ## Transport radius
 
-For equal-length, equal-weight binary words, a cyclic cut defines prefix flow
+Compare a cyclic source word and target word with the same length and number
+of ones. Choose a cut and read positions in cyclic order. Let
 
-`G_k = target prefix weight - source prefix weight`.
+`G_k = target ones in the first k positions - source ones in those positions`.
 
-The endpoints are `G_0 = G_A = 0`, each increment lies in `{-1,0,1}`, and
-the charged cut cost is
+Then `G_0 = G_A = 0`, and each increment is `−1`, `0`, or `1`. Charge the
+internal boundary after each of the first `A-1` positions:
 
-`sum_{k=1}^{A-1} |G_k|`.
+`cost at the cut = sum_{k=1}^{A-1} |G_k|`.
 
-`IsExactTransportRadius` specifies the exact minimum of these costs over
-cyclic cuts. `IsTransportRadiusFour w shift` applies radius four to the
-self-rotation pair `w, rotate w shift`.
-`OddCycle.IsCycleTransportRadiusFour` applies it to the genuine parity word.
+An active edge is an internal boundary with nonzero flow. Its height is
+`|G_k|`. Exact transport radius is the minimum of the cut costs over every
+cyclic cut. `IsExactTransportRadius` defines this minimum by a universal lower
+bound and a cut achieving equality. `IsTransportRadiusFour w shift` applies
+it to `w` and `rotate w shift`; `OddCycle.IsCycleTransportRadiusFour` applies
+it to an actual cycle parity word.
 
-This is RL238's adjacent-transposition transport notion. It is different from
-Hamming distance, which counts unequal positions. The earlier
-`IsRadiusFour` and `OddCycle.IsCycleRadiusFour` definitions use Hamming
-distance and remain separate support definitions.
+Hamming distance instead counts unequal positions. The separate predicates
+`IsRadiusFour` and `OddCycle.IsCycleRadiusFour` have Hamming hypotheses.
+Their results require a proof of those hypotheses before reuse in this
+transport development.
 
-## Completed R4-1 geometry
+## Verified cost-four classification
 
-At a cost-four minimizing cut, the six established families are:
+At a cost-four equal-weight cut, there are six families:
 
-- height-two magnitudes `(1,2,1)` on consecutive edges;
-- four unit-height edges whose maximal consecutive-run lengths, up to
-  component-order permutation, are `[4]`, `[3,1]`, `[2,2]`,
-  `[2,1,1]`, or `[1,1,1,1]`.
+- Height two: three consecutive active edges have magnitudes `(1,2,1)`.
+- Unit height: four active edges form maximal consecutive runs with lengths
+  `[4]`, `[3,1]`, `[2,2]`, `[2,1,1]`, or `[1,1,1,1]`, up to permutation.
 
-The concrete ordered components remain in `transportActiveEdgeRuns`.
-Only the family label forgets their order.
+For example, `[3,1]` means one block of three consecutive active boundaries
+and one isolated active boundary. `transportActiveEdgeRuns` preserves their
+actual order; only the family label forgets the order.
 
-PR #33 proves the cut normalization and the genuine advanced parity origin via
-the existing rotation/parity-word theorem. It also root-imports all intended
-transport modules and repairs the proof elaboration exposed by full CI.
-R4-1 is complete for the prefix-flow target used in the blueprint.
+The classification and cut normalization are verified. A minimizing cut can
+be moved to zero by rotating both words, retaining the same relative shift.
+For cycle words, `OddCycle.cycleTransportRadiusFour_exists_advanced_zero_cut`
+identifies the genuine advanced orbit origin. See the
+[theorem index](THEOREM_INDEX.md) for the component theorems.
 
-## Primitivity and the full denominator
+## Exact target and open exclusions
 
-A word is primitive if only the zero rotation fixes it. `OddCycle` does not
-supply that property or minimality. Preserve `IsPrimitive` explicitly in the
-final theorem unless a separate Lean theorem proves its removal is justified.
+The intended theorem concerns a generic cyclic word of length `A` with
+`L` ones, under `0 < L < A`, `D > 1`, `D ∣ Q(w)`, explicit primitivity, and
+a nonzero rotation shift. Primitivity means that no nonzero shift fixes the
+word. `OddCycle` does not supply this property or a minimal represented period.
+The conclusion excludes exact transport radius four.
 
-The complete denominator must be retained. A factor, residue surrogate, or
-informal eligibility statement cannot replace full-`D` divisibility.
-Generic local replacement lemmas state their actual divisibility hypotheses;
-their application to genuine transport geometry also requires a formal proof.
+No complete family exclusion or final local theorem has yet been proved.
+Verified prerequisites include signed height-two bits `0011 ↔ 1100`, local
+numerator coefficients, coprime context cancellation, and elementary
+logarithmic upper bounds. The new generic word and local-bit work currently on
+`codex/r4-local-word-bridge` has not completed full validation or promotion.
 
-## Remaining local theorem
+The first exclusions, height-two and connected `[4]`, still need the
+quantitative lower bound stated in
+[ANALYTIC_DEPENDENCY.md](ANALYTIC_DEPENDENCY.md), followed by a proved finite
+arithmetic reduction. The remaining families are `[3,1]`, `[2,2]`, `[2,1,1]`,
+and `[1,1,1,1]`. Full source-numerator divisibility must be retained throughout.
 
-The established elimination order is height-two/connected `[4]`, then
-`[3,1]`, `[2,2]`, `[2,1,1]`, and `[1,1,1,1]` quotient-cycle closure.
-
-No complete elimination or final impossibility theorem is yet proved in this
-repository. The first elimination already requires the explicit LMN
-two-logarithm lower bound. The precise missing formal dependency and available
-Mathlib support are recorded in [the analytic audit](RL238_ANALYTIC_DEPENDENCY.md).
-
-The endpoint is the primitive full-denominator transport-Radius-4 local
-impossibility theorem. It is not a global encounter theorem or a proof that all
-nontrivial Collatz cycles are absent. No broader research target follows
-automatically from this repository's completion.
+The target is a local obstruction. It does not assert that every other cycle
+has such a rotation, exclude all other Collatz cycles, or prove the Collatz
+conjecture.

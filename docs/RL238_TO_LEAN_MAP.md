@@ -1,134 +1,99 @@
 # RL238 to Lean working map
 
-Date: 2026-09-05
+Date: 2026-09-07
 
-This file maps the already-established RL238 mathematics into the standalone Lean development. It is not a theorem dependency. The Lean repository must prove every required proposition internally.
+This is a map of the established proof, not a formal dependency.
+Use only the authorized RL238 Radius-4 bundle as a read-only blueprint.
+The Lean repository must prove every required proposition internally.
 
-The research repository may be read only to recover the exact established theorem statements, conventions, and derivations. Do not import its code or artefacts and do not encode its conclusions as axioms.
+## Conventions and final scope
 
-## Existing Lean infrastructure
+RL238 uses exact cyclic adjacent-transposition transport radius, represented
+here by the minimum over cyclic cuts of `sum |G_k|`, where prefix flow is
+target weight minus source weight. The complete endpoint is zero for equal weights.
 
-Already kernel-verified from genuine `OddCycle` / `halfStep` data:
+The target is primitive full-denominator self-rotation impossibility at exact
+transport radius four. The blueprint's numerator Q has the same bit order and
+recursion as Lean's `wordNumerator`. The full denominator is `2^A - 3^L`,
+with strict region `D > 1`; a factor or modular surrogate may not replace it.
+`OddCycle` supplies genuine cycle arithmetic but does not imply primitivity.
+The final endpoint is generic in eligible binary words, not restricted to
+`OddCycle`: the connected verifier retains `0 < L < A`, `D > 1`, nonzero
+self-rotation shift, primitivity, and `D ∣ Q(w)`. Exact transport radius four
+already excludes the zero shift. Structural exclusions use the source-numerator
+divisibility itself; divisibility of the rotation difference alone is insufficient.
 
-- `OddCycle.parityWord`;
-- full denominator arithmetic and genuine word numerator identities;
-- `OddCycle.rotate_parityWord_eq_advancedParityWord`;
-- exact shifted-minus-base denominator/numerator identities;
-- `OddCycle.positiveCycleDenominator_of_nontrivial`;
-- weighted forcing and exact four-boundary numerator formulas under the older Hamming Radius-4 hypothesis.
+## R4-1 — complete
 
-The Hamming results are valid support mathematics but are not RL238's transport-radius theorem.
+| Established ingredient | Lean source |
+| --- | --- |
+| Binary increments, one-Lipschitz flow, zero endpoint, exact radius | `Radius4Transport.lean` |
+| Remove zero edges, exactly four unit-height active edges | `Radius4TransportTopology.lean` |
+| Magnitude bound two and unique `(1,2,1)` branch | `Radius4TransportHeightTwo.lean` |
+| Ordered active components and all five unit families | `Radius4TransportComponents.lean` |
+| Cut normalization and genuine advanced parity origin | `Radius4TransportCovariance.lean` |
 
-## R4-1 transport geometry
+PR #33 root-imports all these modules and repairs their Lean 4.34 elaboration.
+Full local and GitHub builds passed. Its merge is
+`174e0914a1a039234f15e078c56d545f247dc747`.
 
-RL238 uses cyclic adjacent-transposition transport distance. After a cyclic cut, define prefix flow
+The six families are height-two plus `[4]`, `[3,1]`, `[2,2]`, `[2,1,1]`,
+`[1,1,1,1]`. The component lists remain ordered; only the family label uses
+`List.Perm`. The blueprint audit requires no extra general metric-equivalence theorem.
 
-`G_k = (# target ones in first k positions) - (# source ones in first k positions)`
+## R4-2 — first elimination, in progress
 
-and cut cost
+The established connected proof is in the authorized bundle's nested
+`verify_rl238_connected_radius4_closure.py`. Its order is:
 
-`sum_{k=1}^{A-1} |G_k|`.
+1. Obtain the signed local words from the flow geometry.
+2. Use rotation covariance of full-denominator divisibility and local replacement.
+3. Evaluate connected coefficients `15,17,21,27,29,35,47,65` and height-two coefficient `15`.
+4. Cancel the coprime context monomial; restrict full denominators to
+   `5,7,13,17,29,35,47,65`.
+5. Establish `0 < A log 2 - L log 3 < 65/3^L`.
+6. Apply the exact LMN lower bound to prove `L < 7000`.
+7. Prove the seven-triple finite denominator certificate and exclude the structural tails.
 
-For equal-weight words the endpoint is `G_A = 0`. Exact cyclic Radius 4 is the minimum cut cost being exactly four.
+Current elementary Lean coverage:
 
-The six established exact-cost-four topology families are:
+| Established ingredient | Lean source and boundary |
+| --- | --- |
+| Signed unit runs; signed height-two profile and actual `0011 ↔ 1100` bits | `Radius4TransportSigned.lean`; `[4]` local extraction remains |
+| Common-context replacement, eight connected coefficients, signed height-two coefficient | `Radius4ConnectedCoefficients.lean`; application requires complete list decompositions |
+| Coprime context cancellation and eight possible natural denominators | `Radius4ConnectedDenominators.lean`; divisibility and strict-denominator hypotheses remain explicit |
+| Exact logarithmic defect, exponential upper bound, `A < 2L` reduction | `Radius4LogDefect.lean`; no LMN lower bound or cutoff is asserted |
 
-1. height-two `(1,2,1)`;
-2. connected `[4]`;
-3. `[3,1]`;
-4. `[2,2]`;
-5. `[2,1,1]`;
-6. `[1,1,1,1]`.
+No complete connected-branch elimination is yet proved in Lean. The actual
+normalized geometry must still supply the local lists, propagate generic source
+numerator divisibility through rotation, and identify the natural divisor with
+the positive full denominator. The existing OddCycle identities provide the
+genuine-cycle application but do not replace that generic word scope.
+The precise missing analytic theorem is documented in
+[RL238_ANALYTIC_DEPENDENCY.md](RL238_ANALYTIC_DEPENDENCY.md).
+Existing logarithm bounds and Legendre's theorem support elementary and finite
+parts, but do not supply the quantitative two-logarithm lower bound.
 
-## Promoted R4-1 Lean status
+## Remaining established chain
 
-### Transport model — complete
+After R4-2, preserve the certified order:
 
-`Collatz/Radius4Transport.lean` proves:
+- R4-3: `[3,1]`, with reduced convergents and every admissible multiple.
+- R4-4: `[2,2]`, retaining both zero and nonzero skew.
+- R4-5: every `[2,1,1]` skew sector.
+- R4-6–7: `[1,1,1,1]` quotient cycle and minimum-growth closure.
+- Assemble the primitive full-denominator transport-Radius-4 local theorem.
 
-- `transportIncrement_eq_neg_one_or_zero_or_one`;
-- `transportPrefixFlow_step_natAbs_le_one`;
-- `transportPrefixFlow_full_eq_ones_sub_ones`;
-- `transportPrefixFlow_full_eq_zero_of_ones_eq`;
-- `transportPrefixFlow_full_rotate_eq_zero`;
-- exact minimum-over-cuts definitions `IsExactTransportRadius`, `IsTransportRadiusFour`;
-- genuine wrapper `OddCycle.IsCycleTransportRadiusFour`.
+These eliminations and the final theorem remain unproved here.
+No external certificate execution, source-file presence, axiom, or extra
+hypothesis may be described as kernel verification.
 
-### Cost-four support — complete
+## Existing support and scope
 
-`Collatz/Radius4TransportTopology.lean` proves:
+Genuine OddCycle denominator and shifted-origin identities are available.
+Older `IsRadiusFour` / `OddCycle.IsCycleRadiusFour` theorems use Hamming distance;
+only reuse them after their hypotheses have been formally established.
+The final statement must retain transport radius and exact primitivity hypotheses.
 
-- `transportCostAtCut_eq_sum_magnitudes`;
-- `transportCostAtCut_eq_sum_active_magnitudes`;
-- `transportCostAtCut_eq_active_card_of_unit`;
-- `transportActiveEdgeOffsets_card_eq_four_of_cost_four_of_unit`.
-
-Thus the unit-height cost-four branch has exactly four active internal edges.
-
-### Height-two branch — complete
-
-`Collatz/Radius4TransportHeightTwo.lean` proves:
-
-- magnitude one-Lipschitz bounds in both directions;
-- first/last internal height bounds;
-- `transportFlowMagnitude_le_two_of_cost_four`;
-- `exists_transportFlowMagnitude_eq_two_of_cost_four_of_not_unit`;
-- `transportHeightTwo_rigid_of_cost_four`;
-- `exists_transportHeightTwo_pattern_of_cost_four_of_not_unit`.
-
-The complete non-unit cost-four branch is therefore exactly `(1,2,1)`.
-
-## First missing RL238 proposition
-
-Complete the unit-height half of the topology classification.
-
-Starting from the already-proved fact that a unit-height cost-four minimizing cut has exactly four active internal edges, introduce a Lean representation of connected runs of consecutive active offsets and prove that the run lengths are exactly one of:
-
-- `[4]`;
-- `[3,1]`;
-- `[2,2]`;
-- `[2,1,1]`;
-- `[1,1,1,1]`.
-
-This should be a purely finite/combinatorial reconstruction of the established R4-1 classification. Do not search for a different classification or strengthen it.
-
-The representation is free to be Lean-friendly so long as it faithfully records connected consecutive active-edge components and can feed the later RL238 topology eliminations.
-
-## Remaining R4-1 bridge obligations
-
-After the five unit-height families are classified, verify whether the blueprint needs any additional formal bridge for:
-
-- equivalence between the prefix-flow minimum and the inherited cyclic adjacent-transposition metric;
-- covariance of the chosen topology representation under cyclic cut/rotation;
-- connection back to the genuine rotated `OddCycle.parityWord`.
-
-Prove only the bridge actually required by the established RL238 proof.
-
-## Exact hypothesis discipline
-
-### Hamming versus transport
-
-`IsRadiusFour` / `OddCycle.IsCycleRadiusFour` are Hamming notions. RL238 uses `IsTransportRadiusFour` / `OddCycle.IsCycleTransportRadiusFour`. Never substitute the Hamming theorem for transport radius without an explicit Lean proof.
-
-### Primitivity
-
-`OddCycle` and `OddCycle.IsNontrivial` do not imply primitive parity word. Preserve `IsPrimitive c.parityWord` explicitly if the final RL238 theorem requires it.
-
-### Analytic inputs
-
-Later RL238 eliminations use audited analytic reductions, including a two-logarithm lower bound. When reached, reproduce the exact established argument using formally available theorems. If a required external analytic theorem is not available in Mathlib, isolate that formalisation dependency precisely; do not introduce it as an axiom.
-
-## Established proof order after R4-1
-
-Translate only the already-proved RL238 route:
-
-1. `(1,2,1)` and connected `[4]` eliminations;
-2. `[3,1]`;
-3. `[2,2]`;
-4. `[2,1,1]`;
-5. `[1,1,1,1]` quotient-cycle reduction and closure;
-6. assemble the primitive full-denominator transport-Radius-4 local impossibility theorem.
-
-When that theorem is kernel-verified, the repository task is complete.
-
-No Radius 5, global encounter theorem, Gate A, Gate B, or new research objective belongs in this formalisation unless explicitly requested later.
+The local theorem is the endpoint. No Radius 5, Gate A, Gate B, or global
+encounter theorem belongs to this task.

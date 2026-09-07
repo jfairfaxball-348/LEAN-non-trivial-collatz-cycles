@@ -1,136 +1,75 @@
 # Next session handover
 
-Date: 2026-09-06
+Date: 2026-09-07
 
-Repository: `jfairfaxball-348/LEAN-non-trivial-collatz-cycles`
+## Objective and authority
 
-## Objective
+Finish the standalone Lean verification of the established RL238 primitive
+full-denominator transport-Radius-4 local impossibility theorem.
+The final theorem remains **unproved** in this repository.
 
-Continue the standalone Lean formalisation of the already-proved RL238 Radius-4 local theorem.
+Use this repository for formal authority. Consult only the authorized RL238
+blueprint in the sibling research checkout, read-only. Preserve primitivity
+and the transport metric. Do not import research artifacts or assume research
+conclusions. Draft PR #6 is unrelated and remains untouched.
 
-This is a translation/reconstruction/formal-verification task, not mathematical research. The research repository may be consulted only as a read-only blueprint for the established Radius-4 proof. The Lean repository must remain completely self-contained.
+## Promoted work
 
-Do not search for new proof strategies, improve the mathematics, move to Radius 5, or start Gate/global work.
+PR #33 was repaired and merged at `174e0914a1a039234f15e078c56d545f247dc747`.
+Its head `71637765c062ca0b8a04b93fdc708648f6ef487e` passed the full local
+build and GitHub Actions run `34039991808`, including the actual Build step.
+Main's post-merge run `34040305206` also passed its actual Build step.
 
-## Authoritative promoted checkpoint
+All transport modules are now root-imported. The earlier finite family and
+height-two files needed Lean 4.34 repairs that their previous root builds had
+not exercised. Those proofs now compile while retaining their statements.
 
-At this handover, the latest promoted mathematical `main` is:
+R4-1 is complete: the six finite topology families, cut normalization, and the
+genuine advanced OddCycle parity origin are connected in Lean. The authorized
+blueprint does not require another general metric-equivalence theorem.
 
-`98922c2d125bdc24e6094fb879f7dc447c764ca9`
+## First remaining target
 
-This is the green merge of PR #31, `Formalize Radius-4 unit-height component families`.
+R4-2: height-two `(1,2,1)` and connected `[4]`.
 
-PR #31 final head:
+The current increment supplies signed unit-flow and actual height-two bits,
+local numerator coefficients, coprime context cancellation, the finite natural
+divisor list, and elementary logarithmic bounds with the `A < 2L` reduction.
+See the theorem index for exact names and hypotheses. All four new modules
+are root-imported; none proves a whole branch elimination.
 
-`a7f609ef9e3bcac8b4b338e81b943531e9fb616f`
+Next, extract the `[4]` local word from the actual ordered components; convert
+both local geometries to common-prefix/suffix lists; propagate the original
+full-denominator source divisibility through generic word rotation; and connect the natural
+divisor list to the strict positive full denominator. Then complete the
+established LMN parameter enlargement, lower bound, cutoff, finite certificate,
+and structural exclusions. Do not substitute another argument.
+The endpoint is the generic primitive full-denominator word theorem. An
+OddCycle-only theorem would undershoot the authorized RL238 statement; keep
+the original hypothesis `D ∣ Q(w)`, which the finite structural tails use.
 
-GitHub Actions run `33994980788` completed the full Lean CI `Build` step successfully before merge.
+The source bundle and exact missing two-logarithm bound are recorded in
+[RL238_ANALYTIC_DEPENDENCY.md](RL238_ANALYTIC_DEPENDENCY.md).
+The audit found the exact logarithm and Legendre support in pinned Mathlib,
+but no LMN/Baker/Matveev or equivalent quantitative two-logarithm theorem.
+The formal lower bound must be supplied by a kernel proof; an assumption-wrapped
+final statement is not completion.
 
-Do not assume this SHA is still current in the next session. First inspect live `main`, recent commits, open PRs, CI, and the current authoritative documentation.
+## Required continuation checks
 
-## What was completed this session
+1. Recover live main, recent commits, all relevant PRs, CI and the five authority docs.
+2. Check `THEOREM_INDEX.md` for which new R4-2 lemmas have actually been promoted.
+3. Follow R4-2, then `[3,1]`, `[2,2]`, `[2,1,1]`, and `[1,1,1,1]`.
+4. Keep every required module root-imported and run full local and GitHub builds.
+5. Merge only green work; synchronize the checkpoint, index, roadmap and map.
+6. Audit the final exact theorem and all dependencies before declaring completion.
 
-The remaining unit-height half of the finite R4-1 exact-cost-four topology classification is now kernel-verified.
+The installed local toolchain is available at
+`/Users/johnfairfax-ball/.elan/bin/lake`. The repository pins Lean
+`v4.34.0-rc2` and Mathlib `69fe4f49ffbc9580a2c3ae6d29591ef6d1d4131e`.
+Shell Git authentication was unavailable during this session; the connected
+GitHub app was used to publish and merge, with local Git objects verified
+against the exact remote SHAs.
 
-New source:
-
-`Collatz/Radius4TransportComponents.lean`
-
-Promoted definitions retain the actual connected components of active internal edges:
-
-- `consecutiveOffsetRuns`;
-- `consecutiveOffsetRunLengths`;
-- `transportActiveEdgeOffsetList`;
-- `transportActiveEdgeRuns`;
-- `transportActiveEdgeRunLengths`.
-
-The active offsets are listed in increasing order and decomposed into maximal consecutive runs. The concrete run ordering is retained for later topology-specific arguments.
-
-Key promoted theorem:
-
-`transportActiveEdgeRunLengths_family_of_cost_four_of_unit`
-
-At every unit-height cost-four cut, the four active internal edges have run lengths, up to permutation of disconnected components, in exactly one of the established RL238 families:
-
-- `[4]`;
-- `[3,1]`;
-- `[2,2]`;
-- `[2,1,1]`;
-- `[1,1,1,1]`.
-
-`List.Perm` is used only for the family label, so orientations such as `[1,3]` are not treated as new topology families; the actual ordered components remain available through `transportActiveEdgeRuns`.
-
-Together with the previously promoted non-unit rigidity theorem, Lean now kernel-verifies all six finite exact-cost-four topology families:
-
-1. `(1,2,1)`;
-2. `[4]`;
-3. `[3,1]`;
-4. `[2,2]`;
-5. `[2,1,1]`;
-6. `[1,1,1,1]`.
-
-## Unique next target
-
-Do not begin topology-specific arithmetic elimination yet.
-
-First recover from the authoritative RL238 Radius-4 blueprint the exact remaining R4-1 bridge, if any, between the promoted Lean prefix-flow/component classification and the statement actually used by RL238.
-
-The bridge may involve only what the blueprint genuinely requires, for example:
-
-- equivalence with the inherited cyclic adjacent-transposition formulation;
-- covariance under cyclic cut/rotation;
-- connection of the component representation to the genuine rotated `OddCycle.parityWord`.
-
-Do not invent a bridge merely for generality. If the promoted Lean definitions already supply the required connection, record that precisely and move directly to the first established elimination. Otherwise formalise only the missing established bridge on a fresh branch and run full Lean CI.
-
-## Required source policy
-
-Formal authority:
-
-- this Lean repository for definitions, existing Lean theorems, branches, PRs, CI, and checkpoint documentation.
-
-Mathematical blueprint:
-
-- only the authoritative RL238 Radius-4 material in `jfairfaxball-348/Proof-that-non-trivial-cycles-cannot-exist-in-Collatz`, read only as needed to recover exact established conventions/statements and proof order.
-
-Forbidden:
-
-- importing research code or artefacts as Lean dependencies;
-- asserting research conclusions as axioms;
-- unrelated historical RL archives;
-- external Collatz formalisation projects;
-- new Radius-4 mathematical exploration.
-
-## Important distinctions
-
-- RL238 Radius 4 is cyclic adjacent-transposition transport distance, not Hamming distance.
-- `IsTransportRadiusFour` and `OddCycle.IsCycleTransportRadiusFour` are the relevant current predicates.
-- Older Hamming/four-boundary theorems remain valid support infrastructure only where their hypotheses genuinely match.
-- `OddCycle` does not imply primitivity/minimality; preserve the exact RL238 hypotheses.
-
-## Established order after R4-1 is fully connected
-
-Translate only the already-proved RL238 elimination chain, in this order:
-
-1. `(1,2,1)` and connected `[4]`;
-2. `[3,1]`;
-3. `[2,2]`;
-4. `[2,1,1]`;
-5. `[1,1,1,1]` quotient-cycle reduction and final closure;
-6. assemble the primitive full-denominator transport-Radius-4 local impossibility theorem.
-
-Do not strengthen, replace, reorder, or generalise these arguments unless a small prerequisite lemma is required to faithfully encode the established proof.
-
-Once the final local theorem is Lean-verified and full CI is green, stop: the repository objective is complete unless the user explicitly supplies a new objective.
-
-## Repository hygiene
-
-The old draft PR #6 is a separate reverse ordinary-cycle line and is not part of the current target. Do not revive it during Radius-4 formalisation.
-
-After every substantive promotion, update:
-
-- `docs/CURRENT_CHECKPOINT.md`;
-- `docs/THEOREM_INDEX.md`;
-- `docs/FORMALISATION_ROADMAP.md`;
-- `docs/RL238_TO_LEAN_MAP.md`;
-- this handover when the session closes.
+Stop only at the stated endpoint or report the exact unresolved formal
+dependency. Do not start Radius 5, Gate A, Gate B, or global encounter work.

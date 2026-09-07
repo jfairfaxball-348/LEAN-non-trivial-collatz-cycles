@@ -22,7 +22,7 @@ List every mathematically meaningful hypothesis. In particular, distinguish assu
 - primitivity;
 - cycle encoding;
 - arithmetic divisibility or denominator conditions;
-- exact versus bounded Hamming distance;
+- exact versus bounded radius, and Hamming distance versus transport distance;
 - local versus global structure.
 
 ### 4. What the theorem proves

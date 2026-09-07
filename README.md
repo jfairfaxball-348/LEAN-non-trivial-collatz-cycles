@@ -1,163 +1,102 @@
-# Lean formalisation of non-trivial Collatz-cycle obstructions
+# Lean formalisation of the RL238 Radius-4 local theorem
 
-This repository is a **standalone formal mathematics project**. It is intended to be understandable and checkable without access to any other repository, private notes, prior calculations, or project history.
+This standalone repository reconstructs the established RL238 primitive
+full-denominator transport-Radius-4 local impossibility theorem in Lean.
+The final local theorem is **not yet proved here**.
 
-Its first substantial target is a local theorem about a structure called **Radius 4**. The repository defines the Collatz dynamics from first principles, derives the odd-cycle denominator inside Lean, and then builds the cyclic-word language needed to state the local Radius-4 question precisely.
+The research derivation may be consulted as a read-only blueprint. It is not
+a dependency: every formal step must follow from this repository's definitions,
+proved Lean lemmas, and the pinned Mathlib. No research conclusion is an axiom.
 
-## What is the Collatz problem?
+## Cycle model and denominator
 
-For a positive integer `n`, define the ordinary Collatz map
+The ordinary Collatz map sends an even natural number to `n/2` and an odd
+natural number to `3n+1`. Its familiar positive cycle is `1 → 4 → 2 → 1`.
 
-- `T(n) = n / 2` if `n` is even;
-- `T(n) = 3n + 1` if `n` is odd.
+The structure `OddCycle L` records positive odd nodes and exact transitions
 
-For example,
+`3*x_i + 1 = 2^a_i * x_(i+1)`.
 
-`5 -> 16 -> 8 -> 4 -> 2 -> 1 -> 4 -> 2 -> 1 -> ...`
+Lean proves their operational meaning and ordinary periodicity. For the
+denominator-compatible parity encoding it uses `halfStep`, which performs one
+division by two on each transition. The encoded period has length
+`A = sum a_i` and contains `L` odd source states.
 
-The **Collatz conjecture** says that every positive starting integer eventually reaches `1`.
+The cycle equations imply, inside Lean,
 
-Under this version of the map, `1 -> 4 -> 2 -> 1` is the familiar trivial cycle. A **non-trivial cycle** would be any other finite periodic orbit of positive integers.
+`(2^A - 3^L) * x_0 = wordNumerator(parity word)`.
 
-This repository does **not** assume the Collatz conjecture.
+The full denominator `D = 2^A - 3^L` is positive and divides that exact
+numerator. `OddCycle.positiveCycleDenominator_of_nontrivial` also proves
+`D > 1` under the explicit nontriviality hypothesis. Shifted-origin versions
+and the identification of rotation with the advanced parity origin are proved.
 
-## Odd-to-odd cycle model
+`OddCycle` does not assert a minimal represented period or primitivity.
+Required `IsPrimitive` hypotheses must remain explicit.
 
-The substantive formalisation now includes an explicit positive odd-cycle structure. At each cyclic odd index `i`, Lean records
+## What transport Radius 4 means
 
-`3 * x_i + 1 = 2^(a_i) * x_(i+1)`,
+Compare a cyclic binary word with one of its rotations. At a cyclic cut define
 
-with positive odd nodes and positive exponents.
+`G_k = target ones in the first k positions - source ones in those positions`.
 
-The exponent is not merely labelled "exact": Lean proves operationally that all earlier ordinary post-odd states are even and that the stated endpoint is odd.
+The cut cost is `sum_{k=1}^{A-1} |G_k|`. The transport model defines exact
+radius as the minimum of this cost over cyclic cuts for equal-weight words.
+RL238 Radius 4 means that this minimum is exactly four.
 
-The repository also proves that these local equations are realised by the ordinary Collatz map. One full traversal returns the chosen base odd node after `A + L` ordinary Collatz steps, where
+The relevant predicates are `IsTransportRadiusFour` and
+`OddCycle.IsCycleTransportRadiusFour`.
 
-- `L` is the number of odd nodes;
-- `A` is the sum of the exponents.
+The older predicates `IsRadiusFour` and `OddCycle.IsCycleRadiusFour` mean
+Hamming distance four. Their theorems remain support infrastructure and may
+only be reused after their hypotheses have been formally established.
+They do not state the RL238 transport theorem.
 
-A reverse theorem extracting this odd-cycle structure from an arbitrary ordinary periodic orbit has not yet been formalised and remains an explicit bridge if the final theorem is to start from the most general ordinary-cycle formulation.
+## Current formal boundary
 
-## Why a second map appears
+R4-1 is complete: Lean proves the height-two `(1,2,1)` flow family and all five
+unit-height component families `[4]`, `[3,1]`, `[2,2]`, `[2,1,1]`,
+`[1,1,1,1]`, together with the required cut normalization and genuine advanced
+parity origin. All intended transport modules are root-imported and checked by
+ordinary full CI.
 
-For the Radius-4 encoding, the denominator itself fixes the natural cyclic length.
+Work continues at the first established elimination, height-two and connected
+`[4]`. No complete topology elimination or final impossibility theorem is yet
+proved. Its LMN two-logarithm lower bound has no located formal counterpart in
+pinned Mathlib; the exact obligation is documented in
+[the analytic dependency audit](docs/RL238_ANALYTIC_DEPENDENCY.md).
+It is not assumed by the Lean library.
 
-The repository defines the derived one-division map
+See the [checkpoint](docs/CURRENT_CHECKPOINT.md),
+[theorem index](docs/THEOREM_INDEX.md),
+[roadmap](docs/FORMALISATION_ROADMAP.md),
+[RL238 map](docs/RL238_TO_LEAN_MAP.md), and
+[handover](docs/NEXT_SESSION_HANDOVER.md) for current verified scope.
 
-- `S(n) = n / 2` if `n` is even;
-- `S(n) = (3n + 1) / 2` if `n` is odd.
+## Endpoint
 
-This is called `halfStep` in Lean. It does not replace the ordinary Collatz map; it is derived for the denominator-compatible encoding.
+The target excludes the specified primitive full-denominator self-rotation
+configuration at exact transport radius four. It does not by itself exclude
+every nontrivial Collatz cycle or prove the Collatz conjecture.
 
-An odd-to-odd edge with exponent `a_i` takes exactly `a_i` `halfStep` transitions. Therefore one full odd cycle takes exactly `A` such transitions. This is why the final parity word has cyclic length `A`, not `A + L`.
+This task ends when that local theorem is kernel-verified on main, all required
+work is merged, full CI is green, and the completion audit passes.
+Radius 5, Gate A, Gate B, global encounter work, and the unrelated reverse
+ordinary-cycle draft PR #6 are outside this task.
 
-## The derived denominator
+## Building and proof hygiene
 
-Lean now derives, rather than assumes, the full composed cycle identity
-
-`2^A * x_0 = 3^L * x_0 + N`,
-
-where `N` is the recursively generated inhomogeneous numerator obtained from the local odd-to-odd equations.
-
-Rearranging inside Lean gives
-
-`(2^A - 3^L) * x_0 = N`.
-
-So the characteristic denominator
-
-`D = 2^A - 3^L`
-
-is no longer only vocabulary: the repository proves that `D > 0` and that the complete integer `D` divides the exact generated numerator `N`, with quotient `x_0`.
-
-The stronger scaffold predicate `PositiveCycleDenominator`, currently defined as `1 < D`, is **not** silently inferred from positivity. If `D > 1` is needed under a non-triviality hypothesis, that must be proved separately.
-
-## What is Radius 4?
-
-A finite cycle can be represented by a cyclic binary parity word. For the formal odd cycle above, the genuine Collatz-derived word has length `A`: at each cyclic `halfStep` position, its bit records whether the actual orbit state is odd.
-
-If `w` is such a word and `s` is a cyclic shift, `rotate w s` is the same circular word read from a different starting point.
-
-The **Hamming distance** between two binary words is the number of positions at which they differ.
-
-A shift is at **exact Radius 4** when
-
-`hammingDistance w (rotate w s) = 4`.
-
-So Radius 4 is **not** four Collatz iterations and is **not** a bound on the size of an orbit. It is a local combinatorial property of the denominator-compatible parity word.
-
-See [`docs/RADIUS4.md`](docs/RADIUS4.md) for the standalone scope explanation.
-
-## Current Radius-4 boundary
-
-The repository now has a genuine Collatz-specific Radius-4 predicate: exact Hamming distance four for the length-`A` parity word extracted from the proved periodic `halfStep` orbit.
-
-It also defines an arithmetic marker word whose true positions are the cumulative exponent boundaries. Those positions are proved to be actual odd states. The theorem that the marker word equals the genuine parity word is still missing; formally, this requires showing that every non-boundary position inside each exponent block is even.
-
-The next important bridge is then to prove that cyclic rotation of the parity word corresponds to advancing/rebasing the same periodic Collatz data, and to derive the exact full-denominator relation for the rotated numerator or numerator difference. Only after those bridges are available is it legitimate to state the final sparse Radius-4 contradiction.
-
-## What would the Radius-4 local theorem prove?
-
-The target remains:
-
-> An eligible primitive positive Collatz-cycle encoding cannot satisfy the required full-denominator condition while also having a nonzero rotation at exact Hamming distance four.
-
-That theorem is **not yet proved**.
-
-## What would it *not* prove?
-
-Even a completed Radius-4 local theorem would **not by itself**:
-
-- prove the full Collatz conjecture;
-- prove that every positive integer reaches `1`;
-- prove that all Collatz trajectories are bounded;
-- exclude every possible non-trivial cycle;
-- prove anything automatically about other Hamming radii;
-- prove that every hypothetical non-trivial cycle must exhibit a Radius-4 configuration.
-
-The last step would require a separate **global bridge/encounter theorem** showing that every hypothetical non-trivial cycle necessarily generates an eligible Radius-4 configuration. The local Radius-4 theorem and such a global bridge are different results.
-
-## Formalisation status
-
-| Component | Status |
-|---|---|
-| Ordinary Collatz map | defined and checked in Lean |
-| Exact odd-to-odd transition model | substantively formalised |
-| Positive cyclic odd-cycle structure | substantively formalised |
-| Exact removal of powers of two | proved operationally |
-| Odd-cycle -> ordinary periodic orbit | proved for the chosen base odd node |
-| Reverse arbitrary ordinary cycle -> odd-cycle extraction | not yet formalised |
-| Derived one-division map `halfStep` | defined |
-| Odd-cycle -> `halfStep` period `A` | proved |
-| `L ≤ A` and `A > 0` | proved |
-| Composed cycle identity | proved |
-| Denominator identity `(2^A - 3^L) * x_0 = N` | proved |
-| Positivity `2^A - 3^L > 0` | proved |
-| Full denominator divides generated numerator | proved |
-| Genuine length-`A` Collatz parity word | defined from the actual orbit |
-| Exact Collatz-specific Radius-4 predicate | defined |
-| Exponent-marker word equals genuine parity word | not yet proved |
-| Rotation/rebasing arithmetic bridge | not yet proved |
-| Radius-4 local impossibility theorem | not yet proved |
-| Global Radius-4 encounter theorem | out of scope for the local proof |
-| Full Collatz conjecture | not claimed |
-
-## Repository rule: every proof states its scope
-
-Every substantial formalised result added here is accompanied by plain-English documentation giving its assumptions, theorem name, source file, conclusion, limitations, and dependency boundary.
-
-The current formal results are catalogued in [`docs/THEOREM_INDEX.md`](docs/THEOREM_INDEX.md). The documentation rule is defined in [`docs/PROOF_SCOPE_POLICY.md`](docs/PROOF_SCOPE_POLICY.md), and the dependency order for the Radius-4 proof is in [`docs/FORMALISATION_ROADMAP.md`](docs/FORMALISATION_ROADMAP.md).
-
-## Proof hygiene
-
-The project builds with `autoImplicit = false` and `warningAsError = true`. Admitted placeholders are not acceptable project progress.
-
-## Building
-
-The project uses Lean 4 and mathlib, pinned by the repository configuration.
+Lean and Mathlib are pinned by `lean-toolchain` and `lakefile.lean`.
 
 ```text
 lake update
 lake build
 ```
 
-GitHub Actions performs dependency resolution and `lake build` on pushes and pull requests to `main`.
+The package uses `autoImplicit = false` and `warningAsError = true`.
+GitHub Actions resolves dependencies and runs the full library build.
+Proof placeholders, research-conclusion axioms, and undocumented external
+assumptions are not acceptable progress.
+
+The [proof scope policy](docs/PROOF_SCOPE_POLICY.md) requires each substantial
+theorem to state its meaning, assumptions, dependencies, and limitations.

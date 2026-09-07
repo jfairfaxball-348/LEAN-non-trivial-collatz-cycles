@@ -137,9 +137,103 @@ The finite exact-cost-four topology classification is **kernel-verified and gree
 - non-unit branch: `(1,2,1)`;
 - unit-height branch: `[4]`, `[3,1]`, `[2,2]`, `[2,1,1]`, `[1,1,1,1]`.
 
-Before topology-specific arithmetic elimination begins, consult the authoritative RL238 Radius-4 blueprint and formalise only any remaining bridge it actually requires between this prefix-flow/component representation and the inherited cyclic adjacent-transposition / rotation / genuine `OddCycle.parityWord` statement.
+R4-1 is complete. The authorized RL238 blueprint audit confirms that PR #33
+provides the required cut normalization; no further general metric-equivalence
+theorem is needed for the prefix-flow target.
 
-No such bridge should be invented merely for generality.
+Source: `Collatz/Radius4TransportCovariance.lean`.
+
+- `transportIncrement_rotate_cut`;
+- `transportPrefixFlow_rotate_cut`;
+- `transportCostAtCut_rotate_cut`;
+- `rotate_rotate_comm`;
+- `transportCostAtCut_selfRotation_rotate_cut`;
+- `transportRadiusFour_exists_rotated_zero_cut`;
+- `OddCycle.cycleTransportRadiusFour_exists_advanced_zero_cut`.
+
+PR #33 imports every intended transport module from the root and repairs the
+Lean 4.34 elaboration failures that previous root builds had not exercised.
+Its full local build and GitHub Actions Build passed before merge.
+
+## R4-2 elementary prerequisites
+
+These lemmas are prerequisites, not a completed height-two or connected `[4]`
+elimination. All four modules are imported by `Collatz.lean`.
+The full local root build passed with 8,912 jobs. All 27 new public lemmas were
+also dependency-audited: only `propext`, `Classical.choice`, and `Quot.sound`
+occur, with no research-conclusion or proof-placeholder axiom.
+
+### Signed flow and height-two local bits
+
+Source: `Collatz/Radius4TransportSigned.lean`.
+
+- `transportIncrement_eq_one_iff`, `transportIncrement_eq_neg_one_iff`, and
+  `transportIncrement_eq_zero_iff` identify the actual source/target bits.
+- `transportPrefixFlow_succ_eq_of_magnitudes_eq_one` and
+  `transportBits_eq_of_adjacent_magnitudes_eq_one` preserve the signed unit run
+  and its unchanged interior bits.
+- `transportHeightTwo_signed_of_magnitudes` refines magnitudes `(1,2,1)` to
+  signed flows `(s,2*s,s)` for `s = 1` or `s = −1`.
+- `transportHeightTwo_signed_of_cost_four`,
+  `transportHeightTwo_flow_eq_zero_outside`, and
+  `transportHeightTwo_local_bits_of_cost_four` derive the signed profile,
+  zero flow off its three edges, and `0011 ↔ 1100` local bits from equal weight,
+  exact cut cost four, and an internal magnitude-two edge.
+
+### Exact local coefficients
+
+Source: `Collatz/Radius4ConnectedCoefficients.lean`.
+
+- `wordNumerator_localReplacement_difference` factors a replacement with equal
+  local length and weight, in a common prefix/suffix, by `2^a * 3^b`.
+- `transportConnectedFourCoefficient` and its `_mem` theorem give the eight
+  coefficients `15,29,21,47,17,35,27,65` in Boolean lexicographic order.
+- `wordNumerator_connectedFour_difference` proves
+  `Q(0abc1) − Q(1abc0)` equals that coefficient.
+- `wordNumerator_heightTwo_difference` proves `Q(1100) − Q(0011) = −15`.
+- `wordNumerator_connectedFour_context_difference` and
+  `wordNumerator_heightTwo_context_difference` retain the exact context factor.
+
+### Coprime cancellation and finite denominators
+
+Source: `Collatz/Radius4ConnectedDenominators.lean`.
+
+- `cycleDenominator_isCoprime_six` assumes positive exponents `A,L`.
+- `cycleDenominator_dvd_transport_context_iff` cancels `2^a * 3^b` from
+  divisibility by the **full** integer denominator, with the same exponent hypotheses.
+- `cycleDenominator_dvd_connectedFourCoefficient_of_context_difference` and
+  `cycleDenominator_dvd_fifteen_of_heightTwo_context_difference` explicitly assume
+  full-denominator divisibility of the common-context numerator difference.
+- `transportConnected_denominator_mem` and
+  `transportConnectedFour_denominator_mem` prove the natural divisor list
+  `5,7,13,17,29,35,47,65`, assuming `d > 1`, `d.Coprime 6`, and the stated
+  coefficient divisibility. The finite certificate is proved by kernel `decide`.
+- `transportHeightTwo_denominator_eq_five` specializes the same strict and
+  coprime hypotheses to `d ∣ 15`.
+
+No lemma here silently identifies an arbitrary natural divisor with the full
+cycle denominator; that application remains part of the geometry/arithmetic glue.
+
+### Elementary logarithmic defect
+
+Source: `Collatz/Radius4LogDefect.lean`.
+
+- `cycleDenominator_log_defect_eq` identifies
+  `A log 2 − L log 3 = log (1 + D/3^L)` with the exact full denominator.
+- `cycleDenominator_log_defect_pos` and
+  `cycleDenominator_log_defect_lt_ratio` assume `0 < D`.
+- `cycleDenominator_log_defect_lt_sixty_five` assumes `0 < D ≤ 65`.
+- `cycleDenominator_exponent_lt_twice_of_le_sixty_five` proves `A < 2L`
+  under `D ≤ 65` and `4 ≤ L`.
+
+None of these elementary lemmas asserts an LMN lower bound or the cutoff `L < 7000`.
+
+## Analytic dependency for the first elimination
+
+The height-two and connected `[4]` elimination already requires the explicit
+LMN two-logarithm lower bound. No equivalent theorem was located in pinned
+Mathlib. See `docs/RL238_ANALYTIC_DEPENDENCY.md` for the exact proposition and
+the audited support. It is not an axiom or hypothesis in any Lean theorem.
 
 ## Radius-4 local impossibility theorem
 
@@ -147,7 +241,7 @@ Status: **not yet kernel-verified in this repository**.
 
 The mathematics is already established in the research repository. The remaining task here is faithful reconstruction and formal verification, not discovery.
 
-After R4-1 is fully connected to the exact RL238 statement, translate the established elimination chain in this order:
+With R4-1 complete, translate the established elimination chain in this order:
 
 1. `(1,2,1)` and connected `[4]`;
 2. `[3,1]`;

@@ -33,4 +33,13 @@ theorem two_three_monomial_injective {a b c d : ℕ}
   · simpa [Nat.factorization_mul, Nat.prime_two.factorization_pow, hthreeAtTwo] using htwo
   · simpa [Nat.factorization_mul, Nat.prime_three.factorization_pow, htwoAtThree] using hthree
 
+/-- The arithmetic lower-bound primitive for an integral interpolation
+determinant.  Once a zero lemma supplies nonvanishing, its complex norm is at
+least one. -/
+theorem integerInterpolationDeterminant_norm_one_le {ι : Type*}
+    [Fintype ι] [DecidableEq ι] (A : Matrix ι ι ℤ) (hdet : A.det ≠ 0) :
+    1 ≤ ‖(A.map fun z => (z : ℂ)).det‖ := by
+  rw [← Int.cast_det, Complex.norm_intCast]
+  exact_mod_cast Int.one_le_abs hdet
+
 end Collatz

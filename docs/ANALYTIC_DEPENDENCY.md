@@ -74,6 +74,11 @@ monomials `2^a * 3^b` forces equality of both exponent coordinates.  This is
 the elementary multiplicative-independence condition used to keep candidate
 interpolation points distinct.
 
+Finally, `integerInterpolationDeterminant_norm_one_le` proves the arithmetic
+lower-bound step for any integral interpolation matrix: a nonzero determinant
+has complex norm at least one.  The still-missing zero lemma is precisely what
+must establish that nonzero premise for the LMN matrix.
+
 This is the required specialization of a quantitative two-logarithm bound
 associated with Laurent, Mignotte, and Nesterenko. Every hypothesis and the
 constants `22`, `3/50`, and `21` require formal justification. Naming a

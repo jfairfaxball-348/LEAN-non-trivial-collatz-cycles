@@ -391,6 +391,13 @@ subrange without any analytic input:
 This is a verified small-weight closure only.  It leaves the unbounded
 height-two branch, and every other radius-four family, open.
 
+The same module also contains
+`transportRadiusFour_no_generic_length_four`, a complete finite exclusion at
+period four under the intended generic local hypotheses: positive proper
+weight, strict positive full denominator, source-numerator divisibility,
+primitivity, and nonzero shift.  It is an exhaustive kernel computation over
+the period-four word space, not an assumed finite certificate.
+
 ### Required analytic lower bound — unproved
 
 The height-two and connected `[4]` exclusions require a quantitative lower

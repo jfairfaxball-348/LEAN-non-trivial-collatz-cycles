@@ -26,6 +26,7 @@ import Collatz.Radius4TransportHeightTwo
 import Collatz.Radius4TransportComponents
 import Collatz.Radius4TransportClassification
 import Collatz.Radius4TransportCovariance
+import Collatz.Radius4TransportSelfRotationCases
 import Collatz.Radius4TransportSigned
 import Collatz.Radius4ConnectedCoefficients
 import Collatz.Radius4ConnectedDenominators

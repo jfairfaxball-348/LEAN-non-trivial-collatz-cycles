@@ -379,6 +379,12 @@ the unit-height case, and in the latter retains all five component families
 `[4]`, `[3,1]`, `[2,2]`, `[2,1,1]`, and `[1,1,1,1]`.  It is an assembly aid,
 not an exclusion of any branch.
 
+`Collatz/Radius4TransportSelfRotationCases.lean` lifts that split to an exact
+transport-Radius-4 self-rotation: after rotating to a minimizing cut, the same
+relative shift has zero-cut cost four and falls into the displayed
+height/toplevel alternatives.  This remains a classification, not a
+contradiction.
+
 `Collatz/Radius4SmallCases.lean` closes the first fully finite height-two
 subrange without any analytic input:
 

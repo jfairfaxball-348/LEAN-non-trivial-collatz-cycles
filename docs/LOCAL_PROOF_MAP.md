@@ -90,7 +90,8 @@ New component helpers and a height-two outside-bit agreement lemma in
 `Collatz/Radius4TransportConnectedBits.lean`,
 `Collatz/Radius4TransportLocalWords.lean`, and
 `Collatz/Radius4ConnectedBounds.lean` on `codex/r4-local-word-bridge`,
-have not completed full validation or promotion.
+pass the local root build and the bridge/application theorem audit; no CI
+promotion is claimed for this newer revision.
 The last module's application statements target `D = 5` for height-two and
 `D ≤ 65` for connected four-edge flow, retaining source-numerator
 divisibility and deriving the local replacements from the zero-cut geometry.

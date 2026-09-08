@@ -52,11 +52,10 @@ The following steps remain:
 
 New component, cyclic-list, word-rotation, full-denominator-word, local-bit,
 and common-context work on `codex/r4-local-word-bridge`, including the
-application statements in `Collatz/Radius4ConnectedBounds.lean`, has not
-completed full validation or promotion at this checkpoint. The application
-statements target `D = 5` for height-two and `D ≤ 65` for connected
-four-edge flow. Source presence is not evidence that any of these steps
-has been completed.
+application statements in `Collatz/Radius4ConnectedBounds.lean`, passes the
+local root build and bridge axiom audit; no CI promotion is claimed for this
+newer revision. The application statements target `D = 5` for height-two and
+`D ≤ 65` for connected four-edge flow, not complete exclusions.
 
 The logarithmic proposition is stated in
 [ANALYTIC_DEPENDENCY.md](ANALYTIC_DEPENDENCY.md). No equivalent formal theorem

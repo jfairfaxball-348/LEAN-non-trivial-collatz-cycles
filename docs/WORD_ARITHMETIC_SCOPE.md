@@ -103,11 +103,11 @@ this transport conclusion.
 The current branch's `Collatz/CyclicWordList.lean`,
 `Collatz/Radius4WordRotation.lean`, `Collatz/Radius4FullDenominatorWord.lean`,
 `Collatz/Radius4TransportLocalWords.lean`, and
-`Collatz/Radius4ConnectedBounds.lean` have not completed full validation or promotion at the
-[checkpoint](CURRENT_CHECKPOINT.md). Connecting arbitrary cyclic words to
-chronological lists, preserving generic full-denominator divisibility through
-rotation, and producing common-context decompositions must be verified before
-these tools can support the local exclusions.
+`Collatz/Radius4ConnectedBounds.lean` pass the local root build and the
+bridge/application axiom audit at the [checkpoint](CURRENT_CHECKPOINT.md); no
+CI promotion is claimed for this newer revision. They connect arbitrary cyclic
+words to chronological lists, preserve generic full-denominator divisibility
+through rotation, and produce the required common-context decompositions.
 The application statements in the last module target the full-denominator
 bounds `D = 5` for height-two and `D ≤ 65` for connected four-edge flow;
 neither statement is itself an impossibility result.

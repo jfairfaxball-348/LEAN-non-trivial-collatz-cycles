@@ -57,4 +57,14 @@ theorem twoThreeVandermonde_det_ne_zero {n : ℕ}
   rcases two_three_monomial_injective hijNat with ⟨ha, hb⟩
   exact hinj (Prod.ext ha hb)
 
+/-- The Vandermonde determinant at distinct two-prime monomials has the
+integral lower bound needed on the arithmetic side of an interpolation
+argument. -/
+theorem twoThreeVandermonde_norm_one_le {n : ℕ}
+    (a b : Fin n → ℕ) (hinj : Function.Injective fun i => (a i, b i)) :
+    1 ≤ ‖((Matrix.vandermonde fun i => (2 ^ a i * 3 ^ b i : ℤ)).map
+      fun z => (z : ℂ)).det‖ :=
+  integerInterpolationDeterminant_norm_one_le _
+    (twoThreeVandermonde_det_ne_zero a b hinj)
+
 end Collatz

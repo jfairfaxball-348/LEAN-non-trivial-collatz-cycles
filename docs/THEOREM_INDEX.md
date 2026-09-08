@@ -378,6 +378,10 @@ subrange without any analytic input:
 - `cycleDenominator_eq_five_of_ones_le_three` proves that the positive
   solutions of `2^A - 3^L = 5` with `L ≤ 3` are exactly `(A,L) = (3,1)` and
   `(5,3)`.
+- `cycleDenominator_small_list_of_ones_le_five` proves the first segment of
+  the later finite-list certificate: for `L ≤ 5`, the list
+  `{5,7,13,17,29,35,47,65}` gives exactly its seven displayed exponent and
+  denominator triples.
 - `transportHeightTwo_no_small_ones` rules out a radius-four transport in
   both resulting finite word spaces, retaining full source-numerator
   divisibility.

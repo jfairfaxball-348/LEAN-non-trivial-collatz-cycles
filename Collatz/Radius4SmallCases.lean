@@ -68,6 +68,42 @@ theorem cycleDenominator_eq_five_of_ones_le_three {A L : ℕ}
   interval_cases L <;> interval_cases A <;>
     norm_num [cycleDenominator] at hD <;> simp_all
 
+/-- The finite-denominator list has exactly the expected solutions through
+odd-word weight five.  This is the kernel-checked base segment of the larger
+finite certificate required after the logarithmic cutoff. -/
+theorem cycleDenominator_small_list_of_ones_le_five {A L : ℕ}
+    (hA : 0 < A) (hL : 0 < L) (hLsmall : L ≤ 5)
+    (hD : cycleDenominator A L = 5 ∨ cycleDenominator A L = 7 ∨
+      cycleDenominator A L = 13 ∨ cycleDenominator A L = 17 ∨
+      cycleDenominator A L = 29 ∨ cycleDenominator A L = 35 ∨
+      cycleDenominator A L = 47 ∨ cycleDenominator A L = 65) :
+    (A = 3 ∧ L = 1 ∧ cycleDenominator A L = 5) ∨
+    (A = 4 ∧ L = 1 ∧ cycleDenominator A L = 13) ∨
+    (A = 5 ∧ L = 1 ∧ cycleDenominator A L = 29) ∨
+    (A = 4 ∧ L = 2 ∧ cycleDenominator A L = 7) ∨
+    (A = 5 ∧ L = 3 ∧ cycleDenominator A L = 5) ∨
+    (A = 7 ∧ L = 4 ∧ cycleDenominator A L = 47) ∨
+    (A = 8 ∧ L = 5 ∧ cycleDenominator A L = 13) := by
+  have hDle : cycleDenominator A L ≤ 65 := by omega
+  have hEqZ : (2 : ℤ) ^ A ≤ (3 : ℤ) ^ L + 65 := by
+    unfold cycleDenominator at hDle
+    omega
+  have hEq : 2 ^ A ≤ 3 ^ L + 65 := by exact_mod_cast hEqZ
+  have hle : 2 ^ A ≤ 308 := by
+    calc
+      2 ^ A ≤ 3 ^ L + 65 := hEq
+      _ ≤ 3 ^ 5 + 65 := Nat.add_le_add_right
+        (Nat.pow_le_pow_right (by decide) hLsmall) 65
+      _ = 308 := by norm_num
+  have hAle : A ≤ 9 := by
+    apply (Nat.pow_le_pow_iff_right (by decide : 1 < 2)).mp
+    norm_num
+    omega
+  interval_cases L
+  all_goals interval_cases A
+  all_goals norm_num [cycleDenominator] at hD
+  all_goals norm_num [cycleDenominator]
+
 /-- The exact height-two denominator `D = 5` has no transport-radius-four
 instance when the word has at most three odd positions.  This is the fully
 checked finite base case before the quantitative cutoff handles larger weight. -/

@@ -403,7 +403,8 @@ required to turn either numerical bound into a complete branch exclusion.
 height-two subcase globally: for a generic exact transport-Radius-4
 self-rotation with at most three odd positions, no cost-four cut has an
 internal flow magnitude of two.  It transports the prior finite height-two
-exclusion through cyclic-origin covariance.
+exclusion through cyclic-origin covariance.  Its unit-flow corollary therefore
+puts every such cut directly into the connected-component classification.
 
 `Collatz/Radius4SmallCases.lean` closes the first fully finite height-two
 subrange without any analytic input:

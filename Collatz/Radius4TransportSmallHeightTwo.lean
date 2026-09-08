@@ -41,4 +41,25 @@ theorem transportRadiusFour_no_minimizing_heightTwo_of_ones_le_three
   exact transportHeightTwo_no_small_ones_of_cost_four (rotate w cut) shift
     hones' hsmall' hD' hdiv' hradius' hcost' hkpos hklt htwo'
 
+/-- In the small-weight generic Radius-4 case, every cost-four cut has only
+unit-height internal transport edges.  The height-two branch is therefore
+eliminated before the active-edge component partition is classified. -/
+theorem transportRadiusFour_unit_flow_of_ones_le_three
+    {n : ℕ} [NeZero n] (w : CyclicWord n) (shift : ZMod n)
+    (hones : 0 < ones w) (hsmall : ones w ≤ 3)
+    (hD : 1 < cycleDenominator n (ones w))
+    (hdiv : cycleDenominator n (ones w) ∣ (wordNumerator (cyclicWordList w) : ℤ))
+    (hradius : IsTransportRadiusFour w shift) :
+    ∀ cut : ZMod n, transportCostAtCut w (rotate w shift) cut = 4 →
+      ∀ j ∈ Finset.range (n - 1),
+        transportFlowMagnitude w (rotate w shift) cut (j + 1) ≤ 1 := by
+  intro cut hcost
+  by_contra hnotunit
+  obtain ⟨j, hj, htwo⟩ :=
+    exists_transportFlowMagnitude_eq_two_of_cost_four_of_not_unit
+      (ones_rotate w shift).symm cut hcost hnotunit
+  have hjlt : j < n - 1 := Finset.mem_range.mp hj
+  exact transportRadiusFour_no_minimizing_heightTwo_of_ones_le_three
+    w shift hones hsmall hD hdiv hradius cut (j + 1) hcost (by omega) (by omega) htwo
+
 end Collatz

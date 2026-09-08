@@ -392,11 +392,12 @@ This is a verified small-weight closure only.  It leaves the unbounded
 height-two branch, and every other radius-four family, open.
 
 The same module also contains
-`transportRadiusFour_no_generic_length_four`, a complete finite exclusion at
-period four under the intended generic local hypotheses: positive proper
-weight, strict positive full denominator, source-numerator divisibility,
-primitivity, and nonzero shift.  It is an exhaustive kernel computation over
-the period-four word space, not an assumed finite certificate.
+`transportRadiusFour_no_generic_length_four` and
+`transportRadiusFour_no_generic_length_five`, complete finite exclusions at
+periods four and five under the intended generic local hypotheses: positive
+proper weight, strict positive full denominator, source-numerator divisibility,
+primitivity, and nonzero shift.  They are exhaustive kernel computations over
+the respective word spaces, not assumed finite certificates.
 
 ### Required analytic lower bound — unproved
 

@@ -88,6 +88,47 @@ theorem transportRadiusFour_no_generic_length_four
     (hradius : IsTransportRadiusFour w shift) : False :=
   no_generic_transportRadiusFour_length_four w shift hones hproper hD hdiv hprimitive hshift hradius
 
+/- The complete generic Radius-4 eligibility condition is impossible at
+period five. -/
+set_option linter.style.haveILetI false in
+private theorem no_generic_transportRadiusFour_length_five :
+    ∀ w : CyclicWord 5, ∀ shift : ZMod 5,
+      0 < ones w → ones w < 5 → 1 < cycleDenominator 5 (ones w) →
+      cycleDenominator 5 (ones w) ∣ (wordNumerator (cyclicWordList w) : ℤ) →
+      IsPrimitive w → shift ≠ 0 → ¬ IsTransportRadiusFour w shift := by
+  letI : ∀ w : CyclicWord 5, ∀ shift : ZMod 5,
+      Decidable (IsTransportRadiusFour w shift) := decidableIsTransportRadiusFour
+  letI : ∀ w : CyclicWord 5, Decidable (IsPrimitive w) := fun w => by
+    unfold IsPrimitive
+    exact Fintype.decidableForallFintype
+  letI : ∀ w : CyclicWord 5, ∀ shift : ZMod 5,
+      Decidable (0 < ones w → ones w < 5 → 1 < cycleDenominator 5 (ones w) →
+        cycleDenominator 5 (ones w) ∣ (wordNumerator (cyclicWordList w) : ℤ) →
+        IsPrimitive w → shift ≠ 0 → ¬ IsTransportRadiusFour w shift) :=
+    fun _ _ => inferInstance
+  letI : ∀ w : CyclicWord 5,
+      Decidable (∀ shift : ZMod 5,
+        0 < ones w → ones w < 5 → 1 < cycleDenominator 5 (ones w) →
+        cycleDenominator 5 (ones w) ∣ (wordNumerator (cyclicWordList w) : ℤ) →
+        IsPrimitive w → shift ≠ 0 → ¬ IsTransportRadiusFour w shift) :=
+    fun _ => Fintype.decidableForallFintype
+  letI : Decidable (∀ w : CyclicWord 5, ∀ shift : ZMod 5,
+      0 < ones w → ones w < 5 → 1 < cycleDenominator 5 (ones w) →
+      cycleDenominator 5 (ones w) ∣ (wordNumerator (cyclicWordList w) : ℤ) →
+      IsPrimitive w → shift ≠ 0 → ¬ IsTransportRadiusFour w shift) :=
+    Fintype.decidableForallFintype
+  decide
+
+/-- Full generic Radius-4 exclusion at period five. -/
+theorem transportRadiusFour_no_generic_length_five
+    (w : CyclicWord 5) (shift : ZMod 5)
+    (hones : 0 < ones w) (hproper : ones w < 5)
+    (hD : 1 < cycleDenominator 5 (ones w))
+    (hdiv : cycleDenominator 5 (ones w) ∣ (wordNumerator (cyclicWordList w) : ℤ))
+    (hprimitive : IsPrimitive w) (hshift : shift ≠ 0)
+    (hradius : IsTransportRadiusFour w shift) : False :=
+  no_generic_transportRadiusFour_length_five w shift hones hproper hD hdiv hprimitive hshift hradius
+
 /-- The only positive small-weight solutions of `2^A - 3^L = 5` are the
 two explicitly displayed exponent pairs. -/
 theorem cycleDenominator_eq_five_of_ones_le_three {A L : ℕ}

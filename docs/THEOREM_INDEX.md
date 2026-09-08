@@ -385,6 +385,13 @@ relative shift has zero-cut cost four and falls into the displayed
 height/toplevel alternatives.  This remains a classification, not a
 contradiction.
 
+`Collatz/Radius4TransportArithmeticCases.lean` combines that normalized split
+with origin-invariant full-denominator divisibility.  Under the generic
+positive-weight and strict-denominator hypotheses, the height-two alternative
+forces `D = 5`, and the connected `[4]` alternative forces `D ≤ 65`; the four
+other unit-height alternatives remain explicit.  The analytic cutoff is still
+required to turn either numerical bound into a complete branch exclusion.
+
 `Collatz/Radius4SmallCases.lean` closes the first fully finite height-two
 subrange without any analytic input:
 

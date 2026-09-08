@@ -10,7 +10,8 @@ branch rather than a comparison of unrelated words. -/
 theorem transportRadiusFour_exists_rotated_geometric_case {n : ℕ} [NeZero n]
     {w : CyclicWord n} {shift : ZMod n} (h : IsTransportRadiusFour w shift) :
     ∃ cut : ZMod n,
-      (∃ k : ℕ, 0 < k ∧ k < n ∧
+      transportCostAtCut (rotate w cut) (rotate (rotate w cut) shift) 0 = 4 ∧
+      ((∃ k : ℕ, 0 < k ∧ k < n ∧
         transportFlowMagnitude (rotate w cut) (rotate (rotate w cut) shift) 0 k = 2) ∨
       (∀ j ∈ Finset.range (n - 1),
         transportFlowMagnitude (rotate w cut) (rotate (rotate w cut) shift) 0 (j + 1) ≤ 1) ∧
@@ -18,9 +19,9 @@ theorem transportRadiusFour_exists_rotated_geometric_case {n : ℕ} [NeZero n]
           (transportActiveEdgeRunLengths (rotate w cut) (rotate (rotate w cut) shift) 0).Perm [3, 1] ∨
           (transportActiveEdgeRunLengths (rotate w cut) (rotate (rotate w cut) shift) 0).Perm [2, 2] ∨
           (transportActiveEdgeRunLengths (rotate w cut) (rotate (rotate w cut) shift) 0).Perm [2, 1, 1] ∨
-          (transportActiveEdgeRunLengths (rotate w cut) (rotate (rotate w cut) shift) 0).Perm [1, 1, 1, 1]) := by
+          (transportActiveEdgeRunLengths (rotate w cut) (rotate (rotate w cut) shift) 0).Perm [1, 1, 1, 1])) := by
   rcases transportRadiusFour_exists_rotated_zero_cut h with ⟨cut, hcost⟩
-  refine ⟨cut, ?_⟩
+  refine ⟨cut, hcost, ?_⟩
   apply transportCostFour_geometric_cases (cut := 0) ?_ hcost
   exact (ones_rotate (rotate w cut) shift).symm
 

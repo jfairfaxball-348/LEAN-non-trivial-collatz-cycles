@@ -1,5 +1,6 @@
 import Collatz.Radius4SmallCases
 import Collatz.Radius4TransportCovariance
+import Collatz.Radius4TransportClassification
 
 namespace Collatz
 
@@ -61,5 +62,41 @@ theorem transportRadiusFour_unit_flow_of_ones_le_three
   have hjlt : j < n - 1 := Finset.mem_range.mp hj
   exact transportRadiusFour_no_minimizing_heightTwo_of_ones_le_three
     w shift hones hsmall hD hdiv hradius cut (j + 1) hcost (by omega) (by omega) htwo
+
+/-- After cyclic normalization, the generic small-weight Radius-4 case lies
+in one of the five unit-height active-edge component families. -/
+theorem transportRadiusFour_exists_rotated_unit_family_of_ones_le_three
+    {n : ℕ} [NeZero n] {w : CyclicWord n} {shift : ZMod n}
+    (hones : 0 < ones w) (hsmall : ones w ≤ 3)
+    (hD : 1 < cycleDenominator n (ones w))
+    (hdiv : cycleDenominator n (ones w) ∣ (wordNumerator (cyclicWordList w) : ℤ))
+    (hradius : IsTransportRadiusFour w shift) :
+    ∃ cut : ZMod n,
+      transportCostAtCut (rotate w cut) (rotate (rotate w cut) shift) 0 = 4 ∧
+      (∀ j ∈ Finset.range (n - 1),
+        transportFlowMagnitude (rotate w cut) (rotate (rotate w cut) shift) 0 (j + 1) ≤ 1) ∧
+      ((transportActiveEdgeRunLengths (rotate w cut) (rotate (rotate w cut) shift) 0).Perm [4] ∨
+        (transportActiveEdgeRunLengths (rotate w cut) (rotate (rotate w cut) shift) 0).Perm [3, 1] ∨
+        (transportActiveEdgeRunLengths (rotate w cut) (rotate (rotate w cut) shift) 0).Perm [2, 2] ∨
+        (transportActiveEdgeRunLengths (rotate w cut) (rotate (rotate w cut) shift) 0).Perm [2, 1, 1] ∨
+        (transportActiveEdgeRunLengths (rotate w cut) (rotate (rotate w cut) shift) 0).Perm [1, 1, 1, 1]) := by
+  rcases transportRadiusFour_exists_rotated_zero_cut hradius with ⟨cut, hcost⟩
+  have hones' : 0 < ones (rotate w cut) := by
+    simpa only [ones_rotate] using hones
+  have hsmall' : ones (rotate w cut) ≤ 3 := by
+    simpa only [ones_rotate] using hsmall
+  have hD' : 1 < cycleDenominator n (ones (rotate w cut)) := by
+    simpa only [ones_rotate] using hD
+  have hdiv' : cycleDenominator n (ones (rotate w cut)) ∣
+      (wordNumerator (cyclicWordList (rotate w cut)) : ℤ) := by
+    simpa only [ones_rotate] using
+      cycleDenominator_dvd_cyclicWordList_rotate w cut hones hdiv
+  have hradius' : IsTransportRadiusFour (rotate w cut) shift :=
+    isTransportRadiusFour_rotate w shift cut hradius
+  have hunit := transportRadiusFour_unit_flow_of_ones_le_three
+    (rotate w cut) shift hones' hsmall' hD' hdiv' hradius' 0 hcost
+  refine ⟨cut, hcost, hunit, ?_⟩
+  exact transportActiveEdgeRunLengths_family_of_cost_four_of_unit
+    (rotate w cut) (rotate (rotate w cut) shift) 0 hcost hunit
 
 end Collatz

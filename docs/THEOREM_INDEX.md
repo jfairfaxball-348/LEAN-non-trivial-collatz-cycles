@@ -394,8 +394,9 @@ height-two branch, and every other radius-four family, open.
 The same module also contains
 `transportRadiusFour_no_generic_length_four` and
 `transportRadiusFour_no_generic_length_five`, and
-`transportRadiusFour_no_generic_length_six`, complete finite exclusions at
-periods four through six under the intended generic local hypotheses: positive
+`transportRadiusFour_no_generic_length_six`, and
+`transportRadiusFour_no_generic_length_seven`, complete finite exclusions at
+periods four through seven under the intended generic local hypotheses: positive
 proper weight, strict positive full denominator, source-numerator divisibility,
 primitivity, and nonzero shift.  They are exhaustive kernel computations over
 the respective word spaces, not assumed finite certificates.

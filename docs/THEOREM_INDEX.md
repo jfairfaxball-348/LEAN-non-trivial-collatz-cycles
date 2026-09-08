@@ -399,6 +399,12 @@ forces `D = 5`, and the connected `[4]` alternative forces `D ≤ 65`; the four
 other unit-height alternatives remain explicit.  The analytic cutoff is still
 required to turn either numerical bound into a complete branch exclusion.
 
+`Collatz/Radius4TransportSmallHeightTwo.lean` closes the finite small-weight
+height-two subcase globally: for a generic exact transport-Radius-4
+self-rotation with at most three odd positions, no cost-four cut has an
+internal flow magnitude of two.  It transports the prior finite height-two
+exclusion through cyclic-origin covariance.
+
 `Collatz/Radius4SmallCases.lean` closes the first fully finite height-two
 subrange without any analytic input:
 

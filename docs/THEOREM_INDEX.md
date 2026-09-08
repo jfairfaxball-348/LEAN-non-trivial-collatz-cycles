@@ -385,6 +385,13 @@ relative shift has zero-cut cost four and falls into the displayed
 height/toplevel alternatives.  This remains a classification, not a
 contradiction.
 
+The covariance module now also proves
+`transportCostAtCut_rotate_selfRotation` and
+`isTransportRadiusFour_rotate`: changing a word's cyclic origin translates
+the cut by the same amount and preserves exact transport radius.  Thus a
+branch theorem proved for a normalized origin can be transported back to the
+same self-rotation.
+
 `Collatz/Radius4TransportArithmeticCases.lean` combines that normalized split
 with origin-invariant full-denominator divisibility.  Under the generic
 positive-weight and strict-denominator hypotheses, the height-two alternative

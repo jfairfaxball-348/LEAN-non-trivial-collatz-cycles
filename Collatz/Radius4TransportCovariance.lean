@@ -55,6 +55,44 @@ theorem transportCostAtCut_selfRotation_rotate_cut {n : ℕ} [NeZero n]
     _ = transportCostAtCut (rotate w cut) (rotate (rotate w cut) shift) 0 := by
       rw [rotate_rotate_comm w shift cut]
 
+/-- Changing the cyclic origin translates the cut variable for a fixed
+self-rotation. -/
+theorem transportCostAtCut_rotate_selfRotation {n : ℕ} [NeZero n]
+    (w : CyclicWord n) (shift origin cut : ZMod n) :
+    transportCostAtCut (rotate w origin) (rotate (rotate w origin) shift) cut =
+      transportCostAtCut w (rotate w shift) (origin + cut) := by
+  calc
+    transportCostAtCut (rotate w origin) (rotate (rotate w origin) shift) cut =
+        transportCostAtCut (rotate (rotate w origin) cut)
+          (rotate (rotate (rotate w origin) cut) shift) 0 :=
+      transportCostAtCut_selfRotation_rotate_cut (rotate w origin) shift cut
+    _ = transportCostAtCut (rotate w (origin + cut))
+          (rotate (rotate w (origin + cut)) shift) 0 := by
+      have hrotate : rotate (rotate w origin) cut = rotate w (origin + cut) := by
+        funext i
+        simp only [rotate]
+        congr 1
+        abel
+      rw [hrotate]
+    _ = transportCostAtCut w (rotate w shift) (origin + cut) :=
+      (transportCostAtCut_selfRotation_rotate_cut w shift (origin + cut)).symm
+
+/-- Exact transport radius for a self-rotation is invariant under changing the
+cyclic origin. -/
+theorem isTransportRadiusFour_rotate {n : ℕ} [NeZero n]
+    (w : CyclicWord n) (shift origin : ZMod n)
+    (h : IsTransportRadiusFour w shift) :
+    IsTransportRadiusFour (rotate w origin) shift := by
+  refine ⟨(ones_rotate (rotate w origin) shift).symm, ?_, ?_⟩
+  · intro cut
+    rw [transportCostAtCut_rotate_selfRotation]
+    exact h.2.1 (origin + cut)
+  · rcases h.2.2 with ⟨cut, hcut⟩
+    refine ⟨cut - origin, ?_⟩
+    rw [transportCostAtCut_rotate_selfRotation]
+    have hsum : origin + (cut - origin) = cut := by abel
+    simpa only [hsum] using hcut
+
 /-- An exact transport-Radius-4 self-rotation therefore has a rotated origin
 at which the same relative self-rotation has zero-cut transport cost exactly
 four.  This is the precise combinatorial bridge from the minimum-over-cuts

@@ -62,6 +62,13 @@ specialization: `two_pow_ne_three_pow` and
 from positivity of `A`, using parity of powers.  The quantitative inequality
 remains the missing part.
 
+`Collatz/Radius4LMNDeterminants.lean` now records the analytic upper-bound
+primitive for an interpolation determinant: a complex square matrix whose
+entries have norm at most `x` has determinant norm at most
+`card(ι)! * x^card(ι)`.  The remaining task is to construct the LMN matrix,
+prove its determinant nonzero by the relevant zero lemma, and establish its
+explicit arithmetic lower bound.
+
 This is the required specialization of a quantitative two-logarithm bound
 associated with Laurent, Mignotte, and Nesterenko. Every hypothesis and the
 constants `22`, `3/50`, and `21` require formal justification. Naming a

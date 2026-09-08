@@ -36,3 +36,4 @@ import Collatz.Radius4TransportConnectedBits
 import Collatz.Radius4TransportLocalWords
 import Collatz.Radius4ConnectedBounds
 import Collatz.Radius4SmallCases
+import Collatz.Radius4LMNDeterminants

@@ -56,6 +56,12 @@ a theorem declaration, an axiom, or an assumption added to the library:
     Real.log |(A : ℝ) * Real.log 2 - (L : ℝ) * Real.log 3|
 ```
 
+The nonvanishing side condition itself is now discharged internally for this
+specialization: `two_pow_ne_three_pow` and
+`log_two_three_defect_ne_zero` in `Collatz/Radius4LogDefect.lean` prove it
+from positivity of `A`, using parity of powers.  The quantitative inequality
+remains the missing part.
+
 This is the required specialization of a quantitative two-logarithm bound
 associated with Laurent, Mignotte, and Nesterenko. Every hypothesis and the
 constants `22`, `3/50`, and `21` require formal justification. Naming a

@@ -2,6 +2,35 @@ import Collatz.Cycle
 
 namespace Collatz
 
+/-- Positive powers of two and three cannot agree.  This elementary
+multiplicative-independence fact supplies the nonvanishing side condition of
+the two-logarithm lower bound without importing it as an assumption. -/
+theorem two_pow_ne_three_pow {A L : ℕ} (hA : 0 < A) : 2 ^ A ≠ 3 ^ L := by
+  intro hpow
+  have heven : Even (2 ^ A) :=
+    (show Even (2 : ℕ) by norm_num).pow_of_ne_zero (Nat.ne_of_gt hA)
+  have hodd : Odd (3 ^ L) := (show Odd (3 : ℕ) by norm_num).pow
+  exact (Nat.not_even_iff_odd.mpr hodd) (hpow ▸ heven)
+
+/-- The `2`--`3` logarithmic form is nonzero for a positive coefficient of
+`log 2`.  Thus the corresponding nonvanishing requirement is a proved
+arithmetic fact, not an additional analytic hypothesis. -/
+theorem log_two_three_defect_ne_zero {A L : ℕ} (hA : 0 < A) :
+    (A : ℝ) * Real.log 2 - (L : ℝ) * Real.log 3 ≠ 0 := by
+  intro hzero
+  have hratio : (2 : ℝ) ^ A / (3 : ℝ) ^ L = 1 := by
+    rw [← Real.exp_log (by norm_num : (0 : ℝ) < 2),
+      ← Real.exp_log (by norm_num : (0 : ℝ) < 3),
+      ← Real.exp_nat_mul, ← Real.exp_nat_mul, ← Real.exp_sub, hzero]
+    norm_num
+  have hpowR : (2 : ℝ) ^ A = (3 : ℝ) ^ L := by
+    calc
+      (2 : ℝ) ^ A = 1 * (3 : ℝ) ^ L :=
+        (div_eq_iff (by positivity)).mp hratio
+      _ = (3 : ℝ) ^ L := one_mul _
+  have hpow : 2 ^ A = 3 ^ L := by exact_mod_cast hpowR
+  exact two_pow_ne_three_pow hA hpow
+
 /-- The logarithmic defect is the logarithm of the exact
 full-denominator ratio. This identity is elementary and contains no
 two-logarithm lower-bound assumption. -/

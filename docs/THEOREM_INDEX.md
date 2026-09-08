@@ -372,6 +372,13 @@ divisibility from the source hypothesis and geometry; they do not assume those
 intermediate conclusions separately. They do not require primitivity, do not
 exclude a complete family, and do not establish the intended final theorem.
 
+`Collatz/Radius4TransportClassification.lean` supplies
+`transportCostFour_geometric_cases`.  At any equal-weight cost-four cut it
+exhaustively separates the rigid height-two case (with an internal witness) from
+the unit-height case, and in the latter retains all five component families
+`[4]`, `[3,1]`, `[2,2]`, `[2,1,1]`, and `[1,1,1,1]`.  It is an assembly aid,
+not an exclusion of any branch.
+
 `Collatz/Radius4SmallCases.lean` closes the first fully finite height-two
 subrange without any analytic input:
 

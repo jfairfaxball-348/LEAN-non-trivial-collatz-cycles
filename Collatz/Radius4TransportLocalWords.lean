@@ -18,7 +18,8 @@ private theorem cyclicWordList_window_four {n : ℕ} (w : CyclicWord n)
     ((cyclicWordList w).drop p).take 4 =
       [w (p : ZMod n), w ((p + 1 : ℕ) : ZMod n),
         w ((p + 2 : ℕ) : ZMod n), w ((p + 3 : ℕ) : ZMod n)] := by
-  simpa [List.ofFn_succ] using cyclicWordList_window_eq_ofFn w hwindow
+  convert cyclicWordList_window_eq_ofFn w hwindow using 1
+  norm_num [List.ofFn_succ]
 
 private theorem cyclicWordList_window_five {n : ℕ} (w : CyclicWord n)
     {p : ℕ} (hwindow : p + 5 ≤ n) :
@@ -26,7 +27,8 @@ private theorem cyclicWordList_window_five {n : ℕ} (w : CyclicWord n)
       [w (p : ZMod n), w ((p + 1 : ℕ) : ZMod n),
         w ((p + 2 : ℕ) : ZMod n), w ((p + 3 : ℕ) : ZMod n),
         w ((p + 4 : ℕ) : ZMod n)] := by
-  simpa [List.ofFn_succ] using cyclicWordList_window_eq_ofFn w hwindow
+  convert cyclicWordList_window_eq_ofFn w hwindow using 1
+  norm_num [List.ofFn_succ]
 
 /-- The connected unit-height branch supplies complete chronological lists
 with exactly the same prefix and suffix around `1abc0 ↔ 0abc1`. -/

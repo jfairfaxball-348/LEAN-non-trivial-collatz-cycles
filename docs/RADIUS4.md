@@ -78,8 +78,9 @@ The conclusion excludes exact transport radius four.
 No complete family exclusion or final local theorem has yet been proved.
 Verified prerequisites include signed height-two bits `0011 ↔ 1100`, local
 numerator coefficients, coprime context cancellation, and elementary
-logarithmic upper bounds. The new generic word and local-bit work currently on
-`codex/r4-local-word-bridge` has not completed full validation or promotion.
+logarithmic upper bounds. The new generic word and local-bit work on
+`codex/r4-local-word-bridge` passes the local root build and bridge axiom
+audit; no CI promotion is claimed for this newer revision.
 
 The first exclusions, height-two and connected `[4]`, still need the
 quantitative lower bound stated in

@@ -13,7 +13,7 @@ theorem transportConnectedFour_local_bits_of_cost_four
     (hunit : ∀ j ∈ Finset.range (n - 1),
       transportFlowMagnitude source target cut (j + 1) ≤ 1)
     (hconnected : (transportActiveEdgeRunLengths source target cut).Perm [4]) :
-    ∃ p (b : Bool), p + 4 < n ∧
+    ∃ (p : ℕ) (b : Bool), p + 4 < n ∧
       source (cut + (p : ZMod n)) = b ∧
       target (cut + (p : ZMod n)) = !b ∧
       source (cut + ((p + 4 : ℕ) : ZMod n)) = !b ∧
@@ -107,7 +107,7 @@ theorem transportConnectedFour_local_bits_of_cost_four
   · rw [hs] at hinc0 hinc4
     obtain ⟨h0s, h0t⟩ := (transportIncrement_eq_neg_one_iff source target cut p).mp hinc0
     obtain ⟨h4s, h4t⟩ := (transportIncrement_eq_one_iff source target cut (p + 4)).mp
-      (by simpa only [neg_neg] using hinc4)
+      (by simpa using hinc4)
     exact ⟨p, true, hp, h0s, h0t, h4s, h4t, hmiddle, houtside⟩
 
 end Collatz

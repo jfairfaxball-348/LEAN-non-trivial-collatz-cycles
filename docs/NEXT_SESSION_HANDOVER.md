@@ -44,26 +44,19 @@ outside-bit agreement lemma in `Radius4TransportSigned.lean`, plus
 `Collatz/Radius4FullDenominatorWord.lean`,
 `Collatz/Radius4TransportConnectedBits.lean`,
 `Collatz/Radius4TransportLocalWords.lean`, and
-`Collatz/Radius4ConnectedBounds.lean`. These changes have **not completed
-full validation and have not been promoted** at this checkpoint.
-Individual module builds passed for `CyclicWordList.lean`,
-`Radius4WordRotation.lean`, and `Radius4FullDenominatorWord.lean`, plus the
-updated transport definition, topology, height-two, and component modules.
-Validation was stopped during the signed-flow module check for closeout.
-The remaining module checks, full root build, and 24-new-lemma axiom audit
-are incomplete; no CI result is claimed for this snapshot. Development is
-paused here, without promotion or additional formalisation.
+`Collatz/Radius4ConnectedBounds.lean` pass a full local `lake build`
+(8,918 jobs) after two Lean 4.34 compatibility repairs in the connected-bit
+and local-word modules. The 18 bridge/application theorems audited depend
+only on `propext`, `Classical.choice`, and `Quot.sound`. No CI run or merge is
+claimed for this newer local revision.
 
 The last module applies the proposed bridges to the actual strict positive
 full denominator: its statements conclude `D = 5` for height-two and
 `D ≤ 65` for connected four-edge flow. These bounds are not family
 exclusions. The [theorem index](THEOREM_INDEX.md) lists all 24 new public
-lemma statements awaiting full-branch validation.
+lemma statements in the current bridge.
 
-If development resumes, first finish validation of the existing component,
-signed-flow, connected-bit, common-context, and denominator-application proofs.
-Do not duplicate their current source or treat it as verified before checking
-it. The existing cycle-specific shifted-origin identities are available for
+The existing cycle-specific shifted-origin identities are available for
 applications, but they do not replace the generic word result.
 
 The next arithmetic obligation is the precise lower bound for

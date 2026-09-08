@@ -82,7 +82,7 @@ four-edge exclusions:
 The [theorem index](THEOREM_INDEX.md) gives names and exact scope. These
 ingredients do not yet exclude an entire transport family.
 
-## Current unverified work and remaining obligations
+## Validated local-word bridge and remaining obligations
 
 Branch `codex/r4-local-word-bridge` contains new helpers in
 `Collatz/Radius4TransportComponents.lean` and a height-two outside-bit agreement
@@ -91,23 +91,18 @@ lemma in `Collatz/Radius4TransportSigned.lean`, plus the new modules
 `Collatz/Radius4FullDenominatorWord.lean`,
 `Collatz/Radius4TransportConnectedBits.lean`,
 `Collatz/Radius4TransportLocalWords.lean`, and
-`Collatz/Radius4ConnectedBounds.lean`. These additions have **not completed
-full validation and have not been promoted**. Individual module builds passed
-for `CyclicWordList.lean`, `Radius4WordRotation.lean`, and
-`Radius4FullDenominatorWord.lean`, as did the updated transport definition,
-topology, height-two, and component modules. The validation sequence was
-stopped during the signed-flow module check to save the current work as a
-closeout snapshot. The remaining module checks, full root build, and audit of
-the 24 new public lemmas are incomplete. No CI result is claimed for this
-snapshot. Individual checks do not establish whole-branch coverage. The green
-CI builds above certify their recorded revisions, not these later edits.
+`Collatz/Radius4ConnectedBounds.lean` now pass a full local `lake build`
+(8,918 jobs) after two Lean 4.34 compatibility repairs in the connected-bit
+and local-word modules. An axiom audit of the 18 bridge and application
+theorems found only `propext`, `Classical.choice`, and `Quot.sound`.
+No CI run or merge is claimed for this newer local revision.
 
 The new application statements aim to derive `D = 5` for the height-two
 configuration and `D ≤ 65` for the connected four-edge configuration from
 the actual generic word, its source-numerator divisibility, and the stated
 zero-cut geometry. They are not complete family exclusions. The
 [theorem index](THEOREM_INDEX.md) inventories all 24 new public lemma
-statements under validation.
+statements in the current bridge.
 
 The first exclusions require extracting the connected local word, proving
 common-prefix/suffix decompositions, carrying the original `D ∣ Q(w)` through

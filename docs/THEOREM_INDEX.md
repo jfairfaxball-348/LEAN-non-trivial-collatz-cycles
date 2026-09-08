@@ -274,16 +274,15 @@ New component helpers and a height-two outside-bit agreement lemma in
 `Collatz/Radius4TransportConnectedBits.lean`,
 `Collatz/Radius4TransportLocalWords.lean`, and
 `Collatz/Radius4ConnectedBounds.lean`,
-on branch `codex/r4-local-word-bridge`, have not completed full validation or
-promotion at this checkpoint. Individual module checks do not establish
-whole-branch coverage. These additions are not included in the promoted
-scope above.
+on branch `codex/r4-local-word-bridge`, pass a full local root build and an
+audit of the bridge/application theorem dependencies. The audit finds only
+`propext`, `Classical.choice`, and `Quot.sound`; no CI promotion is claimed
+for this newer revision.
 
-### Working-branch inventory — under validation, not promoted
+### Working-branch inventory — locally validated, not CI-promoted
 
 The following are the 24 new public lemma statements in the current source.
-Their descriptions specify the intended application boundary; listing them
-here does not assert that the branch's full build or axiom audit has passed.
+Their descriptions specify the intended application boundary.
 
 `Collatz/CyclicWordList.lean` defines `cyclicWordList`, the chronological list
 of a cyclic word's bits starting at position zero, and contains eight lemmas:

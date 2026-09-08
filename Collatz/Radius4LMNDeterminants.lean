@@ -2,6 +2,7 @@ import Collatz.Radius4LogDefect
 import Mathlib.Analysis.Complex.Norm
 import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.LinearAlgebra.Matrix.AbsoluteValue
+import Mathlib.LinearAlgebra.Vandermonde
 
 namespace Collatz
 
@@ -41,5 +42,19 @@ theorem integerInterpolationDeterminant_norm_one_le {ι : Type*}
     1 ≤ ‖(A.map fun z => (z : ℂ)).det‖ := by
   rw [← Int.cast_det, Complex.norm_intCast]
   exact_mod_cast Int.one_le_abs hdet
+
+/-- A concrete nonzero integral interpolation determinant for distinct
+two-prime exponent pairs.  This is the Vandermonde instance of the
+nonvanishing mechanism required by interpolation-determinant arguments. -/
+theorem twoThreeVandermonde_det_ne_zero {n : ℕ}
+    (a b : Fin n → ℕ) (hinj : Function.Injective fun i => (a i, b i)) :
+    (Matrix.vandermonde fun i => (2 ^ a i * 3 ^ b i : ℤ)).det ≠ 0 := by
+  apply Matrix.det_vandermonde_ne_zero_iff.mpr
+  intro i j hij
+  change (2 ^ a i * 3 ^ b i : ℤ) = 2 ^ a j * 3 ^ b j at hij
+  have hijNat : 2 ^ a i * 3 ^ b i = 2 ^ a j * 3 ^ b j := by
+    exact_mod_cast hij
+  rcases two_three_monomial_injective hijNat with ⟨ha, hb⟩
+  exact hinj (Prod.ext ha hb)
 
 end Collatz

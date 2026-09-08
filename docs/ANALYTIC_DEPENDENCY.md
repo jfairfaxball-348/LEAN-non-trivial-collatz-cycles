@@ -79,6 +79,11 @@ lower-bound step for any integral interpolation matrix: a nonzero determinant
 has complex norm at least one.  The still-missing zero lemma is precisely what
 must establish that nonzero premise for the LMN matrix.
 
+For the concrete Vandermonde interpolation pattern,
+`twoThreeVandermonde_det_ne_zero` now supplies that nonzero premise from
+distinct exponent pairs.  The unresolved LMN zero lemma is the substantially
+stronger result for its multi-parameter derivative/interpolation matrix.
+
 This is the required specialization of a quantitative two-logarithm bound
 associated with Laurent, Mignotte, and Nesterenko. Every hypothesis and the
 constants `22`, `3/50`, and `21` require formal justification. Naming a

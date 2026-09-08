@@ -69,6 +69,11 @@ entries have norm at most `x` has determinant norm at most
 prove its determinant nonzero by the relevant zero lemma, and establish its
 explicit arithmetic lower bound.
 
+That module also proves `two_three_monomial_injective`: equality of two
+monomials `2^a * 3^b` forces equality of both exponent coordinates.  This is
+the elementary multiplicative-independence condition used to keep candidate
+interpolation points distinct.
+
 This is the required specialization of a quantitative two-logarithm bound
 associated with Laurent, Mignotte, and Nesterenko. Every hypothesis and the
 constants `22`, `3/50`, and `21` require formal justification. Naming a

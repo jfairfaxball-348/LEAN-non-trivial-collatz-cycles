@@ -78,7 +78,10 @@ The conclusion excludes exact transport radius four.
 No complete family exclusion or final local theorem has yet been proved.
 Verified prerequisites include signed height-two bits `0011 ↔ 1100`, local
 numerator coefficients, coprime context cancellation, and elementary
-logarithmic upper bounds. The new generic word and local-bit work on
+logarithmic upper bounds.  The finite module
+`Collatz/Radius4SmallCases.lean` additionally excludes the height-two branch
+when `D = 5` and the word has at most three odd positions; it is not a
+complete height-two exclusion. The new generic word and local-bit work on
 `codex/r4-local-word-bridge` passes the local root build and bridge axiom
 audit; no CI promotion is claimed for this newer revision.
 

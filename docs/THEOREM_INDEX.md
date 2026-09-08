@@ -372,6 +372,21 @@ divisibility from the source hypothesis and geometry; they do not assume those
 intermediate conclusions separately. They do not require primitivity, do not
 exclude a complete family, and do not establish the intended final theorem.
 
+`Collatz/Radius4SmallCases.lean` closes the first fully finite height-two
+subrange without any analytic input:
+
+- `cycleDenominator_eq_five_of_ones_le_three` proves that the positive
+  solutions of `2^A - 3^L = 5` with `L ≤ 3` are exactly `(A,L) = (3,1)` and
+  `(5,3)`.
+- `transportHeightTwo_no_small_ones` rules out a radius-four transport in
+  both resulting finite word spaces, retaining full source-numerator
+  divisibility.
+- `transportHeightTwo_no_small_ones_of_cost_four` connects that finite result
+  to the existing height-two `D = 5` application theorem.
+
+This is a verified small-weight closure only.  It leaves the unbounded
+height-two branch, and every other radius-four family, open.
+
 ### Required analytic lower bound — unproved
 
 The height-two and connected `[4]` exclusions require a quantitative lower

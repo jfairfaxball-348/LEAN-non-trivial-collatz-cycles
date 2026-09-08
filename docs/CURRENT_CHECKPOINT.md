@@ -92,10 +92,16 @@ lemma in `Collatz/Radius4TransportSigned.lean`, plus the new modules
 `Collatz/Radius4TransportConnectedBits.lean`,
 `Collatz/Radius4TransportLocalWords.lean`, and
 `Collatz/Radius4ConnectedBounds.lean` now pass a full local `lake build`
-(8,918 jobs) after two Lean 4.34 compatibility repairs in the connected-bit
+(8,919 jobs) after two Lean 4.34 compatibility repairs in the connected-bit
 and local-word modules. An axiom audit of the 18 bridge and application
 theorems found only `propext`, `Classical.choice`, and `Quot.sound`.
 No CI run or merge is claimed for this newer local revision.
+
+`Collatz/Radius4SmallCases.lean` now adds a separately audited finite closure
+for the height-two `D = 5` branch with at most three odd positions.  Its three
+public theorems likewise use only `propext`, `Classical.choice`, and
+`Quot.sound`.  This does not supply the required unbounded logarithmic lower
+bound or close the whole height-two family.
 
 The new application statements aim to derive `D = 5` for the height-two
 configuration and `D ≤ 65` for the connected four-edge configuration from

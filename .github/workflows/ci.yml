@@ -12,7 +12,18 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  sanity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: No sorry / native_decide / admit
+        run: |
+          if grep -rn "sorry\|native_decide" Collatz/; then
+            echo "Found disallowed term above"; exit 1
+          fi
+
   build:
+    needs: sanity
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -23,8 +34,13 @@ jobs:
             | sh -s -- -y
           echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
 
-      - name: Resolve Lean dependencies
-        run: lake update
+      - name: Cache elan + .lake
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.elan
+            .lake
+          key: lean-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}
 
       - name: Download mathlib cache
         run: lake exe cache get

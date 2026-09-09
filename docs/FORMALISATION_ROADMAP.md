@@ -69,8 +69,9 @@ The planned order after the first exclusions is:
 1. `[3,1]`: one run of three active edges and one isolated active edge.  The
    ordered active-edge list is refined into its two possible placements
    (triple first or triple last).  The triple run now yields a local
-   `0ab1 ↔ 1ab0` bit word; relating its isolated edge to that word and proving
-   the required arithmetic exclusion are still unproved.
+   `0ab1 ↔ 1ab0` bit word, and the isolated edge yields `01 ↔ 10`.
+   Relating these two local exchanges and proving the required arithmetic
+   exclusion are still unproved.
 2. `[2,2]`: two runs of two active edges.
 3. `[2,1,1]`: one run of two and two isolated active edges.
 4. `[1,1,1,1]`: four isolated active edges, including the required reduction

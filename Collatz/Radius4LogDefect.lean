@@ -56,6 +56,54 @@ theorem cycleDenominator_log_defect_pos {A L : ℕ}
   have hquot : 0 < (cycleDenominator A L : ℝ) / (3 : ℝ) ^ L := by positivity
   linarith
 
+/-- The exact denominator identity also gives an elementary lower bound for
+the positive logarithmic defect.  This is the finite-range counterpart to the
+much stronger LMN estimate: a positive integer denominator makes the defect
+at least the reciprocal of `2^A`. -/
+theorem cycleDenominator_log_defect_reciprocal_le {A L : ℕ}
+    (hD : 0 < cycleDenominator A L) :
+    1 / (2 : ℝ) ^ A ≤
+      (A : ℝ) * Real.log 2 - (L : ℝ) * Real.log 3 := by
+  rw [cycleDenominator_log_defect_eq]
+  have hDreal : (0 : ℝ) < (cycleDenominator A L : ℝ) := by
+    exact_mod_cast hD
+  have hbase : 0 < 1 + (cycleDenominator A L : ℝ) / (3 : ℝ) ^ L := by
+    positivity
+  calc
+    1 / (2 : ℝ) ^ A ≤ (cycleDenominator A L : ℝ) / (2 : ℝ) ^ A := by
+      apply div_le_div_of_nonneg_right _ (by positivity)
+      have hDone : 1 ≤ cycleDenominator A L := by omega
+      exact_mod_cast hDone
+    _ =
+        1 - (1 + (cycleDenominator A L : ℝ) / (3 : ℝ) ^ L)⁻¹ := by
+      rw [show (2 : ℝ) ^ A = (3 : ℝ) ^ L + cycleDenominator A L by
+        simp only [cycleDenominator, Int.cast_sub, Int.cast_pow, Int.cast_ofNat]
+        ring]
+      field_simp
+      ring
+    _ ≤ Real.log (1 + (cycleDenominator A L : ℝ) / (3 : ℝ) ^ L) :=
+      Real.one_sub_inv_le_log_of_pos hbase
+
+/-- Taking logarithms of the reciprocal estimate gives a completely internal
+linear lower bound.  It is weaker than the desired quadratic-in-`log M` LMN
+bound, but is sufficient whenever an independent finite exponent range has
+already been obtained. -/
+theorem neg_exponent_log_two_le_log_cycleDenominator_defect {A L : ℕ}
+    (hD : 0 < cycleDenominator A L) :
+    -(A : ℝ) * Real.log 2 ≤
+      Real.log |(A : ℝ) * Real.log 2 - (L : ℝ) * Real.log 3| := by
+  have hpos := cycleDenominator_log_defect_pos hD
+  have hrecip := cycleDenominator_log_defect_reciprocal_le hD
+  rw [abs_of_pos hpos]
+  have hrecipPos : 0 < 1 / (2 : ℝ) ^ A := by positivity
+  have hlog := Real.strictMonoOn_log.monotoneOn
+    (show 1 / (2 : ℝ) ^ A ∈ Set.Ioi (0 : ℝ) by exact hrecipPos)
+    (show (A : ℝ) * Real.log 2 - (L : ℝ) * Real.log 3 ∈ Set.Ioi (0 : ℝ) by
+      exact hpos) hrecip
+  rw [Real.log_div (by positivity) (by positivity), Real.log_one, Real.log_pow] at hlog
+  simp only [zero_sub] at hlog
+  linarith
+
 /-- An elementary exponential upper bound for the logarithmic defect.
 The full denominator is retained exactly. -/
 theorem cycleDenominator_log_defect_lt_ratio {A L : ℕ}

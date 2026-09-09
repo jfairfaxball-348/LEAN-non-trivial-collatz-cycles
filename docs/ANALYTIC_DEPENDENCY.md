@@ -112,6 +112,13 @@ names are `cycleDenominator_log_defect_eq`,
 `cycleDenominator_log_defect_lt_sixty_five`, and
 `cycleDenominator_exponent_lt_twice_of_le_sixty_five`.
 
+For every positive full denominator, the same file now also verifies
+`1 / 2^A ≤ Λ`, hence `-A log 2 ≤ log |Λ|`.  This is an elementary
+integer-denominator estimate (`cycleDenominator_log_defect_reciprocal_le`
+and `neg_exponent_log_two_le_log_cycleDenominator_defect`), useful only after
+an independent finite exponent range is available.  It does not replace the
+required LMN lower bound.
+
 ## Remaining cutoff and finite certificate
 
 The intended next steps enlarge the logarithmic parameter to

@@ -1,6 +1,6 @@
 # Development handover
 
-Date: 2026-09-07
+Date: 2026-09-09
 
 ## Objective and model
 
@@ -22,12 +22,11 @@ cycle arithmetic but does not supply primitivity or minimal period.
 
 ## Verified baseline
 
-PR #34 merged at `d7d1f372635c4d749da2172e16f247ba68b3d750`; its verified
-head was `98c0147b420a1112830d54d8fb537e7218ea1245`.
-The full local build passed with 8,912 jobs. GitHub Actions run `34115337625`
-passed its actual Build step, as did post-merge main run `34115689962`.
-The audit of 27 new public lemmas found only `propext`, `Classical.choice`,
-and `Quot.sound`, where used.
+The current local `main` checkpoint is `c7c8161` plus the repository
+infrastructure commits `e29396c`, `c369b10`, `bd4b655`, and `1cdb765`. The
+proof checkpoint passed a full local build of 8,925 jobs before promotion.
+The infrastructure locks dependencies, adds a fast CI sanity gate, a pull
+request template, and the repository working agreements in `AGENTS.md`.
 
 The verified library contains the six cost-four flow families, normalization
 to a zero cut, the genuine advanced parity origin, signed height-two local
@@ -38,23 +37,16 @@ Consult the [theorem index](THEOREM_INDEX.md) for exact statements and scope.
 
 ## Current branch and next work
 
-`codex/r4-local-word-bridge` adds component helpers and a height-two
-outside-bit agreement lemma in `Radius4TransportSigned.lean`, plus
-`Collatz/CyclicWordList.lean`, `Collatz/Radius4WordRotation.lean`,
-`Collatz/Radius4FullDenominatorWord.lean`,
-`Collatz/Radius4TransportConnectedBits.lean`,
-`Collatz/Radius4TransportLocalWords.lean`, and
-`Collatz/Radius4ConnectedBounds.lean` pass a full local `lake build`
-(8,918 jobs) after two Lean 4.34 compatibility repairs in the connected-bit
-and local-word modules. The 18 bridge/application theorems audited depend
-only on `propext`, `Classical.choice`, and `Quot.sound`. No CI run or merge is
-claimed for this newer local revision.
+The former local-word bridge is now promoted. It includes the height-two and
+connected local-word bridges, their elementary denominator bounds, and the
+ordered `[3,1]` topology. `Radius4TransportThreeOneBits.lean` now proves the
+two component-level local exchanges: a triple run gives `0ab1 ↔ 1ab0`, while
+the isolated run gives `01 ↔ 10`. These are reductions only: their joint
+arithmetic exclusion remains unproved.
 
-The last module applies the proposed bridges to the actual strict positive
-full denominator: its statements conclude `D = 5` for height-two and
-`D ≤ 65` for connected four-edge flow. These bounds are not family
-exclusions. The [theorem index](THEOREM_INDEX.md) lists all 24 new public
-lemma statements in the current bridge.
+The height-two and connected applications conclude respectively `D = 5` and
+`D ≤ 65` under their stated hypotheses; these bounds are not full family
+exclusions. The [theorem index](THEOREM_INDEX.md) records exact statements.
 
 The existing cycle-specific shifted-origin identities are available for
 applications, but they do not replace the generic word result.
@@ -75,11 +67,12 @@ family is excluded.
 
 ## Validation and documentation
 
-Check current main, the working branch, relevant pull requests, and actual CI
-Build results. Keep each required module in `Collatz.lean` and run the full
-`lake build`; an earlier green revision does not validate later edits. Before
-promotion, audit theorem dependencies and synchronize the checkpoint, index,
-roadmap, and proof map.
+Read `AGENTS.md` first. Work in a small, isolated theorem-family branch. While
+iterating, build only the module being edited; do not routinely run the full
+library build. Before opening a PR, run the required disallowed-placeholder
+grep, update the theorem index, and use a full `lake build` only as the final
+integration check. Do not run `lake update`: dependencies are locked by the
+committed manifest.
 
 The repository pins Lean `v4.34.0-rc2` and Mathlib
 `69fe4f49ffbc9580a2c3ae6d29591ef6d1d4131e`. Install `elan`, then use

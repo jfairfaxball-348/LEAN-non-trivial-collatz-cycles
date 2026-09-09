@@ -357,6 +357,18 @@ and the bounded chronological window.
   common-context lists around `0011 ↔ 1100`, under equal weight, cut-zero
   cost four, and an internal magnitude-two edge.
 
+`Collatz/Radius4TransportThreeOneBits.lean` records the two local components
+of the `[3,1]` unit-height family:
+
+- `transportThreeOne_exists_three_run_local_bits_of_cost_four` extracts a
+  bounded chronological `0ab1 ↔ 1ab0` exchange from the three-edge component.
+- `transportThreeOne_exists_isolated_run_local_bits_of_cost_four` extracts a
+  bounded chronological `01 ↔ 10` exchange from its separated isolated
+  component.
+
+Neither theorem relates the two components arithmetically or excludes the
+`[3,1]` family.
+
 `Collatz/Radius4ConnectedBounds.lean` contains the two branch-bound applications:
 
 - `transportConnectedFour_fullDenominator_le_sixty_five` concludes `D ≤ 65`

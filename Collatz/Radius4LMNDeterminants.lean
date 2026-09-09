@@ -67,4 +67,19 @@ theorem twoThreeVandermonde_norm_one_le {n : ℕ}
   integerInterpolationDeterminant_norm_one_le _
     (twoThreeVandermonde_det_ne_zero a b hinj)
 
+/-- Combining the concrete two-prime Vandermonde zero lemma and integral
+lower bound with the determinant norm estimate gives the numerical
+interpolation constraint used on the analytic side of a determinant method.
+The remaining LMN construction must supply its derivative interpolation
+matrix and a sharp entry bound. -/
+theorem one_le_twoThreeVandermonde_interpolation_bound {n : ℕ}
+    (a b : Fin n → ℕ) (hinj : Function.Injective fun i => (a i, b i))
+    (x : ℝ)
+    (hentries : ∀ i j,
+      ‖((Matrix.vandermonde fun i => (2 ^ a i * 3 ^ b i : ℤ)).map
+        fun z => (z : ℂ)) i j‖ ≤ x) :
+    1 ≤ (Fintype.card (Fin n)).factorial * x ^ Fintype.card (Fin n) := by
+  exact (twoThreeVandermonde_norm_one_le a b hinj).trans
+    (interpolationDeterminant_norm_le _ x hentries)
+
 end Collatz

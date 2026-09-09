@@ -33,6 +33,7 @@ import Collatz.Radius4TransportSigned
 import Collatz.Radius4ConnectedCoefficients
 import Collatz.Radius4ConnectedDenominators
 import Collatz.Radius4LogDefect
+import Collatz.Radius4LMNParameters
 import Collatz.CyclicWordList
 import Collatz.Radius4WordRotation
 import Collatz.Radius4FullDenominatorWord
@@ -42,3 +43,4 @@ import Collatz.Radius4TransportThreeOneBits
 import Collatz.Radius4ConnectedBounds
 import Collatz.Radius4SmallCases
 import Collatz.Radius4LMNDeterminants
+import Collatz.Radius4LMNZeroLemma

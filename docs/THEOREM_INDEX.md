@@ -423,14 +423,17 @@ subrange without any analytic input:
 
 - `cycleDenominator_eq_five_of_ones_le_three` proves that the positive
   solutions of `2^A - 3^L = 5` with `L ≤ 3` are exactly `(A,L) = (3,1)` and
-  `(5,3)`.
-- `cycleDenominator_small_list_of_ones_le_five` proves the first segment of
-  the later finite-list certificate: for `L ≤ 5`, the list
+  `(5,3)`. Its extension `cycleDenominator_eq_five_of_ones_le_six` proves
+  that no further solutions arise through `L ≤ 6`.
+- `cycleDenominator_small_list_of_ones_le_five` and its extension
+  `cycleDenominator_small_list_of_ones_le_six` prove the first segment of the
+  later finite-list certificate: for `L ≤ 6`, the list
   `{5,7,13,17,29,35,47,65}` gives exactly its seven displayed exponent and
   denominator triples.
-- `transportHeightTwo_no_small_ones` rules out a radius-four transport in
-  both resulting finite word spaces, retaining full source-numerator
-  divisibility.
+- `transportHeightTwo_no_small_ones` and
+  `transportHeightTwo_no_ones_le_six` rule out a radius-four transport in
+  both resulting finite word spaces through six odd positions, retaining full
+  source-numerator divisibility.
 - `transportHeightTwo_no_small_ones_of_cost_four` connects that finite result
   to the existing height-two `D = 5` application theorem.
 
@@ -441,8 +444,9 @@ The same module also contains
 `transportRadiusFour_no_generic_length_four` and
 `transportRadiusFour_no_generic_length_five`, and
 `transportRadiusFour_no_generic_length_six`, and
-`transportRadiusFour_no_generic_length_seven`, complete finite exclusions at
-periods four through seven under the intended generic local hypotheses: positive
+`transportRadiusFour_no_generic_length_seven`, and
+`transportRadiusFour_no_generic_length_eight`, complete finite exclusions at
+periods four through eight under the intended generic local hypotheses: positive
 proper weight, strict positive full denominator, source-numerator divisibility,
 primitivity, and nonzero shift.  They are exhaustive kernel computations over
 the respective word spaces, not assumed finite certificates.
@@ -455,6 +459,24 @@ Mathlib. [ANALYTIC_DEPENDENCY.md](ANALYTIC_DEPENDENCY.md) states the exact
 proposition, constants, hypotheses, and useful library support. It is not an
 axiom or hypothesis in any current Lean theorem. The cutoff and the subsequent
 finite exponent certificate remain unproved.
+
+`Collatz/Radius4LMNDeterminants.lean` additionally combines its concrete
+two-prime Vandermonde zero lemma, integral determinant lower bound, and
+Hadamard-style determinant norm estimate in
+`one_le_twoThreeVandermonde_interpolation_bound`. This is a verified
+determinant-method bridge, but not the derivative interpolation matrix or the
+explicit estimates needed for the stated LMN lower bound.
+
+`Collatz/Radius4LMNParameters.lean` formalizes the exact specialized target
+as `TwoThreeLMNStatement`, including the positive-exponent and nonvanishing
+hypotheses, together with the parameter threshold `21 ≤ M`. Its application
+lemma discharges the `2`--`3` nonvanishing premise from `0 < A`; the actual
+quantitative statement remains unproved.
+
+`Collatz/Radius4LMNZeroLemma.lean` proves the determinant row-power
+factorization and its base consequence that a positive row degree makes the
+scaled determinant vanish at zero. These are algebraic primitives for a
+future interpolation multiplicity proof, not the completed LMN zero lemma.
 
 ## Radius-4 local impossibility theorem
 

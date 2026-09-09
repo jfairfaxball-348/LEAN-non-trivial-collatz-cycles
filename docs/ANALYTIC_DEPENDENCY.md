@@ -43,8 +43,12 @@ The required lower bound is
 
 `-22 * M^2 * log 2 * log 3 ≤ log |Λ|`, provided `Λ ≠ 0`.
 
-The complete formal obligation is displayed as a proposition only. It is not
-a theorem declaration, an axiom, or an assumption added to the library:
+The exact obligation is now formalized as `TwoThreeLMNStatement` in
+`Collatz/Radius4LMNParameters.lean`; its conclusion is
+`HasTwoThreeLMNLowerBound A L`. The statement includes the positive-exponent
+and nonvanishing hypotheses below. It is not an axiom or an assumption added
+to the library; its quantitative proof is still absent. Its defining inequality
+is:
 
 ```lean
 ∀ A L : ℕ, 0 < A → 0 < L →

@@ -112,6 +112,19 @@ theorem consecutiveOffsetRunLengths_four_connected_iff (a b c d : ℕ) :
     consecutiveOffsetRunsAux]
   split_ifs <;> simp_all
 
+/-- The `[3,1]` family has exactly two ordered shapes.  Either the length-three
+component occurs first, or it occurs last.  Recording this distinction is
+essential for the later chronological-word and numerator arguments: a mere
+permutation of component lengths does not retain which local replacement
+comes first. -/
+theorem consecutiveOffsetRunLengths_four_three_one_iff (a b c d : ℕ) :
+    (consecutiveOffsetRunLengths [a, b, c, d]).Perm [3, 1] ↔
+      (b = a + 1 ∧ c = b + 1 ∧ d ≠ c + 1) ∨
+        (b ≠ a + 1 ∧ c = b + 1 ∧ d = c + 1) := by
+  simp only [consecutiveOffsetRunLengths, consecutiveOffsetRuns,
+    consecutiveOffsetRunsAux]
+  split_ifs <;> simp_all <;> decide
+
 /-- In the `[4]` branch, the actual ordered active-edge list is four
 consecutive offsets. Offset `p` is edge `G_(p+1)`, so the corresponding local
 word occupies the five positions `p` through `p+4`. -/
@@ -141,5 +154,29 @@ theorem transportActiveEdgeOffsetList_eq_four_consecutive_of_connected
   have hlt := (mem_transportActiveEdgeOffsets_iff source target cut _).mp hmem'
   refine ⟨a, by omega, ?_⟩
   simpa [Nat.add_assoc] using hlist
+
+/-- In the first disconnected family, the concrete ordered active-edge list
+is either a consecutive triple followed by an isolated edge or an isolated
+edge followed by a consecutive triple.  This preserves the left-to-right
+order required to turn the flow information into two chronological local
+word contexts. -/
+theorem transportActiveEdgeOffsetList_three_one_shapes_of_cost_four
+    {n : ℕ} [NeZero n] (source target : CyclicWord n) (cut : ZMod n)
+    (hcost : transportCostAtCut source target cut = 4)
+    (hunit : ∀ j ∈ Finset.range (n - 1),
+      transportFlowMagnitude source target cut (j + 1) ≤ 1)
+    (hthreeOne : (transportActiveEdgeRunLengths source target cut).Perm [3, 1]) :
+    ∃ a b c d,
+      transportActiveEdgeOffsetList source target cut = [a, b, c, d] ∧
+        ((b = a + 1 ∧ c = b + 1 ∧ d ≠ c + 1) ∨
+          (b ≠ a + 1 ∧ c = b + 1 ∧ d = c + 1)) := by
+  have hcard := transportActiveEdgeOffsets_card_eq_four_of_cost_four_of_unit
+    source target cut hcost hunit
+  have hlen : (transportActiveEdgeOffsetList source target cut).length = 4 := by
+    simpa [transportActiveEdgeOffsetList] using hcard
+  obtain ⟨a, b, c, d, hlist⟩ := List.length_eq_four.mp hlen
+  refine ⟨a, b, c, d, hlist, ?_⟩
+  apply (consecutiveOffsetRunLengths_four_three_one_iff a b c d).mp
+  simpa only [transportActiveEdgeRunLengths, hlist] using hthreeOne
 
 end Collatz

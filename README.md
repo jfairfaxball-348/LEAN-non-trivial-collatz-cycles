@@ -1,3 +1,5 @@
+![Lean CI](https://github.com/jfairfaxball-348/LEAN-non-trivial-collatz-cycles/actions/workflows/ci.yml/badge.svg)
+
 # Collatz cycles and a local transport obstruction in Lean
 
 This repository develops a machine-checked local obstruction for possible

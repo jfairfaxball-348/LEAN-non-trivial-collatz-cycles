@@ -42,5 +42,7 @@ import Collatz.Radius4TransportLocalWords
 import Collatz.Radius4TransportThreeOneBits
 import Collatz.Radius4ConnectedBounds
 import Collatz.Radius4SmallCases
+import Collatz.Radius4FiniteCertificate
+import Collatz.Radius4ConnectedFinite
 import Collatz.Radius4LMNDeterminants
 import Collatz.Radius4LMNZeroLemma

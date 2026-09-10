@@ -41,14 +41,18 @@ exact local coefficients, coprime context cancellation, a finite divisor list,
 and elementary logarithmic upper bounds. PR #34 promoted these prerequisites;
 see the [checkpoint](CURRENT_CHECKPOINT.md) for build evidence.
 
-The following steps remain:
+The first three steps are proved; the unbounded analytic step remains:
 
 1. Extract `0abc1 ↔ 1abc0` from the connected four-edge geometry.
 2. Express each comparison using common prefix and suffix lists, and prove
    that full-denominator source divisibility passes through generic rotation.
 3. Apply the local coefficient and divisor lemmas to the actual word pair.
-4. Prove the precise quantitative logarithmic lower bound, use it to obtain
-   `L < 7000`, and verify the resulting finite exponent list and exclusions.
+4. Prove a justified quantitative logarithmic lower bound and its cutoff.
+   The exact finite exponent list and word exclusions below weight 7000
+   are now verified in `Radius4FiniteCertificate.lean`, with the range
+   hypothesis explicit. `Radius4ConnectedFinite.lean` applies the list to
+   connected geometry and removes height two and connected `[4]` from the
+   normalized classification in that range.
 
 New component, cyclic-list, word-rotation, full-denominator-word, local-bit,
 and common-context work on `codex/r4-local-word-bridge`, including the
@@ -57,7 +61,8 @@ local root build and bridge axiom audit; no CI promotion is claimed for this
 newer revision. The application statements target `D = 5` for height-two and
 `D ≤ 65` for connected four-edge flow, not complete exclusions.
 
-The logarithmic proposition is stated in
+The proposed logarithmic proposition and a newly identified gap in its
+source specialization are documented in
 [ANALYTIC_DEPENDENCY.md](ANALYTIC_DEPENDENCY.md). No equivalent formal theorem
 was located in the pinned Mathlib. It must receive a kernel proof and cannot
 be added as an axiom or an extra hypothesis of the intended final theorem.

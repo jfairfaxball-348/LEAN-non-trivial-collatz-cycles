@@ -24,6 +24,6 @@ theorem interpolationDeterminant_row_power_zero_at_zero
   rcases hdegree with ⟨i, hi⟩
   apply mul_eq_zero_of_left
   apply Finset.prod_eq_zero (Finset.mem_univ i)
-  simp [hi]
+  exact zero_pow (Nat.ne_of_gt hi)
 
 end Collatz

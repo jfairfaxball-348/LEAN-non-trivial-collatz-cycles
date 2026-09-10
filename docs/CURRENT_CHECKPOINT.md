@@ -1,10 +1,61 @@
 # Current verified checkpoint
 
-Date: 2026-09-07
+Date: 2026-09-10
 
 The final primitive full-denominator transport-radius-four impossibility
 theorem is **unproved**. This document distinguishes the verified main-branch
 results from source currently under development.
+
+## Current worktree update
+
+The baseline is `6888142` ("Formalize Radius-4 finite and LMN scaffolding").
+The current work is uncommitted. No PR or new full-library build has been
+made. The historical sections below retain earlier build records; their
+remaining-obligation descriptions are superseded by this update and the
+current [theorem index](THEOREM_INDEX.md).
+
+The inherited interpolation file and zero-power proof repair are preserved.
+The finite monomial auxiliary function is still an elementary prerequisite,
+not the LMN auxiliary construction or its multiplicity/nonvanishing theorem.
+
+`Collatz/Radius4FiniteCertificate.lean` now passes its targeted build,
+including the exact seven-triple exponent certificate for `0 < L < A`,
+`L < 7000`, and denominators in `{5,7,13,17,29,35,47,65}`. Its modular proof
+establishes that 3 has order 16384 modulo 65536 and reduces to `A < 16`.
+The height-two application and the generic word exclusion for that list and
+range also pass the targeted build. This completes the finite certificate
+and its word-level exclusion with an explicit range hypothesis, not the
+unbounded Radius-4 theorem.
+
+Build evidence for the final finite module: `lake build
+Collatz.Radius4FiniteCertificate` completed successfully with exit status 0
+(8,904 jobs; module compilation 177 seconds). The `sorry`/`native_decide`
+scan returned no matches. Only targeted builds have been run in this work.
+
+`Collatz/Radius4ConnectedFinite.lean` also passes its targeted build
+(8,908 jobs; module compilation 170 seconds; exit status 0). It derives the
+exact denominator list from the connected geometry without a weight bound,
+excludes connected `[4]` below weight 7000, and removes both height two and
+connected `[4]` from the normalized generic classification in that range.
+The four disconnected families remain explicit. Both new finite modules are
+imported by the root source; a full root build remains reserved for actual
+completion of the final theorem.
+
+An explicit axiom audit of all eight new public finite and connected
+theorems completed successfully. Each depends only on `propext`,
+`Classical.choice`, and `Quot.sound`.
+
+The analytic audit also found that Mignotte's Remark 4 requires height
+parameters at least 1 for rational bases. The proposed `log 2` substitution
+does not meet that hypothesis. See
+[ANALYTIC_DEPENDENCY.md](ANALYTIC_DEPENDENCY.md) for the source and exact
+scope of this additional gap; it does not prove the target bound false.
+
+Still required: the actual quantitative auxiliary construction and zero
+lemma, analytic estimates and a justified specialized lower bound, an
+unbounded cutoff, the four disconnected-family exclusions, the unbounded
+height-two and connected exclusions, and final generic assembly. No LMN
+statement or finite cutoff is assumed to be established.
 
 ## Objective and definitions
 
@@ -25,7 +76,7 @@ Transport radius is the minimum, over cyclic cuts, of
 `sum_{k=1}^{A-1} |G_k|`, where `G_k` is target-prefix ones minus source-prefix
 ones. It differs from Hamming distance, which counts unequal positions.
 
-## Verified main branch
+## Historical verified main-branch checkpoints
 
 PR #34 merged at `d7d1f372635c4d749da2172e16f247ba68b3d750`.
 Its verified head was `98c0147b420a1112830d54d8fb537e7218ea1245`.
@@ -82,7 +133,7 @@ four-edge exclusions:
 The [theorem index](THEOREM_INDEX.md) gives names and exact scope. These
 ingredients do not yet exclude an entire transport family.
 
-## Validated local-word bridge and remaining obligations
+## Historical local-word bridge and then-remaining obligations
 
 Branch `codex/r4-local-word-bridge` contains new helpers in
 `Collatz/Radius4TransportComponents.lean` and a height-two outside-bit agreement

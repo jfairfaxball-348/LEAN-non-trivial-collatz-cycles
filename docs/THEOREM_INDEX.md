@@ -1,8 +1,9 @@
 # Theorem index
 
 This index records the meaning and scope of the verified library. The final
-local impossibility theorem is unproved. Verified status refers to the main
-revision and build evidence in [CURRENT_CHECKPOINT.md](CURRENT_CHECKPOINT.md).
+local impossibility theorem is unproved. Main-branch results and locally
+checked, uncommitted work are distinguished in
+[CURRENT_CHECKPOINT.md](CURRENT_CHECKPOINT.md).
 
 ## Model and notation
 
@@ -451,14 +452,60 @@ proper weight, strict positive full denominator, source-numerator divisibility,
 primitivity, and nonzero shift.  They are exhaustive kernel computations over
 the respective word spaces, not assumed finite certificates.
 
+### Finite denominator certificate below weight 7000
+
+`Collatz/Radius4FiniteCertificate.lean` completes the finite exponent
+certificate with the range hypothesis `L < 7000` kept explicit:
+
+- `two_pow_eq_three_pow_add_small_exponent_lt_sixteen` proves `A < 16`
+  from `L < A`, `L < 7000`, `2^A = 3^L + d`, and the eight-element
+  denominator list.
+- `cycleDenominator_small_list_of_ones_lt_seven_thousand` proves exactly
+  the seven exponent/denominator triples listed in the analytic dependency
+  note. It reuses the verified `L ≤ 6` certificate after excluding all
+  larger weights in this range.
+- `transportHeightTwo_no_ones_lt_seven_thousand` excludes `D = 5`
+  throughout that range, retaining source divisibility and without requiring
+  primitivity. Its `_of_cost_four` application derives `D = 5` from the
+  actual height-two geometry.
+- `transportRadiusFour_no_small_denominator_of_ones_lt_seven_thousand`
+  excludes every candidate in the eight-element denominator list in that
+  range, using the generic word's divisibility, primitivity, and nonzero
+  shift. The seven exponent triples reduce to the previously checked word
+  spaces of lengths 3, 4, 5, 7, 8.
+
+The private supporting lemmas are `three_order_mod_65536` (exact order
+16384), `three_pow_add_mod_of_equation` (reduction modulo a power of two),
+`three_pow_residue_mod_16384` (uniqueness of exponent residues), and
+`small_denominator_mod_eight` (elimination of denominators 17, 35, 65
+when `A ≥ 3`). Modular powers use kernel-checked repeated squaring;
+the sole `decide` checks an inequality between two explicit residues.
+
+`Collatz/Radius4ConnectedFinite.lean` applies the certificate to the actual
+connected geometry:
+
+- `transportConnectedFour_fullDenominator_mem` derives the eight-element
+  integer denominator list from the connected `[4]` local words and original
+  source divisibility. This list theorem has no weight cutoff.
+- `transportConnectedFour_no_ones_lt_seven_thousand` excludes the connected
+  `[4]` family below weight 7000 under the generic hypotheses.
+- `transportRadiusFour_exists_rotated_disconnected_family_of_ones_lt_seven_thousand`
+  removes height two and connected `[4]` from the normalized classification
+  in that range. Only `[3,1]`, `[2,2]`, `[2,1,1]`, and `[1,1,1,1]` remain.
+  It uses origin-invariant denominator arithmetic to apply the finite
+  exclusions to the original word.
+
+The analytic cutoff itself is still unproved. These results are not
+unbounded family exclusions or the generic Radius-4 impossibility theorem.
+
 ### Required analytic lower bound — unproved
 
 The height-two and connected `[4]` exclusions require a quantitative lower
 bound for `log |A log 2-L log 3|`. No equivalent theorem was located in pinned
 Mathlib. [ANALYTIC_DEPENDENCY.md](ANALYTIC_DEPENDENCY.md) states the exact
 proposition, constants, hypotheses, and useful library support. It is not an
-axiom or hypothesis in any current Lean theorem. The cutoff and the subsequent
-finite exponent certificate remain unproved.
+axiom of the Lean library. The cutoff remains unproved; its subsequent
+finite exponent certificate is now proved with the range hypothesis explicit.
 
 `Collatz/Radius4LMNDeterminants.lean` additionally combines its concrete
 two-prime Vandermonde zero lemma, integral determinant lower bound, and
@@ -477,6 +524,14 @@ quantitative statement remains unproved.
 factorization and its base consequence that a positive row degree makes the
 scaled determinant vanish at zero. These are algebraic primitives for a
 future interpolation multiplicity proof, not the completed LMN zero lemma.
+
+`Collatz/Radius4LMNInterpolation.lean` defines a finite complex monomial
+interpolation auxiliary function and its entrywise derivative matrix.  It
+proves that the matrix entries are the actual complex derivatives, and proves
+the first concrete multiplicity condition: degrees at least two force both
+the auxiliary function and its first derivative to vanish at zero.  This is
+an algebraic/function-level prerequisite only; it supplies neither the LMN
+coefficient construction nor its quantitative analytic estimates.
 
 ## Radius-4 local impossibility theorem
 

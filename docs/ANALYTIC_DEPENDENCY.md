@@ -1,6 +1,6 @@
 # Quantitative logarithmic dependency
 
-Audit date: 2026-09-06. Status updated: 2026-09-07.
+Audit date: 2026-09-06. Status updated: 2026-09-10.
 
 The final local transport-radius-four impossibility theorem is **unproved**.
 The first family exclusions require the quantitative logarithmic proposition
@@ -90,11 +90,27 @@ with the integral lower-bound primitive.  The unresolved LMN zero lemma is the
 substantially stronger result for its multi-parameter derivative/interpolation
 matrix.
 
-This is the required specialization of a quantitative two-logarithm bound
+This is the proposed specialization of a quantitative two-logarithm bound
 associated with Laurent, Mignotte, and Nesterenko. Every hypothesis and the
 constants `22`, `3/50`, and `21` require formal justification. Naming a
 classical theorem does not supply its Lean proof. Making this proposition
 an extra final-theorem hypothesis would leave the intended target incomplete.
+
+### Additional specialization gap found on 2026-09-10
+
+[Mignotte, *A corollary to a theorem of Laurent–Mignotte–Nesterenko*,
+Acta Arithmetica 86 (1998), Remark 4, p. 111](https://matwbn.icm.edu.pl/ksiazki/aa/aa86/aa8621.pdf)
+gives the constants `22`, `0.06`, and `21`, but requires
+`log A_i ≥ max {h(α_i), |log α_i| / D, 1 / D}` for its height parameters.
+For the rational bases 2 and 3, the field-degree parameter is `D = 1`.
+Thus choosing the first height parameter to be `log 2 < 1` does **not**
+meet the stated hypotheses. The displayed repository target is not a direct
+specialization of that remark.
+
+This does not disprove `TwoThreeLMNStatement`. A sharper specialization or
+an alternative estimate with a new cutoff needs proof. Parameters `1` and
+`log 3` satisfy this size condition but give a different, still unformalized
+lower bound.
 
 ## Verified elementary ingredients
 
@@ -102,8 +118,8 @@ The connected local coefficient set is `15,17,21,27,29,35,47,65`; the
 height-two coefficient has absolute value `15`. The generic coefficient and
 cancellation lemmas are verified. For a natural divisor `d > 1` coprime to
 six, they give the possible values `5,7,13,17,29,35,47,65` when the stated
-coefficient divisibility holds. Their application to the actual full
-denominator and transport geometry remains a separate obligation.
+coefficient divisibility holds. `transportConnectedFour_fullDenominator_mem`
+now derives that list from the actual full denominator and connected geometry.
 
 For `D = 2^A-3^L` with `0 < D ≤ 65`,
 `Collatz/Radius4LogDefect.lean` proves
@@ -125,20 +141,29 @@ required LMN lower bound.
 
 ## Remaining cutoff and finite certificate
 
-The intended next steps enlarge the logarithmic parameter to
+The proposed next steps enlarge the logarithmic parameter to
 `max (log (4L) + 3/50) 21`, combine the lower and upper bounds to prove
 `L < 7000`, and check the finite denominator equation in that range.
-Neither the cutoff nor that finite certificate is currently proved here.
+The cutoff is unproved. The finite certificate is now proved independently
+with `L < 7000` retained as an explicit range hypothesis.
 
 The exact certificate target is: if `0 < L < A`, `L < 7000`,
 `D = 2^A-3^L`, and `D ∈ {5,7,13,17,29,35,47,65}`, then `(A,L,D)` is one of
 
 `(3,1,5), (4,1,13), (5,1,29), (4,2,7), (5,3,5), (7,4,47), (8,5,13)`.
 
-Even after proving this finite statement, the remaining word configurations
-must be excluded using the actual target hypotheses, including primitivity
-and `D ∣ Q(w)`. A computation performed outside the Lean kernel or an
-assumed cutoff does not establish these obligations.
+This is `cycleDenominator_small_list_of_ones_lt_seven_thousand` in
+`Collatz/Radius4FiniteCertificate.lean`. Its modular-order proof first reduces
+to `A < 16`; it then reuses the verified `L ≤ 6` certificate and rules out
+the remaining weights 7, 8, 9. No logarithmic lower bound is used.
+
+`transportRadiusFour_no_small_denominator_of_ones_lt_seven_thousand` now
+also excludes the remaining word configurations in that list and range,
+using the actual target hypotheses, including primitivity and `D ∣ Q(w)`.
+It reuses the kernel-verified word spaces at the certified periods.
+`transportHeightTwo_no_ones_lt_seven_thousand_of_cost_four` directly applies
+the finite result to height-two geometry, without primitivity. Neither
+theorem proves the unbounded analytic cutoff.
 
 ## Pinned Mathlib audit and useful support
 
